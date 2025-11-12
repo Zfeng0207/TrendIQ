@@ -1,0 +1,1 @@
+using LeadService as service from '../../srv/service';

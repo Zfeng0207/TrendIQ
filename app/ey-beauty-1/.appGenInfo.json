@@ -1,0 +1,29 @@
+{
+  "generationParameters": {
+    "generationDate": "Tue Nov 11 2025 22:42:19 GMT+0800 (Malaysia Time)",
+    "generatorPlatform": "Visual Studio Code",
+    "serviceType": "Local CAP",
+    "metadataFilename": "",
+    "serviceUrl": "http://localhost:4004/odata/v4/lead/",
+    "appName": "ey-beauty-1",
+    "appTitle": "App Title",
+    "appDescription": "An SAP Fiori application.",
+    "appNamespace": "beautydashboard",
+    "ui5Theme": "sap_fiori_3_dark",
+    "ui5Version": "1.142.0",
+    "enableCodeAssist": true,
+    "enableEslint": false,
+    "enableTypeScript": false,
+    "showMockDataInfo": false,
+    "generatorVersion": "1.19.5",
+    "template": "Overview Page V4",
+    "generatorName": "SAP Fiori Application Generator",
+    "entityRelatedConfig": [
+      {
+        "type": "Filter Entity Type",
+        "value": "Leads"
+      }
+    ],
+    "launchText": "To launch the generated app, start your CAP project:  and navigate to the following location in your browser:\n\nhttp://localhost:4004/ey-beauty-1/webapp/index.html"
+  }
+}

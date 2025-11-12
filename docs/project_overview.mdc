@@ -1,0 +1,122 @@
+---
+alwaysApply: true
+---
+
+### 1. Project Objective
+
+To design, build, and deploy a **Smart Beauty CRM**, a zero-code, AI-driven application for the beauty industry.
+
+This system will be built on **SAP Build** and **Databricks**. It is designed to replace outdated spreadsheets and disconnected tools. Its primary function is to automatically capture and analyze external market signals (like social media trends) and internal data (emails, forms) and turn them into prioritized, actionable sales opportunities within a single, unified platform.
+
+### 2. Core Problem & Personas
+
+* **Problem:** Beauty brands (from large enterprises like L'Oréal to SME salons) have slow lead response times, no visibility into real-time customer sentiment, and rely on manual deal approvals. They are failing to capitalize on fast-moving online trends from sources like TikTok, Shopee, and Google Maps.
+* **Primary User Persona:** Alex, a Regional Sales Manager at a company like L'Oréal.
+* **Customer Segments:**
+    * **Large Enterprises:** (e.g., L'Oréal, Estée Lauder) B2B regional sales teams.
+    * **SMEs:** (e.g., Indie skincare brands, salons, distributors) Teams needing a plug-and-play, intelligent CRM.
+
+### 3. Core Technology Stack
+
+| Layer | Tools / Services |
+| :--- | :--- |
+| **Frontend (No-Code)** | **SAP Build Apps** (Main CRM Interface) |
+| **Backend & Workflow**| **SAP Build Process Automation** (Lead routing, approvals, notifications) |
+| **AI & Data Engine** | **Databricks** (Web/social scraping, ML models, trend analysis) |
+| **Database** | **SAP HANA Cloud** / Databricks Delta Lake |
+| **Analytics** | **SAP Analytics Cloud (SAC)** (Dashboards, maps, forecasting) |
+| **Collaboration** | **SAP Work Zone** (Team chat, notifications, approval alerts) |
+| **ERP Integration** | **SAP S/4HANA** (Orders, billing, inventory, pricing data) |
+
+---
+
+### 4. System Architecture & Data Flow
+
+This diagram outlines the end-to-end flow of data from capture to action.
+
+****
+
+1.  **SENSING (Databricks):** The Databricks AI engine actively scrapes public data from social media (TikTok), e-commerce (Shopee), and web (Google Maps, blogs) for new trends, salons, and retailers. It also ingests internal data from emails and web forms.
+2.  **PROCESSING (Databricks):** All raw data is processed by a suite of AI models in the Databricks Lakehouse. Models perform trend analysis, sentiment analysis, lead scoring, and data enrichment.
+3.  **AUTOMATION (SAP Build Process Automation):** The enriched, scored data is sent to SAP BPA. Workflows are triggered to:
+    * Route new leads to the correct rep.
+    * Assign tasks and draft follow-up emails.
+    * Manage multi-step discount/deal approval processes.
+    * Send notifications to SAP Work Zone.
+4.  **APPLICATION (SAP Build Apps):** The Sales Manager (Alex) and reps interact with this data through the 6-page "Smart Beauty CRM" application built on SAP Build Apps.
+5.  **INTEGRATION (SAP S/4HANA):** The CRM continuously syncs with the SAP ERP to pull real-time data on product inventory, pricing, and customer order/billing history.
+6.  **ANALYTICS (SAP Analytics Cloud):** All data from the process is fed into SAC, which visualizes KPIs, forecasts, and trend maps for management.
+
+---
+
+### 5. Functional Breakdown (Application Pages)
+
+This defines the 6 core pages of the **SAP Build Apps** application.
+
+#### 1. Lead Management Page
+* **Purpose:** Capture, qualify, and assign all new business leads.
+* **Key Features:**
+    * Customizable table (Company, Contact, Source, **LeadScore**, Status, etc.).
+    * Auto-population of new leads found by the **Databricks** scraping engine.
+    * Auto-sync from email inboxes (e.g., Gmail) and embedded web forms.
+    * AI automatically drafts personalized reply suggestions.
+    * **SAP Build Process Automation** triggers to auto-assign leads based on region or product interest.
+    * One-click "Convert to Account" button.
+
+#### 2. Contacts Management Page
+* **Purpose:** Manage 360° profiles for all qualified people (clients, partners).
+* **Key Features:**
+    * Detailed profile with communication history, relationship tags (Distributor, Salon, Influencer), and purchase history.
+    * Email sync to view and reply to emails directly within the CRM.
+    * AI-generated "Contact Insights" summary (e.g., "Prefers WhatsApp; interested in Vitamin C line").
+    * **Databricks** sentiment model identifies the tone of email replies ("Positive," "At Risk").
+
+#### 3. Accounts Management Page
+* **Purpose:** Organize client companies, retail chains, and distributors at the business level.
+* **Key Features:**
+    * Hierarchical view (e.g., Company -> Branches -> Contacts).
+    * **SAP S/4HANA Integration:** Syncs and displays real-time sales data, billing history, and order status for each account.
+    * **AI Account Health Score** (based on order frequency, payment history, and engagement).
+    * A dedicated collaboration thread (like Lark or Teams) for each high-value account, integrated via **SAP Work Zone**.
+
+#### 4. Activities Page
+* **Purpose:** A smart calendar and unified log for all team tasks and touchpoints.
+* **Key Features:**
+    * Unified log of all calls, emails, meetings, and demos.
+    * AI auto-logs activities from synced Gmail and calendars.
+    * Natural language scheduling (e.g., "Book follow-up with GlowBar KL next Tuesday").
+    * Automated reminders triggered by **SAP Build Process Automation**.
+
+#### 5. Deals Page
+* **Purpose:** Visually manage the sales pipeline from negotiation to closure.
+* **Key Features:**
+    * Kanban board view with drag-and-drop stages (Prospecting, Quoted, Negotiation, Closed Won).
+    * **SAP S/4HANA Integration:** Syncs real-time product pricing and stock levels.
+    * **AI Win Probability Score** for each deal, calculated by Databricks.
+    * Built-in "Discount Approval Form" that triggers an **SAP Build Process Automation** workflow to the manager (Alex).
+    * Manager receives approval request instantly in **SAP Work Zone**.
+
+#### 6. Dashboard (Analytics)
+* **Purpose:** Management overview of performance, trends, and geography, powered by **SAP Analytics Cloud**.
+* **Key Features:**
+    * Real-time KPI tiles (Total Leads, Conversion Rate, Top Product Trend, Top Rep).
+    * **Intelligent Map:** An interactive map showing new leads by region, hot products trending per city, and sales pipeline heatmaps.
+    * **Predictive Forecasting** (from Databricks model) for next-month revenue by product.
+    * AI-generated summary box (e.g., "Sales up 14% in KL due to #SPF50 trend").
+
+---
+
+### 6. Core AI Models (Databricks)
+
+The Databricks engine must be developed to provide the following models:
+
+1.  **Web/Social Scraping Engine:** To find and extract data on new businesses and trends.
+2.  **Lead Scoring Model:** Analyzes engagement, trend match, and profile data to create a "LeadScore."
+3.  **Sentiment & Intent Detection (NLP):** Tags email replies (e.g., "Interested," "Not Interested") and social trends.
+4.  **Cross-Sell Engine:** Matches trending products (from scraping) to existing customer profiles to flag opportunities.
+5.  **Forecasting Model:** Predicts future revenue based on pipeline, trends, and seasonality.
+6.  **Auto-Draft Reply (GenAI):** A GPT-style assistant to draft personalized outreach emails.
+
+### 7. Design & UI Guidelines
+
+The **SAP Build Apps** frontend should adhere to a clean, modern aesthetic that merges SAP's professionalism with a beauty-industry feel.

@@ -1,0 +1,21 @@
+{
+  "name": "ey-beauty-1",
+  "version": "0.0.1",
+  "description": "An SAP Fiori application.",
+  "keywords": [
+    "ui5",
+    "openui5",
+    "sapui5"
+  ],
+  "main": "webapp/index.html",
+  "devDependencies": {
+    "@sap/eslint-plugin-ui5-jsdocs": "^2.0.5",
+    "@sap/ux-ui5-tooling": "1",
+    "@sapui5/ts-types": "^1.92.2",
+    "@ui5/cli": "^4.0.16",
+    "eslint": "^7.32.0"
+  },
+  "scripts": {
+    "deploy-config": "npx -p @sap/ux-ui5-tooling fiori add deploy-config cf"
+  }
+}
