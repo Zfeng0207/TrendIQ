@@ -1,0 +1,172 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beauty CRM - Fiori Launchpad</title>
+
+    <script type="text/javascript">
+        window["sap-ushell-config"] = {
+            defaultRenderer: "fiori2",
+            bootstrapPlugins: {
+                "RuntimeAuthoringPlugin": {
+                    component: "sap.ushell.plugins.rta",
+                    config: {
+                        validateAppVersion: false
+                    }
+                }
+            },
+            renderers: {
+                fiori2: {
+                    componentData: {
+                        config: {
+                            search: "hidden",
+                            enableSearch: false,
+                            enablePersonalization: true,
+                            enableRecentActivity: true
+                        }
+                    }
+                }
+            },
+            applications: {
+                "dashboard-display": {
+                    title: "CRM Dashboard",
+                    description: "Overview dashboard with key metrics and insights",
+                    additionalInformation: "SAPUI5.Component=beautydashboard.eybeauty1",
+                    applicationType: "URL",
+                    url: "./ey-beauty-1/webapp/",
+                    navigationMode: "embedded"
+                },
+                "leads-manage": {
+                    title: "Lead Management",
+                    description: "Manage beauty product leads and convert to accounts",
+                    additionalInformation: "SAPUI5.Component=beautyleads.leads",
+                    applicationType: "URL",
+                    url: "./leads/webapp/",
+                    navigationMode: "embedded"
+                },
+                "accounts-manage": {
+                    title: "Account Management",
+                    description: "Manage customer accounts, contacts, and relationships",
+                    additionalInformation: "SAPUI5.Component=beautyleads.accounts",
+                    applicationType: "URL",
+                    url: "./accounts/webapp/",
+                    navigationMode: "embedded"
+                },
+                "opportunities-manage": {
+                    title: "Opportunity Management",
+                    description: "Manage sales opportunities and track pipeline progress",
+                    additionalInformation: "SAPUI5.Component=beautyleads.opportunities",
+                    applicationType: "URL",
+                    url: "./opportunities/webapp/",
+                    navigationMode: "embedded"
+                }
+            },
+            groups: [
+                {
+                    id: "dashboard",
+                    title: "Dashboard",
+                    isPreset: true,
+                    isVisible: true,
+                    isDefaultGroup: true,
+                    tiles: [
+                        {
+                            id: "dashboard-tile",
+                            tileType: "sap.ushell.ui.tile.StaticTile",
+                            properties: {
+                                title: "CRM Dashboard",
+                                subtitle: "Overview & Analytics",
+                                infoState: "Neutral",
+                                info: "",
+                                icon: "sap-icon://line-chart",
+                                targetURL: "#dashboard-display"
+                            }
+                        }
+                    ]
+                },
+                {
+                    id: "sales",
+                    title: "Sales & Marketing",
+                    isPreset: true,
+                    isVisible: true,
+                    tiles: [
+                        {
+                            id: "leads-tile",
+                            tileType: "sap.ushell.ui.tile.StaticTile",
+                            properties: {
+                                title: "Lead Management",
+                                subtitle: "Track & Convert Leads",
+                                infoState: "Neutral",
+                                info: "",
+                                icon: "sap-icon://lead",
+                                targetURL: "#leads-manage"
+                            }
+                        },
+                        {
+                            id: "opportunities-tile",
+                            tileType: "sap.ushell.ui.tile.StaticTile",
+                            properties: {
+                                title: "Opportunities",
+                                subtitle: "Sales Pipeline",
+                                infoState: "Neutral",
+                                info: "",
+                                icon: "sap-icon://sales-quote",
+                                targetURL: "#opportunities-manage"
+                            }
+                        }
+                    ]
+                },
+                {
+                    id: "accounts",
+                    title: "Customer Management",
+                    isPreset: true,
+                    isVisible: true,
+                    tiles: [
+                        {
+                            id: "accounts-tile",
+                            tileType: "sap.ushell.ui.tile.StaticTile",
+                            properties: {
+                                title: "Account Management",
+                                subtitle: "Manage Customers",
+                                infoState: "Neutral",
+                                info: "",
+                                icon: "sap-icon://customer-financial-fact-sheet",
+                                targetURL: "#accounts-manage"
+                            }
+                        }
+                    ]
+                }
+            ]
+        };
+    </script>
+
+    <script src="https://sapui5.hana.ondemand.com/1.120.0/test-resources/sap/ushell/bootstrap/sandbox.js" id="sap-ushell-bootstrap"></script>
+    <script id="sap-ui-bootstrap"
+        src="https://sapui5.hana.ondemand.com/1.120.0/resources/sap-ui-core.js"
+        data-sap-ui-libs=""
+        data-sap-ui-async="true"
+        data-sap-ui-preload="async"
+        data-sap-ui-theme="sap_horizon"
+        data-sap-ui-compatVersion="edge"
+        data-sap-ui-language="en"
+        data-sap-ui-resourceroots='{
+            "beautydashboard.eybeauty1": "./ey-beauty-1/webapp/",
+            "beautyleads.leads": "./leads/webapp/",
+            "beautyleads.accounts": "./accounts/webapp/",
+            "beautyleads.opportunities": "./opportunities/webapp/"
+        }'
+        data-sap-ui-frameOptions="allow"
+        data-sap-ui-flexibilityServices='[{"connector": "LocalStorageConnector"}]'>
+    </script>
+    <script>
+        sap.ui.getCore().attachInit(function () {
+            sap.ushell.Container.createRenderer().placeAt("content");
+        });
+    </script>
+</head>
+
+<body class="sapUiBody" id="content">
+</body>
+
+</html>

@@ -12,13 +12,21 @@
   },
   "scripts": {
     "start": "cds-serve",
-    "watch-ey-beauty-1": "cds watch --open beautydashboard.eybeauty1/index.html?sap-ui-xx-viewCache=false --livereload false"
+    "watch": "cds watch",
+    "watch-launchpad": "cds watch --open app/launchpad.html",
+    "watch-dashboard": "cds watch --open beautydashboard.eybeauty1/index.html?sap-ui-xx-viewCache=false",
+    "watch-leads": "cds watch --open beautyleads.leads/index.html?sap-ui-xx-viewCache=false",
+    "watch-accounts": "cds watch --open beautyleads.accounts/index.html?sap-ui-xx-viewCache=false",
+    "watch-opportunities": "cds watch --open beautyleads.opportunities/index.html?sap-ui-xx-viewCache=false"
   },
   "private": true,
   "workspaces": [
     "app/*"
   ],
   "sapux": [
-    "app/ey-beauty-1"
+    "app/ey-beauty-1",
+    "app/leads",
+    "app/accounts",
+    "app/opportunities"
   ]
 }

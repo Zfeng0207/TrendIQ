@@ -1,7 +1,22 @@
-// in srv/service.cds
-using { beauty.leads as db } from '../db/schema';
+/**
+ * Beauty Leads CRM - Main Service Definitions
+ *
+ * This file aggregates all service modules for the Beauty Leads CRM system.
+ * Each service is defined in its own file under srv/services/
+ */
 
-service LeadService {
-    @readonly
-    entity Leads as projection on db.Leads;
-}
+// Import all service modules
+using from './services/lead-service';
+using from './services/account-service';
+using from './services/opportunity-service';
+using from './services/activity-service';
+using from './services/product-service';
+using from './services/workflow-service';
+
+// Import all UI annotations
+using from './services/lead-service-annotations';
+using from './services/account-service-annotations';
+using from './services/opportunity-service-annotations';
+using from './services/activity-service-annotations';
+using from './services/product-service-annotations';
+using from './services/workflow-service-annotations';
