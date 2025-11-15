@@ -38,15 +38,12 @@ annotate AccountService.Accounts with @(
             {
                 $Type: 'UI.DataField',
                 Value: status,
-                Label: 'Status',
-                Criticality: statusCriticality,
-                CriticalityRepresentation: #WithIcon
+                Label: 'Status'
             },
             {
                 $Type: 'UI.DataField',
                 Value: accountTier,
-                Label: 'Tier',
-                Criticality: tierCriticality
+                Label: 'Tier'
             },
             {
                 $Type: 'UI.DataFieldForAnnotation',
@@ -75,8 +72,7 @@ annotate AccountService.Accounts with @(
             Value: healthScore,
             Title: 'Health Score',
             TargetValue: 100,
-            Visualization: #Progress,
-            Criticality: healthCriticality
+            Visualization: #Progress
         },
 
         HeaderInfo: {
@@ -192,8 +188,7 @@ annotate AccountService.Accounts with @(
         FieldGroup#AIInsights: {
             Data: [
                 {Value: healthScore},
-                {Value: sentimentScore},
-                {Value: sentimentLabel}
+                {Value: riskLevel}
             ]
         },
 
@@ -251,7 +246,7 @@ annotate AccountService.Contacts with @(
             },
             {
                 $Type: 'UI.DataField',
-                Value: jobTitle,
+                Value: title,
                 Label: 'Title'
             },
             {
@@ -304,7 +299,7 @@ annotate AccountService.Contacts with @(
             TypeName: 'Contact',
             TypeNamePlural: 'Contacts',
             Title: {Value: fullName},
-            Description: {Value: jobTitle},
+            Description: {Value: title},
             ImageUrl: 'sap-icon://customer',
             TypeImageUrl: 'sap-icon://person-placeholder'
         },
@@ -340,7 +335,8 @@ annotate AccountService.Contacts with @(
                 {Value: firstName},
                 {Value: lastName},
                 {Value: fullName},
-                {Value: jobTitle},
+                {Value: title},
+                {Value: department},
                 {Value: email},
                 {Value: phone},
                 {Value: mobile},
@@ -387,7 +383,8 @@ annotate AccountService.Contacts with {
     fullName       @title: 'Full Name' @Common.FieldControl: #Mandatory;
     firstName      @title: 'First Name';
     lastName       @title: 'Last Name';
-    jobTitle       @title: 'Job Title';
+    title          @title: 'Job Title';
+    department     @title: 'Department';
     email          @title: 'Email' @Common.FieldControl: #Mandatory;
     mobile         @title: 'Mobile';
     isPrimary      @title: 'Primary Contact';

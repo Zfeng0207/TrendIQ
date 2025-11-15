@@ -1,0 +1,180 @@
+_schema-version: 3.3.0
+ID: beautyleads
+version: 1.0.0
+description: "A simple CAP project."
+parameters:
+  enable-parallel-deployments: true
+build-parameters:
+  before-all:
+    - builder: custom
+      commands:
+        - npm ci
+        - npx cds build --production
+modules:
+  - name: beautyleads-srv
+    type: nodejs
+    path: gen/srv
+    parameters:
+      instances: 1
+      buildpack: nodejs_buildpack
+    build-parameters:
+      builder: npm-ci
+    provides:
+      - name: srv-api # required by consumers of CAP services (e.g. approuter)
+        properties:
+          srv-url: ${default-url}
+    requires:
+      # - name: beautyleads-auth  # Temporarily disabled for trial deployment
+      - name: beautyleads-db
+
+  - name: beautyleads-db-deployer
+    type: hdb
+    path: gen/db
+    parameters:
+      buildpack: nodejs_buildpack
+    requires:
+      - name: beautyleads-db
+
+  - name: beautyleads-app-content
+    type: com.sap.application.content
+    path: .
+    requires:
+      - name: beautyleads-repo-host
+        parameters:
+          content-target: true
+    build-parameters:
+      build-result: resources
+      requires:
+        - artifacts:
+            - beautydashboardeybeauty1.zip
+          name: beautydashboardeybeauty1
+          target-path: resources/
+        - artifacts:
+            - beautyleadsleads.zip
+          name: beautyleadsleads
+          target-path: resources/
+        - artifacts:
+            - beautyleadsaccounts.zip
+          name: beautyleadsaccounts
+          target-path: resources/
+        - artifacts:
+            - beautyleadsopportunities.zip
+          name: beautyleadsopportunities
+          target-path: resources/
+
+  - name: beautydashboardeybeauty1
+    type: html5
+    path: app/ey-beauty-1
+    build-parameters:
+      build-result: dist
+      builder: custom
+      commands:
+        - npm install
+        - npm run build:cf
+      supported-platforms: []
+
+  - name: beautyleadsleads
+    type: html5
+    path: app/leads
+    build-parameters:
+      build-result: dist
+      builder: custom
+      commands:
+        - npm install
+        - npm run build:cf
+      supported-platforms: []
+
+  - name: beautyleadsaccounts
+    type: html5
+    path: app/accounts
+    build-parameters:
+      build-result: dist
+      builder: custom
+      commands:
+        - npm install
+        - npm run build:cf
+      supported-platforms: []
+
+  - name: beautyleadsopportunities
+    type: html5
+    path: app/opportunities
+    build-parameters:
+      build-result: dist
+      builder: custom
+      commands:
+        - npm install
+        - npm run build:cf
+      supported-platforms: []
+
+  - name: beautyleads-destination-content
+    type: com.sap.application.content
+    requires:
+      - name: beautyleads-destination-service
+        parameters:
+          content-target: true
+      - name: beautyleads-repo-host
+        parameters:
+          service-key:
+            name: beautyleads-repo-host-key
+      # Temporarily disabled for trial deployment
+      # - name: beautyleads-auth
+      #   parameters:
+      #     service-key:
+      #       name: beautyleads-auth-key
+    parameters:
+      content:
+        instance:
+          destinations:
+            - Name: beautyleads_html_repo_host
+              ServiceInstanceName: beautyleads-html5-srv
+              ServiceKeyName: beautyleads-repo-host-key
+              sap.cloud.service: beautyleads
+            # Temporarily disabled for trial deployment
+            # - Authentication: OAuth2UserTokenExchange
+            #   Name: beautyleads_auth
+            #   ServiceInstanceName: beautyleads-xsuaa-service
+            #   ServiceKeyName: beautyleads-auth-key
+            #   sap.cloud.service: beautyleads
+          existing_destinations_policy: ignore
+    build-parameters:
+      no-source: true
+
+resources:
+  # Temporarily disabled authentication for trial deployment
+  # - name: beautyleads-auth
+  #   type: org.cloudfoundry.managed-service
+  #   parameters:
+  #     service: identity
+  #     service-plan: application
+  #     path: ./xs-security.json
+  #     config:
+  #       xsappname: beautyleads-${org}-${space}
+  #       tenant-mode: dedicated
+  - name: beautyleads-db
+    type: org.cloudfoundry.existing-service
+    parameters:
+      service-name: dev-db
+  - name: beautyleads-repo-host
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: html5-apps-repo
+      service-name: beautyleads-html5-srv
+      service-plan: app-host
+  - name: beautyleads-destination-service
+    type: org.cloudfoundry.managed-service
+    parameters:
+      config:
+        HTML5Runtime_enabled: true
+        init_data:
+          instance:
+            destinations:
+              - Authentication: NoAuthentication
+                Name: ui5
+                ProxyType: Internet
+                Type: HTTP
+                URL: https://ui5.sap.com
+            existing_destinations_policy: update
+        version: 1.0.0
+      service: destination
+      service-name: beautyleads-destination-service
+      service-plan: lite

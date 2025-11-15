@@ -1,0 +1,130 @@
+{
+  "_version": "1.59.0",
+  "sap.app": {
+    "id": "beautyleads.accounts",
+    "type": "application",
+    "i18n": "i18n/i18n.properties",
+    "applicationVersion": {
+      "version": "1.0.0"
+    },
+    "title": "{{appTitle}}",
+    "description": "{{appDescription}}",
+    "dataSources": {
+      "mainService": {
+        "uri": "/account/",
+        "type": "OData",
+        "settings": {
+          "annotations": [],
+          "odataVersion": "4.0"
+        }
+      }
+    },
+    "crossNavigation": {
+      "inbounds": {
+        "intent1": {
+          "signature": {
+            "parameters": {},
+            "additionalParameters": "allowed"
+          },
+          "semanticObject": "Accounts",
+          "action": "manage",
+          "title": "{{appTitle}}",
+          "icon": "sap-icon://customer-financial-fact-sheet"
+        }
+      }
+    }
+  },
+  "sap.ui": {
+    "technology": "UI5",
+    "icons": {
+      "icon": "sap-icon://customer-financial-fact-sheet"
+    },
+    "deviceTypes": {
+      "desktop": true,
+      "tablet": true,
+      "phone": true
+    }
+  },
+  "sap.ui5": {
+    "flexEnabled": true,
+    "dependencies": {
+      "minUI5Version": "1.120.0",
+      "libs": {
+        "sap.m": {},
+        "sap.ui.core": {},
+        "sap.fe.templates": {}
+      }
+    },
+    "contentDensities": {
+      "compact": true,
+      "cozy": true
+    },
+    "models": {
+      "i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "settings": {
+          "bundleName": "beautyleads.accounts.i18n.i18n"
+        }
+      },
+      "": {
+        "dataSource": "mainService",
+        "preload": true,
+        "settings": {
+          "operationMode": "Server",
+          "autoExpandSelect": true,
+          "earlyRequests": true
+        }
+      }
+    },
+    "routing": {
+      "routes": [
+        {
+          "pattern": ":?query:",
+          "name": "AccountsList",
+          "target": "AccountsList"
+        },
+        {
+          "pattern": "Accounts({key}):?query:",
+          "name": "AccountsObjectPage",
+          "target": "AccountsObjectPage"
+        }
+      ],
+      "targets": {
+        "AccountsList": {
+          "type": "Component",
+          "id": "AccountsList",
+          "name": "sap.fe.templates.ListReport",
+          "options": {
+            "settings": {
+              "contextPath": "/Accounts",
+              "variantManagement": "Page",
+              "navigation": {
+                "Accounts": {
+                  "detail": {
+                    "route": "AccountsObjectPage"
+                  }
+                }
+              },
+              "initialLoad": true
+            }
+          }
+        },
+        "AccountsObjectPage": {
+          "type": "Component",
+          "id": "AccountsObjectPage",
+          "name": "sap.fe.templates.ObjectPage",
+          "options": {
+            "settings": {
+              "editableHeaderContent": true,
+              "contextPath": "/Accounts"
+            }
+          }
+        }
+      }
+    }
+  },
+  "sap.fiori": {
+    "registrationIds": [],
+    "archeType": "transactional"
+  }
+}
