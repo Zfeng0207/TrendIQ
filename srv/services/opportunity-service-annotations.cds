@@ -12,30 +12,28 @@ annotate OpportunityService.Opportunities with @(
     UI: {
         SelectionFields: [
             stage,
-            accountName_ID,
+            account_ID,
             owner_ID,
-            expectedCloseDate,
+            closeDate,
             requiresApproval
         ],
 
         LineItem: [
             {
                 $Type: 'UI.DataField',
-                Value: opportunityName,
+                Value: name,
                 Label: 'Opportunity',
                 ![@UI.Importance]: #High
             },
             {
                 $Type: 'UI.DataField',
-                Value: accountName.accountName,
+                Value: account.accountName,
                 Label: 'Account'
             },
             {
                 $Type: 'UI.DataField',
                 Value: stage,
-                Label: 'Stage',
-                Criticality: stageCriticality,
-                CriticalityRepresentation: #WithIcon
+                Label: 'Stage'
             },
             {
                 $Type: 'UI.DataField',
@@ -59,7 +57,7 @@ annotate OpportunityService.Opportunities with @(
             },
             {
                 $Type: 'UI.DataField',
-                Value: expectedCloseDate,
+                Value: closeDate,
                 Label: 'Expected Close'
             },
             {
@@ -93,8 +91,8 @@ annotate OpportunityService.Opportunities with @(
         HeaderInfo: {
             TypeName: 'Opportunity',
             TypeNamePlural: 'Opportunities',
-            Title: {Value: opportunityName},
-            Description: {Value: accountName.accountName},
+            Title: {Value: name},
+            Description: {Value: account.accountName},
             ImageUrl: 'sap-icon://sales-order',
             TypeImageUrl: 'sap-icon://opportunity'
         },
@@ -159,12 +157,10 @@ annotate OpportunityService.Opportunities with @(
 
         FieldGroup#BasicInfo: {
             Data: [
-                {Value: opportunityName},
-                {Value: accountName.accountName},
-                {Value: contactName.fullName},
-                {Value: type},
-                {Value: leadSource},
-                {Value: owner.fullName}
+                {Value: name},
+                {Value: account.accountName},
+                {Value: primaryContact.fullName},
+                {Value: description}
             ]
         },
 
@@ -172,10 +168,8 @@ annotate OpportunityService.Opportunities with @(
             Data: [
                 {Value: stage},
                 {Value: probability},
-                {Value: expectedCloseDate},
-                {Value: actualCloseDate},
-                {Value: fiscalQuarter},
-                {Value: fiscalYear}
+                {Value: closeDate},
+                {Value: actualCloseDate}
             ]
         },
 
@@ -199,7 +193,8 @@ annotate OpportunityService.Opportunities with @(
         FieldGroup#AdditionalInfo: {
             Data: [
                 {Value: description},
-                {Value: competitorInfo},
+                {Value: competitors},
+                {Value: winStrategy},
                 {Value: lostReason},
                 {Value: notes}
             ]
@@ -243,7 +238,7 @@ annotate OpportunityService.Opportunities with @(
 );
 
 annotate OpportunityService.Opportunities with {
-    opportunityName @title: 'Opportunity Name' @Common.FieldControl: #Mandatory;
+    name           @title: 'Opportunity Name' @Common.FieldControl: #Mandatory;
     stage          @title: 'Stage';
     amount         @title: 'Amount' @Measures.ISOCurrency: currency;
     probability    @title: 'Probability (%)';
@@ -301,12 +296,12 @@ annotate OpportunityService.OpportunityProducts with @(
 
         FieldGroup#ProductDetails: {
             Data: [
-                {Value: product_ID},
+                {Value: product.productName},
                 {Value: quantity},
                 {Value: unitPrice},
                 {Value: discount},
                 {Value: totalPrice},
-                {Value: description}
+                {Value: notes}
             ]
         }
     }
@@ -314,9 +309,9 @@ annotate OpportunityService.OpportunityProducts with @(
 
 annotate OpportunityService.OpportunityProducts with {
     quantity    @title: 'Quantity';
-    unitPrice   @title: 'Unit Price' @Measures.ISOCurrency: currency;
+    unitPrice   @title: 'Unit Price';
     discount    @title: 'Discount (%)';
-    totalPrice  @title: 'Total Price' @Measures.ISOCurrency: currency;
+    totalPrice  @title: 'Total Price';
 }
 
 // ============================================================================
@@ -340,21 +335,21 @@ annotate OpportunityService.Approvals with @(
             },
             {
                 $Type: 'UI.DataField',
-                Value: opportunityID.opportunityName,
+                Value: opportunityID.name,
                 Label: 'Opportunity'
             },
             {
                 $Type: 'UI.DataField',
                 Value: status,
                 Label: 'Status',
-                Criticality: statusCriticality,
-                CriticalityRepresentation: #WithIcon
+                
+                
             },
             {
                 $Type: 'UI.DataField',
                 Value: priority,
                 Label: 'Priority',
-                Criticality: priorityCriticality
+                
             },
             {
                 $Type: 'UI.DataField',
@@ -385,7 +380,7 @@ annotate OpportunityService.Approvals with @(
             },
             {
                 $Type: 'UI.DataFieldForAction',
-                Action: 'OpportunityService.rejectApproval',
+                Action: 'OpportunityService.reject',
                 Label: 'Reject',
                 Inline: true,
                 Criticality: 1
@@ -443,7 +438,7 @@ annotate OpportunityService.Approvals with @(
             },
             {
                 $Type: 'UI.DataFieldForAction',
-                Action: 'OpportunityService.rejectApproval',
+                Action: 'OpportunityService.reject',
                 Label: 'Reject'
             }
         ]
@@ -462,7 +457,7 @@ annotate OpportunityService.Approvals with {
 // Analytical Views
 // ============================================================================
 
-annotate OpportunityService.PipelineByStage with @(
+annotate OpportunityService.OpportunitiesByStage with @(
     UI: {
         Chart: {
             Title: 'Pipeline by Stage',
@@ -489,7 +484,7 @@ annotate OpportunityService.PipelineByStage with @(
 annotate OpportunityService.HighValueDeals with @(
     UI: {
         LineItem: [
-            {Value: opportunityName},
+            {Value: name},
             {Value: amount},
             {Value: stage},
             {Value: aiWinScore}

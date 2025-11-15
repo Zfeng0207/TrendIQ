@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beauty Leads CRM</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            width: 100%;
+        }
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 2.5rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            text-decoration: none;
+            color: #333;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 20px rgba(0,0,0,0.2);
+        }
+        .card-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #667eea;
+        }
+        .card-desc {
+            color: #666;
+            line-height: 1.5;
+        }
+        .info {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            margin-top: 30px;
+            backdrop-filter: blur(10px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌸 Beauty Leads CRM</h1>
+        <div class="grid">
+            <a href="/beautyleads.leads/index.html" class="card">
+                <div class="card-icon">📋</div>
+                <div class="card-title">Lead Management</div>
+                <div class="card-desc">Track and convert beauty product leads from social platforms</div>
+            </a>
+            <a href="/beautyleads.accounts/index.html" class="card">
+                <div class="card-icon">🏢</div>
+                <div class="card-title">Account Management</div>
+                <div class="card-desc">Manage customer accounts, contacts, and relationships</div>
+            </a>
+            <a href="/beautyleads.opportunities/index.html" class="card">
+                <div class="card-icon">💰</div>
+                <div class="card-title">Opportunities</div>
+                <div class="card-desc">Track sales pipeline and manage deals</div>
+            </a>
+        </div>
+        <div class="info">
+            <strong>Server:</strong> http://localhost:4004 | 
+            <strong>Status:</strong> ✅ Running
+        </div>
+    </div>
+</body>
+</html>

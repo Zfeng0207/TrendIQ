@@ -17,7 +17,7 @@
     },
     "dataSources": {
       "mainService": {
-        "uri": "/odata/v4/lead/",
+        "uri": "/lead/",
         "type": "OData",
         "settings": {
           "annotations": [],
@@ -252,7 +252,7 @@
           "title": "Recent Activities",
           "subTitle": "Latest customer interactions",
           "entitySet": "Activities",
-          "sortBy": "activityDate",
+          "sortBy": "startDateTime",
           "sortOrder": "descending",
           "annotationPath": "com.sap.vocabularies.UI.v1.LineItem#RecentActivities"
         }
@@ -262,11 +262,11 @@
         "template": "sap.ovp.cards.list",
         "settings": {
           "title": "Top Performing Products",
-          "subTitle": "Products by popularity score",
+          "subTitle": "Products by trend score",
           "entitySet": "Products",
           "listType": "extended",
           "listFlavor": "standard",
-          "sortBy": "popularityScore",
+          "sortBy": "trendScore",
           "sortOrder": "descending",
           "annotationPath": "com.sap.vocabularies.UI.v1.LineItem#TopProducts"
         }

@@ -35,22 +35,17 @@ annotate LeadService.Leads with @(
             {
                 $Type: 'UI.DataField',
                 Value: platform,
-                Label: 'Platform',
-                Criticality: platformCriticality
+                Label: 'Platform'
             },
             {
                 $Type: 'UI.DataField',
                 Value: status,
-                Label: 'Status',
-                Criticality: statusCriticality,
-                CriticalityRepresentation: #WithIcon
+                Label: 'Status'
             },
             {
                 $Type: 'UI.DataField',
                 Value: leadQuality,
-                Label: 'Quality',
-                Criticality: qualityCriticality,
-                CriticalityRepresentation: #WithoutIcon
+                Label: 'Quality'
             },
             {
                 $Type: 'UI.DataFieldForAnnotation',
@@ -92,8 +87,7 @@ annotate LeadService.Leads with @(
             Value: aiScore,
             Title: 'AI Score',
             TargetValue: 100,
-            Visualization: #Progress,
-            Criticality: aiScoreCriticality
+            Visualization: #Progress
         },
 
         DataPoint#TrendScore: {

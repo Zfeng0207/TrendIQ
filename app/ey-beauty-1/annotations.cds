@@ -1,8 +1,8 @@
-using LeadService from '../../srv/service';
-using AccountService from '../../srv/service';
-using OpportunityService from '../../srv/service';
-using ActivityService from '../../srv/service';
-using ProductService from '../../srv/service';
+using LeadService from '../../srv/services/lead-service';
+using AccountService from '../../srv/services/account-service';
+using OpportunityService from '../../srv/services/opportunity-service';
+using ActivityService from '../../srv/services/activity-service';
+using ProductService from '../../srv/services/product-service';
 
 // Lead Pipeline Card Annotations
 annotate LeadService.Leads with @(
@@ -69,14 +69,12 @@ annotate LeadService.Leads with @(
     {
       $Type: 'UI.DataField',
       Value: leadQuality,
-      Label: 'Quality',
-      Criticality: leadQualityCriticality
+      Label: 'Quality'
     },
     {
       $Type: 'UI.DataField',
       Value: status,
-      Label: 'Status',
-      Criticality: statusCriticality
+      Label: 'Status'
     }
   ]
 );
@@ -91,9 +89,8 @@ annotate AccountService.Accounts with @(
     },
     {
       $Type: 'UI.DataField',
-      Value: tier,
-      Label: 'Tier',
-      Criticality: tierCriticality
+      Value: accountTier,
+      Label: 'Tier'
     },
     {
       $Type: 'UI.DataFieldForAnnotation',
@@ -102,14 +99,13 @@ annotate AccountService.Accounts with @(
     },
     {
       $Type: 'UI.DataField',
-      Value: totalOrderValue,
-      Label: 'Total Value'
+      Value: annualRevenue,
+      Label: 'Annual Revenue'
     },
     {
       $Type: 'UI.DataField',
-      Value: accountStatus,
-      Label: 'Status',
-      Criticality: accountStatusCriticality
+      Value: status,
+      Label: 'Status'
     }
   ]
 );
@@ -147,7 +143,7 @@ annotate OpportunityService.Opportunities with @(
   UI.LineItem #RevenueOpportunities: [
     {
       $Type: 'UI.DataField',
-      Value: opportunityName,
+      Value: name,
       Label: 'Opportunity'
     },
     {
@@ -158,8 +154,7 @@ annotate OpportunityService.Opportunities with @(
     {
       $Type: 'UI.DataField',
       Value: stage,
-      Label: 'Stage',
-      Criticality: stageCriticality
+      Label: 'Stage'
     },
     {
       $Type: 'UI.DataFieldForAnnotation',
@@ -173,7 +168,7 @@ annotate OpportunityService.Opportunities with @(
     },
     {
       $Type: 'UI.DataField',
-      Value: expectedCloseDate,
+      Value: closeDate,
       Label: 'Close Date'
     }
   ]
@@ -185,8 +180,7 @@ annotate ActivityService.Activities with @(
     {
       $Type: 'UI.DataField',
       Value: activityType,
-      Label: 'Type',
-      Criticality: activityTypeCriticality
+      Label: 'Type'
     },
     {
       $Type: 'UI.DataField',
@@ -195,23 +189,23 @@ annotate ActivityService.Activities with @(
     },
     {
       $Type: 'UI.DataField',
-      Value: relatedTo,
-      Label: 'Related To'
+      Value: relatedAccount.accountName,
+      Label: 'Account'
     },
     {
       $Type: 'UI.DataField',
-      Value: activityDate,
+      Value: startDateTime,
       Label: 'Date'
+    },
+    {
+      $Type: 'UI.DataField',
+      Value: status,
+      Label: 'Status'
     },
     {
       $Type: 'UI.DataField',
       Value: owner.fullName,
       Label: 'Owner'
-    },
-    {
-      $Type: 'UI.DataFieldForAnnotation',
-      Target: '@UI.DataPoint#SentimentScore',
-      Label: 'Sentiment'
     }
   ]
 );
@@ -236,19 +230,23 @@ annotate ProductService.Products with @(
     },
     {
       $Type: 'UI.DataFieldForAnnotation',
-      Target: '@UI.DataPoint#PopularityScore',
-      Label: 'Popularity'
-    },
-    {
-      $Type: 'UI.DataFieldForAnnotation',
       Target: '@UI.DataPoint#TrendScore',
       Label: 'Trend'
     },
     {
       $Type: 'UI.DataField',
-      Value: stockLevel,
-      Label: 'Stock',
-      Criticality: stockCriticality
+      Value: listPrice,
+      Label: 'Price'
+    },
+    {
+      $Type: 'UI.DataField',
+      Value: stockQuantity,
+      Label: 'Stock'
+    },
+    {
+      $Type: 'UI.DataField',
+      Value: status,
+      Label: 'Status'
     }
   ]
 );

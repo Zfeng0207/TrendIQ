@@ -8,12 +8,13 @@
   },
   "devDependencies": {
     "@cap-js/sqlite": "^2",
+    "@sap-ux/ui5-middleware-fe-mockserver": "^2.3.20",
     "cds-plugin-ui5": "^0.13.0"
   },
   "scripts": {
     "start": "cds-serve",
     "watch": "cds watch",
-    "watch-launchpad": "cds watch --open app/launchpad.html",
+    "watch-launchpad": "cds watch --open index.html",
     "watch-dashboard": "cds watch --open beautydashboard.eybeauty1/index.html?sap-ui-xx-viewCache=false",
     "watch-leads": "cds watch --open beautyleads.leads/index.html?sap-ui-xx-viewCache=false",
     "watch-accounts": "cds watch --open beautyleads.accounts/index.html?sap-ui-xx-viewCache=false",
@@ -28,5 +29,15 @@
     "app/leads",
     "app/accounts",
     "app/opportunities"
-  ]
+  ],
+  "cds": {
+    "requires": {
+      "db": {
+        "kind": "sqlite",
+        "credentials": {
+          "url": ":memory:"
+        }
+      }
+    }
+  }
 }

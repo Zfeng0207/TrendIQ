@@ -135,19 +135,7 @@
                   }
                 }
               },
-              "initialLoad": "Enabled",
-              "views": {
-                "paths": [
-                  {
-                    "primary": [
-                      {
-                        "annotationPath": "@com.sap.vocabularies.UI.v1.SelectionVariant#HotLeads"
-                      }
-                    ],
-                    "secondary": []
-                  }
-                ]
-              }
+              "initialLoad": true
             }
           }
         },
