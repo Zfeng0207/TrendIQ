@@ -179,7 +179,6 @@ annotate LeadService.Leads with @(
             Data: [
                 {Value: outletName},
                 {Value: brandToPitch},
-                {Value: productCategory},
                 {Value: platform},
                 {Value: source},
                 {Value: sourceDetail}
@@ -200,7 +199,6 @@ annotate LeadService.Leads with @(
                 {Value: status},
                 {Value: leadQuality},
                 {Value: estimatedValue},
-                {Value: currency},
                 {Value: converted},
                 {Value: convertedDate}
             ]
@@ -312,8 +310,7 @@ annotate LeadService.Leads with {
     sentimentLabel @title: 'Sentiment';
     trendScore     @title: 'Trend Score';
 
-    estimatedValue @title: 'Estimated Value'
-                   @Measures.ISOCurrency: currency;
+    estimatedValue @title: 'Estimated Value (MYR)';
 
     notes          @UI.MultiLineText: true;
 }
