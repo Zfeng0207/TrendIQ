@@ -1,0 +1,31 @@
+{
+  "name": "merchants",
+  "version": "1.0.0",
+  "description": "Merchant Onboarding Application",
+  "keywords": [
+    "ui5",
+    "fiori",
+    "sapui5"
+  ],
+  "main": "webapp/index.html",
+  "scripts": {
+    "start": "fiori run --open \"test/flpSandbox.html?sap-ui-xx-viewCache=false#beautyleadsmerchants-manage\"",
+    "start-local": "fiori run --config ./ui5-local.yaml --open \"test/flpSandbox.html?sap-ui-xx-viewCache=false#beautyleadsmerchants-manage\"",
+    "build": "ui5 build --config=ui5.yaml --clean-dest --dest dist",
+    "deploy": "fiori verify",
+    "deploy-config": "fiori add deploy-config",
+    "start-noflp": "fiori run --open \"index.html?sap-ui-xx-viewCache=false\"",
+    "start-mock": "fiori run --open \"test/flpSandbox.html?sap-ui-xx-viewCache=false#beautyleadsmerchants-manage\" --config ./ui5-mock.yaml"
+  },
+  "sapuxLayer": "CUSTOMER_BASE",
+  "devDependencies": {
+    "@sap/ux-ui5-tooling": "^1.14.4",
+    "@ui5/cli": "^3.11.1"
+  },
+  "ui5": {
+    "dependencies": [
+      "@sap/ux-ui5-tooling"
+    ]
+  }
+}
+

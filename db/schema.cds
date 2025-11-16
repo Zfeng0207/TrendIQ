@@ -54,4 +54,9 @@ entity Leads : managed, cuid, aspects.Address, aspects.AIInsights {
     // AI-enhanced fields (trending topics detected by AI)
     trendingTopics    : String(500) @title: 'Trending Topics';
     recommendedAction : String(1000) @title: 'AI Recommendation';
+
+    // Merchant discovery tracking
+    discoverySource   : String(100) @title: 'Discovery Source';
+    autoDiscovered    : Boolean default false @title: 'Auto Discovered';
+    merchantDiscovery : Association to crm.MerchantDiscovery @title: 'Merchant Discovery';
 }

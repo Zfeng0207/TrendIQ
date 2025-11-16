@@ -1,0 +1,55 @@
+/* Custom styles for Marketing Campaigns table - larger text and spacing */
+
+/* Increase table row height and spacing */
+.sapMListUl .sapMLIB,
+.sapMTable .sapMTableRow {
+    min-height: 3.5rem !important;
+    height: auto !important;
+    padding-top: 0.75rem !important;
+    padding-bottom: 0.75rem !important;
+}
+
+/* Increase cell padding for more spacing */
+.sapMTable .sapMTableRow .sapMTableTd,
+.sapMListUl .sapMLIB .sapMLIBContent {
+    padding: 0.75rem 1rem !important;
+}
+
+/* Increase font size in table cells */
+.sapMTable .sapMTableRow .sapMText,
+.sapMTable .sapMTableRow .sapMLabel,
+.sapMListUl .sapMLIB .sapMText,
+.sapMListUl .sapMLIB .sapMLabel {
+    font-size: 1rem !important;
+    line-height: 1.5rem !important;
+}
+
+/* Increase button text size */
+.sapMTable .sapMTableRow .sapMBtn .sapMBtnContent,
+.sapMListUl .sapMLIB .sapMBtn .sapMBtnContent {
+    font-size: 0.9375rem !important;
+    padding: 0.5rem 1rem !important;
+}
+
+/* Increase header text size */
+.sapMTable .sapMColumnHeader .sapMText,
+.sapMTable .sapMColumnHeader .sapMLabel {
+    font-size: 0.9375rem !important;
+    font-weight: 600 !important;
+    padding: 0.75rem 1rem !important;
+}
+
+/* Increase spacing between rows */
+.sapMTable .sapMTableRow + .sapMTableRow,
+.sapMListUl .sapMLIB + .sapMLIB {
+    border-top: 1px solid #e5e5e5 !important;
+}
+
+/* Make action buttons more prominent */
+.sapMTable .sapMTableRow .sapMBtn,
+.sapMListUl .sapMLIB .sapMBtn {
+    min-width: auto !important;
+    height: 2.5rem !important;
+    margin: 0.25rem !important;
+}
+

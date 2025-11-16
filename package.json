@@ -18,7 +18,8 @@
     "start": "cds-serve",
     "watch": "cds watch",
     "watch-launchpad": "cds watch --open index.html",
-    "watch-dashboard": "cds watch --open beautydashboard.eybeauty1/index.html?sap-ui-xx-viewCache=false",
+    "watch-merchants": "cds watch --open beautyleads.merchants/index.html?sap-ui-xx-viewCache=false",
+    "watch-campaigns": "cds watch --open beautyleads.campaigns/index.html?sap-ui-xx-viewCache=false",
     "watch-leads": "cds watch --open beautyleads.leads/index.html?sap-ui-xx-viewCache=false",
     "watch-accounts": "cds watch --open beautyleads.accounts/index.html?sap-ui-xx-viewCache=false",
     "watch-opportunities": "cds watch --open beautyleads.opportunities/index.html?sap-ui-xx-viewCache=false"
@@ -28,7 +29,8 @@
     "app/*"
   ],
   "sapux": [
-    "app/ey-beauty-1",
+    "app/merchants",
+    "app/campaigns",
     "app/leads",
     "app/accounts",
     "app/opportunities"

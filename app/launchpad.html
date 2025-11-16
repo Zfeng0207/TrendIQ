@@ -36,23 +36,17 @@
                     applicationType: "URL",
                     url: "/beautyleads.leads/index.html"
                 },
-                "leads-manage": {
-                    title: "Lead Management",
-                    description: "Manage beauty product leads and convert to accounts",
+                "merchants-manage": {
+                    title: "Merchant Onboarding",
+                    description: "AI-powered merchant discovery and onboarding",
                     applicationType: "URL",
-                    url: "/beautyleads.leads/index.html"
+                    url: "/beautyleads.merchants/index.html"
                 },
-                "accounts-manage": {
-                    title: "Account Management",
-                    description: "Manage customer accounts, contacts, and relationships",
+                "campaigns-manage": {
+                    title: "Marketing Campaigns",
+                    description: "Trend-driven marketing campaign automation",
                     applicationType: "URL",
-                    url: "/beautyleads.accounts/index.html"
-                },
-                "opportunities-manage": {
-                    title: "Opportunity Management",
-                    description: "Manage sales opportunities and track pipeline progress",
-                    applicationType: "URL",
-                    url: "/beautyleads.opportunities/index.html"
+                    url: "/beautyleads.campaigns/index.html"
                 }
             },
             groups: [
@@ -78,53 +72,41 @@
                     ]
                 },
                 {
-                    id: "sales",
-                    title: "Sales & Marketing",
+                    id: "b2b-growth",
+                    title: "B2B Growth",
                     isPreset: true,
                     isVisible: true,
                     tiles: [
                         {
-                            id: "leads-tile",
+                            id: "merchants-tile",
                             tileType: "sap.ushell.ui.tile.StaticTile",
                             properties: {
-                                title: "Lead Management",
-                                subtitle: "Track & Convert Leads",
+                                title: "Merchant Onboarding",
+                                subtitle: "AI-Powered Discovery & Onboarding",
                                 infoState: "Neutral",
                                 info: "",
-                                icon: "sap-icon://lead",
-                                targetURL: "#leads-manage"
-                            }
-                        },
-                        {
-                            id: "opportunities-tile",
-                            tileType: "sap.ushell.ui.tile.StaticTile",
-                            properties: {
-                                title: "Opportunities",
-                                subtitle: "Sales Pipeline",
-                                infoState: "Neutral",
-                                info: "",
-                                icon: "sap-icon://sales-quote",
-                                targetURL: "#opportunities-manage"
+                                icon: "sap-icon://business-objects-experience",
+                                targetURL: "#merchants-manage"
                             }
                         }
                     ]
                 },
                 {
-                    id: "accounts",
-                    title: "Customer Management",
+                    id: "marketing-activation",
+                    title: "Marketing Activation",
                     isPreset: true,
                     isVisible: true,
                     tiles: [
                         {
-                            id: "accounts-tile",
+                            id: "campaigns-tile",
                             tileType: "sap.ushell.ui.tile.StaticTile",
                             properties: {
-                                title: "Account Management",
-                                subtitle: "Manage Customers",
+                                title: "Marketing Campaigns",
+                                subtitle: "Trend-Driven Campaign Automation",
                                 infoState: "Neutral",
                                 info: "",
-                                icon: "sap-icon://customer-financial-fact-sheet",
-                                targetURL: "#accounts-manage"
+                                icon: "sap-icon://marketing-campaign",
+                                targetURL: "#campaigns-manage"
                             }
                         }
                     ]
@@ -144,6 +126,8 @@
         data-sap-ui-language="en"
         data-sap-ui-resourceroots='{
             "beautydashboard.eybeauty1": "/ey-beauty-1/webapp/",
+            "beautyleads.merchants": "/merchants/webapp/",
+            "beautyleads.campaigns": "/campaigns/webapp/",
             "beautyleads.leads": "/leads/webapp/",
             "beautyleads.accounts": "/accounts/webapp/",
             "beautyleads.opportunities": "/opportunities/webapp/"

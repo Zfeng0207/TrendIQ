@@ -97,11 +97,23 @@
           "options": {
             "settings": {
               "contextPath": "/Accounts",
-              "variantManagement": "Page",
+              "variantManagement": "None",
               "navigation": {
                 "Accounts": {
                   "detail": {
                     "route": "AccountsObjectPage"
+                  }
+                }
+              },
+              "controlConfiguration": {
+                "@com.sap.vocabularies.UI.v1.LineItem": {
+                  "tableSettings": {
+                    "type": "ResponsiveTable",
+                    "enableExport": true,
+                    "selectAll": true,
+                    "growingThreshold": 15,
+                    "growing": true,
+                    "growingScrollToLoad": true
                   }
                 }
               },

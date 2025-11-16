@@ -3,6 +3,7 @@ namespace beauty.crm;
 
 using { cuid, managed } from '@sap/cds/common';
 using { beauty.aspects as aspects } from './aspects';
+using { beauty.leads as leads } from './schema';
 
 /**
  * Users - System users (sales reps, managers, admins)
@@ -170,6 +171,11 @@ entity Products : managed, cuid {
     isTrending : Boolean default false @title: 'Trending';
     trendScore : Integer @title: 'Trend Score' @assert.range: [0, 100];
 
+    // Trend tracking for marketing campaigns
+    trendingKeywords  : String(500) @title: 'Trending Keywords';
+    trendDetectedDate : DateTime @title: 'Trend Detected Date';
+    trendVelocity     : Integer @title: 'Trend Velocity' @assert.range: [0, 100];
+
     // Product hierarchy
     parentProduct : Association to Products @title: 'Parent Product';
 
@@ -323,4 +329,66 @@ entity Approvals : managed, cuid {
 
     // Notes
     notes : LargeString @title: 'Notes';
+}
+
+/**
+ * MerchantDiscovery - AI-discovered merchant opportunities from web scraping
+ */
+entity MerchantDiscovery : managed, cuid, aspects.Address {
+    merchantName      : String(200) not null @title: 'Merchant Name' @mandatory;
+    about             : LargeString @title: 'About';
+    discoverySource   : String(50) @title: 'Discovery Source'
+                      @assert.enum: ['Online Web', 'Partnership', 'Offline', 'Other'];
+    discoveryDate     : DateTime @title: 'Discovery Date';
+    location          : String(500) @title: 'Location';
+    businessType      : String(50) @title: 'Business Type'
+                      @assert.enum: ['Salon', 'Spa', 'Retailer', 'E-commerce', 'Kiosk', 'Distributor'];
+    contactInfo       : LargeString @title: 'Contact Information';
+    socialMediaLinks  : LargeString @title: 'Social Media Links';
+    merchantScore     : Integer @title: 'Merchant Score' @assert.range: [0, 100];
+    autoAssignedTo    : Association to Users @title: 'Auto Assigned To';
+    discoveryMetadata : LargeString @title: 'Discovery Metadata'; // JSON string for raw scraped data
+    status            : String(20) @title: 'Status' default 'Discovered'
+                      @assert.enum: ['Discovered', 'Qualified', 'Contacted', 'Onboarded', 'Rejected'];
+    
+    // Relationships
+    convertedToLead   : Association to leads.Leads @title: 'Converted to Lead';
+}
+
+/**
+ * MarketingCampaigns - Trend-driven marketing campaign automation
+ */
+entity MarketingCampaigns : managed, cuid {
+    campaignName      : String(200) not null @title: 'Campaign Name' @mandatory;
+    campaignType      : String(50) @title: 'Campaign Type'
+                      @assert.enum: ['Influencer', 'SocialAds', 'Email', 'TikTok', 'Instagram', 'ShopeeAds'];
+    triggerKeyword    : String(200) @title: 'Trigger Keyword';
+    triggerProduct    : Association to Products @title: 'Trigger Product';
+    status            : String(20) @title: 'Status' default 'Draft'
+                      @assert.enum: ['Draft', 'PendingApproval', 'Active', 'Paused', 'Completed'];
+    budget            : Decimal(15,2) @title: 'Budget (RM)';
+    startDate         : DateTime @title: 'Start Date';
+    endDate           : DateTime @title: 'End Date';
+    targetAudience    : String(500) @title: 'Target Audience';
+    campaignBrief     : LargeString @title: 'Campaign Brief'; // Auto-generated
+    performanceMetrics: LargeString @title: 'Performance Metrics'; // JSON for ROI, clicks, conversions
+    owner             : Association to Users @title: 'Owner';
+    
+    // Relationships
+    creators          : Composition of many CampaignCreators on creators.campaign = $self;
+}
+
+/**
+ * CampaignCreators - Selected creators/influencers for campaigns
+ */
+entity CampaignCreators : cuid {
+    campaign          : Association to MarketingCampaigns not null @title: 'Campaign' @mandatory;
+    creatorName       : String(200) @title: 'Creator Name';
+    platform          : String(50) @title: 'Platform'
+                      @assert.enum: ['Instagram', 'TikTok', 'YouTube', 'Facebook'];
+    creatorHandle     : String(200) @title: 'Creator Handle';
+    followerCount     : Integer @title: 'Follower Count';
+    engagementRate    : Decimal(5,2) @title: 'Engagement Rate (%)';
+    selected          : Boolean default false @title: 'Selected';
+    assignedBudget    : Decimal(15,2) @title: 'Assigned Budget (RM)';
 }

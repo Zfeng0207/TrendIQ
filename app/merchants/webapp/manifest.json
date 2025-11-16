@@ -1,7 +1,7 @@
 {
   "_version": "1.59.0",
   "sap.app": {
-    "id": "beautyleads.leads",
+    "id": "beautyleads.merchants",
     "type": "application",
     "i18n": "i18n/i18n.properties",
     "applicationVersion": {
@@ -17,7 +17,7 @@
     },
     "dataSources": {
       "mainService": {
-        "uri": "/lead/",
+        "uri": "/merchant/",
         "type": "OData",
         "settings": {
           "annotations": [],
@@ -33,10 +33,10 @@
             "parameters": {},
             "additionalParameters": "allowed"
           },
-          "semanticObject": "Leads",
+          "semanticObject": "Merchants",
           "action": "manage",
           "title": "{{appTitle}}",
-          "icon": "sap-icon://lead"
+          "icon": "sap-icon://business-objects-experience"
         }
       }
     }
@@ -44,7 +44,7 @@
   "sap.ui": {
     "technology": "UI5",
     "icons": {
-      "icon": "sap-icon://lead",
+      "icon": "sap-icon://business-objects-experience",
       "favIcon": "",
       "phone": "",
       "phone@2": "",
@@ -76,7 +76,7 @@
       "i18n": {
         "type": "sap.ui.model.resource.ResourceModel",
         "settings": {
-          "bundleName": "beautyleads.leads.i18n.i18n"
+          "bundleName": "beautyleads.merchants.i18n.i18n"
         }
       },
       "": {
@@ -101,28 +101,28 @@
       "routes": [
         {
           "pattern": ":?query:",
-          "name": "LeadsList",
-          "target": "LeadsList"
+          "name": "MerchantDiscoveriesList",
+          "target": "MerchantDiscoveriesList"
         },
         {
-          "pattern": "Leads({key}):?query:",
-          "name": "LeadsObjectPage",
-          "target": "LeadsObjectPage"
+          "pattern": "MerchantDiscoveries({key}):?query:",
+          "name": "MerchantDiscoveriesObjectPage",
+          "target": "MerchantDiscoveriesObjectPage"
         }
       ],
       "targets": {
-        "LeadsList": {
+        "MerchantDiscoveriesList": {
           "type": "Component",
-          "id": "LeadsList",
+          "id": "MerchantDiscoveriesList",
           "name": "sap.fe.templates.ListReport",
           "options": {
             "settings": {
-              "contextPath": "/Leads",
+              "contextPath": "/MerchantDiscoveries",
               "variantManagement": "None",
               "navigation": {
-                "Leads": {
+                "MerchantDiscoveries": {
                   "detail": {
-                    "route": "LeadsObjectPage"
+                    "route": "MerchantDiscoveriesObjectPage"
                   }
                 }
               },
@@ -139,18 +139,30 @@
                 }
               },
               "initialLoad": true
+            },
+            "controllerExtensions": {
+              "sap.fe.templates.ListReport.ListReportController": {
+                "controllerName": "beautyleads.merchants.ext.controller.ListReportExt"
+              }
             }
           }
         },
-        "LeadsObjectPage": {
+        "MerchantDiscoveriesObjectPage": {
           "type": "Component",
-          "id": "LeadsObjectPage",
+          "id": "MerchantDiscoveriesObjectPage",
           "name": "sap.fe.templates.ObjectPage",
           "options": {
             "settings": {
               "editableHeaderContent": true,
-              "contextPath": "/Leads",
-              "navigation": {}
+              "contextPath": "/MerchantDiscoveries",
+              "navigation": {
+                "convertedToLead": {
+                  "detail": {
+                    "route": "LeadsObjectPage",
+                    "navigationProperty": "convertedToLead"
+                  }
+                }
+              }
             }
           }
         }
@@ -166,3 +178,4 @@
     "service": "beautyleads"
   }
 }
+
