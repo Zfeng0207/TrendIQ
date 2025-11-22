@@ -7,12 +7,15 @@ using { beauty.leads as leads } from '../../db/schema';
  */
 service MerchantService @(path: '/merchant') {
     @cds.redirection.target
-    entity MerchantDiscoveries as projection on crm.MerchantDiscovery actions {
+    entity MerchantDiscoveries as projection on crm.MerchantDiscovery {
+        *,
+        virtual null as statusCriticality : Integer
+    } actions {
         action qualifyMerchant();
         action assignToSalesRep(salesRepID: String);
         action convertToLead();
         action bulkImport(discoveries: String); // JSON array
-        action generateAbout(); // AI-generated merchant about information
+        action generateAbout() returns MerchantDiscoveries; // AI-generated merchant about information
     };
     
     @readonly entity MerchantDiscoveriesBySource as projection on crm.MerchantDiscovery {

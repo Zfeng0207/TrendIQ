@@ -236,19 +236,11 @@ module.exports = async function() {
         }).where({ ID: merchantID });
 
         // Fetch the updated merchant to return in response
-        // This helps Fiori Elements detect the change and refresh
         const updatedMerchant = await SELECT.one.from(MerchantDiscoveries)
-            .columns('ID', 'about', 'merchantName', 'status', 'businessType', 'discoveryDate')
+            .columns('*')
             .where({ ID: merchantID });
 
-        // Return success response with updated entity data
-        // The entity ID in the response helps Fiori Elements refresh the specific row
-        return req.reply({ 
-            message: 'About information generated successfully', 
-            about: aboutText,
-            ID: merchantID,
-            merchant: updatedMerchant
-        });
+        return updatedMerchant;
     });
 
     // Action: Bulk Import

@@ -139,11 +139,6 @@
                 }
               },
               "initialLoad": true
-            },
-            "controllerExtensions": {
-              "sap.fe.templates.ListReport.ListReportController": {
-                "controllerName": "beautyleads.merchants.ext.controller.ListReportExt"
-              }
             }
           }
         },

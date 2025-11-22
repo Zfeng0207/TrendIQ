@@ -36,9 +36,9 @@ annotate MerchantService.MerchantDiscoveries with @(
             {
                 $Type: 'UI.DataFieldForAction',
                 Action: 'MerchantService.generateAbout',
-                Label: 'AI',
+                Label: 'Generate AI Summary',
                 Inline: true,
-                ![@UI.Importance]: #Low
+                ![@UI.Importance]: #High
             },
             {
                 $Type: 'UI.DataField',
@@ -120,6 +120,11 @@ annotate MerchantService.MerchantDiscoveries with @(
                     },
                     {
                         $Type: 'UI.ReferenceFacet',
+                        Target: '@UI.FieldGroup#AIInsights',
+                        Label: 'AI Insights'
+                    },
+                    {
+                        $Type: 'UI.ReferenceFacet',
                         Target: '@UI.FieldGroup#DiscoveryDetails',
                         Label: 'Discovery Details'
                     }
@@ -148,10 +153,20 @@ annotate MerchantService.MerchantDiscoveries with @(
         ],
 
         // Field Groups (Form Sections)
+        FieldGroup#AIInsights: {
+            Data: [
+                {Value: about},
+                {
+                    $Type: 'UI.DataFieldForAction',
+                    Action: 'MerchantService.generateAbout',
+                    Label: 'Regenerate AI Summary'
+                }
+            ]
+        },
+
         FieldGroup#BasicInfo: {
             Data: [
                 {Value: merchantName},
-                {Value: about},
                 {Value: businessType},
                 {Value: status},
                 {Value: discoveryDate}
@@ -278,5 +293,19 @@ annotate MerchantService.MerchantDiscoveries with {
     socialMediaLinks  @title: 'Social Media Links';
     discoveryMetadata @title: 'Discovery Metadata';
     discoveryDate     @title: 'Discovery Date';
+}
+
+// ============================================================================
+// Side Effects
+// ============================================================================
+
+annotate MerchantService.MerchantDiscoveries actions {
+    generateAbout @Common.SideEffects: {
+        TargetProperties: [
+            'about',
+            'merchantScore',
+            'statusCriticality'
+        ]
+    };
 }
 
