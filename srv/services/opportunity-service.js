@@ -8,6 +8,32 @@ const cds = require('@sap/cds');
 module.exports = async function() {
     const { Opportunities, Approvals } = this.entities;
 
+    // Handler for virtual fields: criticality
+    this.on('READ', 'Opportunities', async (req, next) => {
+        const results = await next();
+
+        const processOpp = (opp) => {
+            if (opp) {
+                // Win Score Criticality
+                if (opp.aiWinScore >= 80) opp.winScoreCriticality = 3;      // Green
+                else if (opp.aiWinScore >= 50) opp.winScoreCriticality = 2; // Yellow
+                else opp.winScoreCriticality = 1;                           // Red
+
+                // Stage Criticality
+                if (opp.stage === 'Closed Won') opp.stageCriticality = 3;
+                else if (opp.stage === 'Closed Lost') opp.stageCriticality = 1;
+                else opp.stageCriticality = 2;
+            }
+        };
+
+        if (Array.isArray(results)) {
+            results.forEach(processOpp);
+        } else if (results) {
+            processOpp(results);
+        }
+        return results;
+    });
+
     // Action: Move Opportunity to Stage
     this.on('moveToStage', 'Opportunities', async (req) => {
         const oppID = req.params[0].ID;
@@ -41,7 +67,8 @@ module.exports = async function() {
             probability: stageProbability[newStage] || opportunity.probability
         }).where({ ID: oppID });
 
-        return req.reply({ message: `Opportunity moved to ${newStage}`, stage: newStage });
+        const updatedOpp = await SELECT.one.from(Opportunities).where({ ID: oppID });
+        return updatedOpp;
     });
 
     // Action: Request Approval
@@ -103,7 +130,8 @@ module.exports = async function() {
             actualCloseDate: new Date().toISOString()
         }).where({ ID: oppID });
 
-        return req.reply({ message: 'Opportunity marked as Won!' });
+        const updatedOpp = await SELECT.one.from(Opportunities).where({ ID: oppID });
+        return updatedOpp;
     });
 
     // Action: Mark as Lost
@@ -124,7 +152,8 @@ module.exports = async function() {
             lostReason: reason
         }).where({ ID: oppID });
 
-        return req.reply({ message: 'Opportunity marked as Lost', reason });
+        const updatedOpp = await SELECT.one.from(Opportunities).where({ ID: oppID });
+        return updatedOpp;
     });
 
     // Action: Update AI Win Score
@@ -136,6 +165,7 @@ module.exports = async function() {
             return req.error(404, `Opportunity ${oppID} not found`);
         }
 
+        await new Promise(resolve => setTimeout(resolve, 1500)); // Mock delay
         const aiWinScore = calculateWinProbability(opportunity);
         const recommendation = getWinRecommendation(opportunity, aiWinScore);
 
@@ -144,7 +174,8 @@ module.exports = async function() {
             aiRecommendation: recommendation
         }).where({ ID: oppID });
 
-        return req.reply({ message: 'AI win score updated', aiWinScore });
+        const updatedOpp = await SELECT.one.from(Opportunities).where({ ID: oppID });
+        return updatedOpp;
     });
 
     // Action: Approve

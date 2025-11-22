@@ -8,9 +8,13 @@ service LeadService @(path: '/lead') {
 
     // Main Lead entity with full CRUD
     @cds.redirection.target
-    entity Leads as projection on leads.Leads actions {
+    entity Leads as projection on leads.Leads {
+        *,
+        virtual null as statusCriticality : Integer,
+        virtual null as leadQualityCriticality : Integer
+    } actions {
         action convertToAccount();
-        action updateAIScore();
+        action updateAIScore() returns Leads;
     };
 
     // Read-only views for lead analytics

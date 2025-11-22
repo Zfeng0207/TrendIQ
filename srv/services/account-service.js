@@ -8,6 +8,35 @@ const cds = require('@sap/cds');
 module.exports = async function() {
     const { Accounts, Contacts } = this.entities;
 
+    // Handler for virtual fields: criticality
+    this.on('READ', 'Accounts', async (req, next) => {
+        const results = await next();
+
+        const processAccount = (account) => {
+            if (account) {
+                // Health Criticality
+                if (account.healthScore >= 80) account.healthCriticality = 3;      // Green
+                else if (account.healthScore >= 50) account.healthCriticality = 2; // Yellow
+                else account.healthCriticality = 1;                                // Red
+
+                // Status Criticality
+                switch (account.status) {
+                    case 'Active':   account.statusCriticality = 3; break;
+                    case 'Prospect': account.statusCriticality = 2; break;
+                    case 'Inactive': account.statusCriticality = 1; break;
+                    default:         account.statusCriticality = 0;
+                }
+            }
+        };
+
+        if (Array.isArray(results)) {
+            results.forEach(processAccount);
+        } else if (results) {
+            processAccount(results);
+        }
+        return results;
+    });
+
     // Action: Update Account AI Score
     this.on('updateAIScore', 'Accounts', async (req) => {
         const accountID = req.params[0].ID;
@@ -18,6 +47,7 @@ module.exports = async function() {
         }
 
         // Mock AI scoring
+        await new Promise(resolve => setTimeout(resolve, 1500)); // Mock delay
         const healthScore = calculateAccountHealth(account);
         const sentiment = calculateAccountSentiment(account);
 
@@ -27,7 +57,8 @@ module.exports = async function() {
             sentimentLabel: sentiment.label
         }).where({ ID: accountID });
 
-        return req.reply({ message: 'Account AI score updated', healthScore });
+        const updatedAccount = await SELECT.one.from(Accounts).where({ ID: accountID });
+        return updatedAccount;
     });
 
     // Action: Merge Account

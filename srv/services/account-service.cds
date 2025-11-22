@@ -8,8 +8,12 @@ service AccountService @(path: '/account') {
 
     // Account management with full CRUD
     @cds.redirection.target
-    entity Accounts as projection on crm.Accounts actions {
-        action updateAIScore();
+    entity Accounts as projection on crm.Accounts {
+        *,
+        virtual null as healthCriticality : Integer,
+        virtual null as statusCriticality : Integer
+    } actions {
+        action updateAIScore() returns Accounts;
         action mergeAccount(targetAccountID: UUID);
     };
 

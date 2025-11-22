@@ -32,23 +32,20 @@ annotate AccountService.Accounts with @(
             },
             {
                 $Type: 'UI.DataField',
-                Value: industry,
-                Label: 'Industry'
+                Value: status,
+                Label: 'Status',
+                Criticality: statusCriticality
             },
             {
-                $Type: 'UI.DataField',
-                Value: status,
-                Label: 'Status'
+                $Type: 'UI.DataFieldForAnnotation',
+                Target: '@UI.DataPoint#HealthScore',
+                Label: 'Health',
+                ![@UI.Importance]: #High
             },
             {
                 $Type: 'UI.DataField',
                 Value: accountTier,
                 Label: 'Tier'
-            },
-            {
-                $Type: 'UI.DataFieldForAnnotation',
-                Target: '@UI.DataPoint#HealthScore',
-                Label: 'Health'
             },
             {
                 $Type: 'UI.DataField',
@@ -63,8 +60,9 @@ annotate AccountService.Accounts with @(
             {
                 $Type: 'UI.DataFieldForAction',
                 Action: 'AccountService.updateAIScore',
-                Label: 'Update Health Score',
-                Inline: true
+                Label: 'Refresh Health',
+                Inline: true,
+                IconUrl: 'sap-icon://refresh'
             }
         ],
 
@@ -72,7 +70,8 @@ annotate AccountService.Accounts with @(
             Value: healthScore,
             Title: 'Health Score',
             TargetValue: 100,
-            Visualization: #Progress
+            Visualization: #Progress,
+            Criticality: healthCriticality
         },
 
         HeaderInfo: {
@@ -100,8 +99,8 @@ annotate AccountService.Accounts with @(
         Facets: [
             {
                 $Type: 'UI.CollectionFacet',
-                Label: 'Account Information',
-                ID: 'AccountInfo',
+                Label: 'Overview',
+                ID: 'Overview',
                 Facets: [
                     {
                         $Type: 'UI.ReferenceFacet',
@@ -110,35 +109,32 @@ annotate AccountService.Accounts with @(
                     },
                     {
                         $Type: 'UI.ReferenceFacet',
-                        Target: '@UI.FieldGroup#ContactDetails',
-                        Label: 'Contact Details'
+                        Target: '@UI.FieldGroup#AIInsights',
+                        Label: 'AI Insights'
+                    }
+                ]
+            },
+            {
+                $Type: 'UI.CollectionFacet',
+                Label: 'Business Information',
+                ID: 'BusinessInfo',
+                Facets: [
+                    {
+                        $Type: 'UI.ReferenceFacet',
+                        Target: '@UI.FieldGroup#BusinessInfo',
+                        Label: 'Company Details'
+                    },
+                    {
+                        $Type: 'UI.ReferenceFacet',
+                        Target: '@UI.FieldGroup#FinancialInfo',
+                        Label: 'Financials'
                     }
                 ]
             },
             {
                 $Type: 'UI.ReferenceFacet',
-                Target: '@UI.FieldGroup#BusinessInfo',
-                Label: 'Business Information'
-            },
-            {
-                $Type: 'UI.ReferenceFacet',
-                Target: '@UI.FieldGroup#SocialMedia',
-                Label: 'Social Media'
-            },
-            {
-                $Type: 'UI.ReferenceFacet',
-                Target: '@UI.FieldGroup#FinancialInfo',
-                Label: 'Financial Information'
-            },
-            {
-                $Type: 'UI.ReferenceFacet',
                 Target: 'contacts/@UI.LineItem',
                 Label: 'Contacts'
-            },
-            {
-                $Type: 'UI.ReferenceFacet',
-                Target: '@UI.FieldGroup#AIInsights',
-                Label: 'AI Insights'
             }
         ],
 
@@ -226,8 +222,16 @@ annotate AccountService.Accounts with {
 }
 
 // ============================================================================
-// Contact List & Object Page (nested in Account)
+// Side Effects
 // ============================================================================
+
+annotate AccountService.Accounts actions {
+    updateAIScore @(
+        Common.SideEffects: {
+            TargetProperties: ['healthScore', 'sentimentScore', 'sentimentLabel']
+        }
+    );
+}
 
 annotate AccountService.Contacts with @(
     UI: {

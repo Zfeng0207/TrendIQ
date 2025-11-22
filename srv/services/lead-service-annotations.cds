@@ -5,7 +5,7 @@
 using LeadService from './lead-service';
 
 // ============================================================================
-// Lead List Report Annotations
+// Lead List Report / Analytical List Page Annotations
 // ============================================================================
 
 annotate LeadService.Leads with @(
@@ -34,23 +34,27 @@ annotate LeadService.Leads with @(
             },
             {
                 $Type: 'UI.DataField',
-                Value: platform,
-                Label: 'Platform'
-            },
-            {
-                $Type: 'UI.DataField',
                 Value: status,
-                Label: 'Status'
+                Label: 'Status',
+                Criticality: statusCriticality
             },
             {
                 $Type: 'UI.DataField',
                 Value: leadQuality,
-                Label: 'Quality'
+                Label: 'Quality',
+                Criticality: leadQualityCriticality
             },
             {
                 $Type: 'UI.DataFieldForAnnotation',
                 Target: '@UI.DataPoint#AIScore',
-                Label: 'AI Score'
+                Label: 'AI Score',
+                ![@UI.Importance]: #High
+            },
+            {
+                $Type: 'UI.DataFieldForAnnotation',
+                Target: '@UI.DataPoint#TrendScore',
+                Label: 'Trend',
+                ![@UI.Importance]: #Medium
             },
             {
                 $Type: 'UI.DataField',
@@ -59,26 +63,20 @@ annotate LeadService.Leads with @(
             },
             {
                 $Type: 'UI.DataField',
-                Value: owner.fullName,
-                Label: 'Owner'
+                Value: platform,
+                Label: 'Platform'
             },
             {
                 $Type: 'UI.DataField',
-                Value: lastContactDate,
-                Label: 'Last Contact'
+                Value: owner.fullName,
+                Label: 'Owner'
             },
             {
                 $Type: 'UI.DataFieldForAction',
                 Action: 'LeadService.updateAIScore',
                 Label: 'Update AI Score',
-                Inline: true
-            },
-            {
-                $Type: 'UI.DataFieldForAction',
-                Action: 'LeadService.convertToAccount',
-                Label: 'Convert to Account',
                 Inline: true,
-                Criticality: 3
+                IconUrl: 'sap-icon://refresh'
             }
         ],
 
@@ -87,14 +85,28 @@ annotate LeadService.Leads with @(
             Value: aiScore,
             Title: 'AI Score',
             TargetValue: 100,
-            Visualization: #Progress
+            Visualization: #Progress,
+            CriticalityCalculation: {
+                ImprovementDirection: #Maximize,
+                ToleranceLowValue: 50,
+                ToleranceHighValue: 80,
+                DeviationLowValue: 40,
+                DeviationHighValue: 100
+            }
         },
 
         DataPoint#TrendScore: {
             Value: trendScore,
             Title: 'Trend Score',
             TargetValue: 100,
-            Visualization: #Progress
+            Visualization: #Progress, // Or Delta if you have a previous value
+            CriticalityCalculation: {
+                ImprovementDirection: #Maximize,
+                ToleranceLowValue: 50,
+                ToleranceHighValue: 80,
+                DeviationLowValue: 40,
+                DeviationHighValue: 100
+            }
         },
 
         // Header Info (Object Page Header)
@@ -121,7 +133,7 @@ annotate LeadService.Leads with @(
             },
             {
                 $Type: 'UI.ReferenceFacet',
-                Target: '@UI.FieldGroup#EstimatedValue',
+                Target: '@UI.DataPoint#EstValue',
                 Label: 'Estimated Value'
             }
         ],
@@ -130,30 +142,13 @@ annotate LeadService.Leads with @(
         Facets: [
             {
                 $Type: 'UI.CollectionFacet',
-                Label: 'General Information',
-                ID: 'GeneralInfo',
+                Label: 'Overview',
+                ID: 'Overview',
                 Facets: [
                     {
                         $Type: 'UI.ReferenceFacet',
                         Target: '@UI.FieldGroup#BasicInfo',
                         Label: 'Basic Details'
-                    },
-                    {
-                        $Type: 'UI.ReferenceFacet',
-                        Target: '@UI.FieldGroup#ContactInfo',
-                        Label: 'Contact Information'
-                    }
-                ]
-            },
-            {
-                $Type: 'UI.CollectionFacet',
-                Label: 'Lead Details',
-                ID: 'LeadDetails',
-                Facets: [
-                    {
-                        $Type: 'UI.ReferenceFacet',
-                        Target: '@UI.FieldGroup#LeadClassification',
-                        Label: 'Classification'
                     },
                     {
                         $Type: 'UI.ReferenceFacet',
@@ -163,14 +158,38 @@ annotate LeadService.Leads with @(
                 ]
             },
             {
-                $Type: 'UI.ReferenceFacet',
-                Target: '@UI.FieldGroup#LocationInfo',
-                Label: 'Location'
+                $Type: 'UI.CollectionFacet',
+                Label: 'Contact & Activity',
+                ID: 'ContactActivity',
+                Facets: [
+                    {
+                        $Type: 'UI.ReferenceFacet',
+                        Target: '@UI.FieldGroup#ContactInfo',
+                        Label: 'Contact Information'
+                    },
+                     {
+                        $Type: 'UI.ReferenceFacet',
+                        Target: '@UI.FieldGroup#ActivityInfo',
+                        Label: 'Activity'
+                    }
+                ]
             },
             {
-                $Type: 'UI.ReferenceFacet',
-                Target: '@UI.FieldGroup#AdditionalInfo',
-                Label: 'Additional Information'
+                $Type: 'UI.CollectionFacet',
+                Label: 'Qualify',
+                ID: 'Qualify',
+                Facets: [
+                     {
+                        $Type: 'UI.ReferenceFacet',
+                        Target: '@UI.FieldGroup#LeadClassification',
+                        Label: 'Classification'
+                    },
+                    {
+                        $Type: 'UI.ReferenceFacet',
+                        Target: '@UI.FieldGroup#LocationInfo',
+                        Label: 'Location'
+                    }
+                ]
             }
         ],
 
@@ -190,7 +209,14 @@ annotate LeadService.Leads with @(
                 {Value: contactName},
                 {Value: contactEmail},
                 {Value: contactPhone},
-                {Value: lastContactDate}
+                {Value: owner.fullName}
+            ]
+        },
+
+        FieldGroup#ActivityInfo: {
+            Data: [
+                {Value: lastContactDate},
+                {Value: notes}
             ]
         },
 
@@ -231,14 +257,10 @@ annotate LeadService.Leads with @(
             ]
         },
 
-        FieldGroup#EstimatedValue: {
-            Data: [
-                {
-                    $Type: 'UI.DataField',
-                    Value: estimatedValue,
-                    Label: 'Estimated Value'
-                }
-            ]
+        DataPoint#EstValue: {
+            Value: estimatedValue,
+            Title: 'Est. Value',
+            Visualization: #Number
         },
 
         // Actions in Identification section
@@ -246,18 +268,87 @@ annotate LeadService.Leads with @(
             {
                 $Type: 'UI.DataFieldForAction',
                 Action: 'LeadService.convertToAccount',
-                Label: 'Convert to Account'
+                Label: 'Convert to Account',
+                ![@UI.Importance]: #High
             },
             {
                 $Type: 'UI.DataFieldForAction',
                 Action: 'LeadService.updateAIScore',
-                Label: 'Refresh AI Score'
+                Label: 'Refresh AI Score',
+                ![@UI.Importance]: #Medium
             }
         ]
     },
 
     // Semantic annotations for fields
     UI.TextArrangement: #TextOnly
+);
+
+// ============================================================================
+// Analytics on Leads (ApplySupported + Charts + SPV for ALP)
+// ============================================================================
+
+// Enable analytical operations on the Leads entity
+annotate LeadService.Leads with @Aggregation.ApplySupported: {
+    Rollup: #None,
+    GroupableProperties: [ status, source, platform, owner_ID ],
+    AggregatableProperties: [ { Property: estimatedValue } ]
+};
+
+// Charts and SelectionPresentationVariant for Analytical List Page
+annotate LeadService.Leads with @(
+    // Main chart on status
+    UI.Chart #ByStatus: {
+        Title: 'Leads by Status',
+        Description: 'Total estimated value per status',
+        ChartType: #Column,
+        Dimensions: [status],
+        Measures: [estimatedValue],
+        DimensionAttributes: [{
+            Dimension: status,
+            Role: #Category
+        }],
+        MeasureAttributes: [{
+            Measure: estimatedValue,
+            Role: #Axis1
+        }]
+    },
+
+    // Secondary chart on source
+    UI.Chart #BySource: {
+        Title: 'Leads by Source',
+        Description: 'Total estimated value per source',
+        ChartType: #Donut,
+        Dimensions: [source],
+        Measures: [estimatedValue],
+        DimensionAttributes: [{
+            Dimension: source,
+            Role: #Category
+        }],
+        MeasureAttributes: [{
+            Measure: estimatedValue,
+            Role: #Axis1
+        }]
+    },
+
+    // SelectionVariant used by the ALP (filter bar)
+    UI.SelectionVariant #Default: {
+        Text: 'Leads'
+    },
+
+    // PresentationVariant combining chart + table
+    UI.PresentationVariant #Main: {
+        Visualizations: [
+            '@UI.Chart#ByStatus',
+            '@UI.LineItem'
+        ]
+    },
+
+    // SelectionPresentationVariant that the ALP will use
+    UI.SelectionPresentationVariant #Main: {
+        SelectionVariant: '@UI.SelectionVariant#Default',
+        PresentationVariant: '@UI.PresentationVariant#Main'
+    }
 );
 
 // ============================================================================
@@ -285,11 +376,23 @@ annotate LeadService.Leads with {
                        }
                    };
 
+    // Visual filter-enabled value help for status
     status         @title: 'Status'
                    @Common: {
                        ValueListWithFixedValues: true,
                        Text: status,
-                       TextArrangement: #TextOnly
+                       TextArrangement: #TextOnly,
+                       ValueList: {
+                           CollectionPath: 'LeadsByStatus',
+                           PresentationVariantQualifier: 'ByStatusFilter',
+                           Parameters: [
+                               {
+                                   $Type: 'Common.ValueListParameterInOut',
+                                   LocalDataProperty: status,
+                                   ValueListProperty: 'status'
+                               }
+                           ]
+                       }
                    };
 
     leadQuality    @title: 'Lead Quality'
@@ -297,7 +400,21 @@ annotate LeadService.Leads with {
                        ValueListWithFixedValues: true
                    };
 
-    source         @title: 'Source';
+    // Visual filter-enabled value help for source
+    source         @title: 'Source'
+                   @Common: {
+                       ValueList: {
+                           CollectionPath: 'LeadsBySource',
+                           PresentationVariantQualifier: 'BySourceFilter',
+                           Parameters: [
+                               {
+                                   $Type: 'Common.ValueListParameterInOut',
+                                   LocalDataProperty: source,
+                                   ValueListProperty: 'source'
+                               }
+                           ]
+                       }
+                   };
 
     contactName    @title: 'Contact Name';
     contactEmail   @title: 'Email';
@@ -330,17 +447,68 @@ annotate LeadService.Leads with {
 
 
 // ============================================================================
-// Action Parameter Annotations
+// Chart Annotations for Analytics (Aggregated Entities + Visual Filters)
 // ============================================================================
 
-annotate LeadService.convertToAccount with @(
-    Common.SideEffects: {
-        TargetProperties: ['converted', 'convertedDate', 'status']
+annotate LeadService.LeadsByStatus with @(
+    UI.Chart #ByStatus: {
+        Title: 'Leads by Status',
+        Description: 'Count of leads per status',
+        ChartType: #Column,
+        Dimensions: [status],
+        Measures: [count],
+        DimensionAttributes: [{
+            Dimension: status,
+            Role: #Category
+        }],
+        MeasureAttributes: [{
+            Measure: count,
+            Role: #Axis1
+        }]
+    },
+
+    // Used by visual filter on Status
+    UI.PresentationVariant #ByStatusFilter: {
+        Visualizations: ['@UI.Chart#ByStatus']
     }
 );
 
-annotate LeadService.updateAIScore with @(
-    Common.SideEffects: {
-        TargetProperties: ['aiScore', 'sentimentScore', 'trendScore', 'recommendedAction']
+annotate LeadService.LeadsBySource with @(
+    UI.Chart #BySource: {
+        Title: 'Leads by Source',
+        Description: 'Count of leads per source',
+        ChartType: #Donut,
+        Dimensions: [source],
+        Measures: [count],
+        DimensionAttributes: [{
+            Dimension: source,
+            Role: #Category
+        }],
+        MeasureAttributes: [{
+            Measure: count,
+            Role: #Axis1
+        }]
+    },
+
+    // Used by visual filter on Source
+    UI.PresentationVariant #BySourceFilter: {
+        Visualizations: ['@UI.Chart#BySource']
     }
 );
+
+// ============================================================================
+// Side Effects
+// ============================================================================
+
+annotate LeadService.Leads actions {
+    convertToAccount @(
+        Common.SideEffects: {
+            TargetProperties: ['converted', 'convertedDate', 'status']
+        }
+    );
+    updateAIScore @(
+        Common.SideEffects: {
+            TargetProperties: ['aiScore', 'sentimentScore', 'trendScore', 'recommendedAction']
+        }
+    );
+}

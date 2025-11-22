@@ -33,7 +33,8 @@ annotate OpportunityService.Opportunities with @(
             {
                 $Type: 'UI.DataField',
                 Value: stage,
-                Label: 'Stage'
+                Label: 'Stage',
+                Criticality: stageCriticality
             },
             {
                 $Type: 'UI.DataField',
@@ -43,12 +44,14 @@ annotate OpportunityService.Opportunities with @(
             {
                 $Type: 'UI.DataField',
                 Value: probability,
-                Label: 'Probability (%)'
+                Label: 'Probability (%)',
+                Criticality: winScoreCriticality
             },
             {
                 $Type: 'UI.DataFieldForAnnotation',
                 Target: '@UI.DataPoint#AIWinScore',
-                Label: 'AI Win Score'
+                Label: 'AI Win Score',
+                ![@UI.Importance]: #High
             },
             {
                 $Type: 'UI.DataField',
@@ -59,6 +62,13 @@ annotate OpportunityService.Opportunities with @(
                 $Type: 'UI.DataField',
                 Value: closeDate,
                 Label: 'Expected Close'
+            },
+            {
+                $Type: 'UI.DataFieldForAction',
+                Action: 'OpportunityService.updateAIWinScore',
+                Label: 'Update AI Score',
+                Inline: true,
+                IconUrl: 'sap-icon://refresh'
             },
             {
                 $Type: 'UI.DataFieldForAction',
@@ -118,8 +128,8 @@ annotate OpportunityService.Opportunities with @(
         Facets: [
             {
                 $Type: 'UI.CollectionFacet',
-                Label: 'Opportunity Details',
-                ID: 'OppDetails',
+                Label: 'Overview',
+                ID: 'Overview',
                 Facets: [
                     {
                         $Type: 'UI.ReferenceFacet',
@@ -128,8 +138,20 @@ annotate OpportunityService.Opportunities with @(
                     },
                     {
                         $Type: 'UI.ReferenceFacet',
+                        Target: '@UI.FieldGroup#AIInsights',
+                        Label: 'AI Insights'
+                    }
+                ]
+            },
+            {
+                $Type: 'UI.CollectionFacet',
+                Label: 'Stage & Timeline',
+                ID: 'StageInfo',
+                Facets: [
+                    {
+                        $Type: 'UI.ReferenceFacet',
                         Target: '@UI.FieldGroup#StageInfo',
-                        Label: 'Stage & Timeline'
+                        Label: 'Timeline Details'
                     }
                 ]
             },
@@ -142,11 +164,6 @@ annotate OpportunityService.Opportunities with @(
                 $Type: 'UI.ReferenceFacet',
                 Target: 'products/@UI.LineItem',
                 Label: 'Products'
-            },
-            {
-                $Type: 'UI.ReferenceFacet',
-                Target: '@UI.FieldGroup#AIInsights',
-                Label: 'AI Insights'
             },
             {
                 $Type: 'UI.ReferenceFacet',
@@ -451,6 +468,33 @@ annotate OpportunityService.Approvals with {
     priority       @title: 'Priority';
     requestedAmount @title: 'Requested Amount' @Measures.ISOCurrency: 'MYR';
     requestedDiscount @title: 'Requested Discount (%)';
+}
+
+// ============================================================================
+// Side Effects
+// ============================================================================
+
+annotate OpportunityService.Opportunities actions {
+    updateAIWinScore @(
+        Common.SideEffects: {
+            TargetProperties: ['aiWinScore', 'aiRecommendation', 'probability']
+        }
+    );
+    markAsWon @(
+        Common.SideEffects: {
+            TargetProperties: ['stage', 'probability', 'actualCloseDate', 'statusCriticality']
+        }
+    );
+    markAsLost @(
+        Common.SideEffects: {
+            TargetProperties: ['stage', 'probability', 'actualCloseDate', 'lostReason', 'statusCriticality']
+        }
+    );
+    moveToStage @(
+        Common.SideEffects: {
+            TargetProperties: ['stage', 'probability', 'statusCriticality']
+        }
+    );
 }
 
 // ============================================================================

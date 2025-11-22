@@ -8,12 +8,16 @@ service OpportunityService @(path: '/opportunity') {
 
     // Opportunity management with full CRUD
     @cds.redirection.target
-    entity Opportunities as projection on crm.Opportunities actions {
-        action moveToStage(newStage: String);
+    entity Opportunities as projection on crm.Opportunities {
+        *,
+        virtual null as winScoreCriticality : Integer,
+        virtual null as stageCriticality : Integer
+    } actions {
+        action moveToStage(newStage: String) returns Opportunities;
         action requestApproval(reason: String, discountPercent: Decimal);
-        action markAsWon();
-        action markAsLost(reason: String);
-        action updateAIWinScore();
+        action markAsWon() returns Opportunities;
+        action markAsLost(reason: String) returns Opportunities;
+        action updateAIWinScore() returns Opportunities;
     };
 
     // Opportunity products (line items)
