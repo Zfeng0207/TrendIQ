@@ -97,7 +97,7 @@
           "options": {
             "settings": {
               "contextPath": "/Accounts",
-              "variantManagement": "None",
+              "variantManagement": "Page",
               "navigation": {
                 "Accounts": {
                   "detail": {
@@ -113,11 +113,27 @@
                     "selectAll": true,
                     "growingThreshold": 15,
                     "growing": true,
-                    "growingScrollToLoad": true
+                    "growingScrollToLoad": true,
+                    "condensed": false
                   }
                 }
               },
-              "initialLoad": true
+              "initialLoad": true,
+              "defaultSortOrder": [
+                {
+                  "property": "dateCreated",
+                  "descending": true
+                }
+              ]
+            }
+          },
+          "extends": {
+            "extensions": {
+              "sap.ui.controllerExtensions": {
+                "sap.fe.templates.ListReport.ListReportController": {
+                  "controllerName": "beautyleads.accounts.ext.controller.ListReportExt"
+                }
+              }
             }
           }
         },
@@ -129,6 +145,15 @@
             "settings": {
               "editableHeaderContent": true,
               "contextPath": "/Accounts"
+            }
+          },
+          "extends": {
+            "extensions": {
+              "sap.ui.controllerExtensions": {
+                "sap.fe.templates.ObjectPage.ObjectPageController": {
+                  "controllerName": "beautyleads.accounts.ext.controller.AccountsObjectPageExt"
+                }
+              }
             }
           }
         }

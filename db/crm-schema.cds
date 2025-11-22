@@ -70,6 +70,10 @@ entity Accounts : managed, cuid, aspects.Address, aspects.SocialMedia, aspects.C
     accountManager : Association to Users @title: 'Account Manager';
     accountTier    : String(20) @title: 'Account Tier'
                      @assert.enum: ['Platinum', 'Gold', 'Silver', 'Bronze'];
+    
+    // Operational fields for List Report
+    assignedTo     : String(200) @title: 'Assigned To'; // Sales rep name as string
+    dateCreated    : Date @title: 'Date Created';
 
     // Health & scoring
     healthScore : Integer @title: 'Account Health Score' @assert.range: [0, 100];
@@ -79,10 +83,31 @@ entity Accounts : managed, cuid, aspects.Address, aspects.SocialMedia, aspects.C
     // Financial
     creditLimit  : Decimal(15,2) @title: 'Credit Limit (RM)';
     paymentTerms : String(50) @title: 'Payment Terms';
+    estimatedMonthlyGMV : Decimal(15,2) @title: 'Estimated Monthly GMV (RM)';
+    forecastedRevenueContribution : Decimal(15,2) @title: 'Forecasted Revenue Contribution (RM)';
+    contractStatus : String(50) @title: 'Contract Status'
+                  @assert.enum: ['Draft', 'Pending', 'Active', 'Expired', 'Terminated'];
+
+    // Partner Priority Timeline
+    currentTimelineStage : String(50) @title: 'Current Timeline Stage'
+                      @assert.enum: ['Onboarding', 'FinancialNegotiation', 'OpportunityDevelopment', 'CampaignExecution', 'RevenueRealization'];
+    timelineStageStatus : String(50) @title: 'Timeline Stage Status'
+                      @assert.enum: ['NotStarted', 'InProgress', 'Completed', 'Delayed', 'Blocked'];
+    nextRecommendedAction : LargeString @title: 'Next Recommended Action';
+    timelineStageDeadline : DateTime @title: 'Timeline Stage Deadline';
+    timelineStageOwner : Association to Users @title: 'Timeline Stage Owner';
+    timelineStageNotes : LargeString @title: 'Timeline Stage Notes';
+
+    // Sentiment & Trends
+    recentSentimentTrend : String(20) @title: 'Recent Sentiment Trend'
+                          @assert.enum: ['Improving', 'Stable', 'Declining'];
+    sentimentScore : Integer @title: 'Sentiment Score' @assert.range: [-100, 100];
 
     // Relationships (compositions - owned by account)
     contacts      : Composition of many Contacts on contacts.account = $self;
     opportunities : Composition of many Opportunities on opportunities.account = $self;
+    recommendations : Composition of many AccountRecommendations on recommendations.account = $self;
+    riskAlerts    : Composition of many AccountRiskAlerts on riskAlerts.account = $self;
 
     // Relationships (associations - references)
     activities : Association to many Activities on activities.relatedAccount = $self;
@@ -332,10 +357,10 @@ entity Approvals : managed, cuid {
 }
 
 /**
- * MerchantDiscovery - AI-discovered merchant opportunities from web scraping
+ * MerchantDiscovery - AI-discovered channel partner opportunities from web scraping
  */
 entity MerchantDiscovery : managed, cuid, aspects.Address {
-    merchantName      : String(200) not null @title: 'Merchant Name' @mandatory;
+    merchantName      : String(200) not null @title: 'Channel Partner Name' @mandatory;
     about             : LargeString @title: 'About';
     discoverySource   : String(50) @title: 'Discovery Source'
                       @assert.enum: ['Online Web', 'Partnership', 'Offline', 'Other'];
@@ -345,11 +370,11 @@ entity MerchantDiscovery : managed, cuid, aspects.Address {
                       @assert.enum: ['Salon', 'Spa', 'Retailer', 'E-commerce', 'Kiosk', 'Distributor'];
     contactInfo       : LargeString @title: 'Contact Information';
     socialMediaLinks  : LargeString @title: 'Social Media Links';
-    merchantScore     : Integer @title: 'Merchant Score' @assert.range: [0, 100];
+    merchantScore     : Integer @title: 'Channel Partner Score' @assert.range: [0, 100];
     autoAssignedTo    : Association to Users @title: 'Auto Assigned To';
     discoveryMetadata : LargeString @title: 'Discovery Metadata'; // JSON string for raw scraped data
     status            : String(20) @title: 'Status' default 'Discovered'
-                      @assert.enum: ['Discovered', 'Qualified', 'Contacted', 'Onboarded', 'Rejected'];
+                      @assert.enum: ['Discovered', 'Contacted', 'Qualified', 'Onboarding', 'In Review', 'Completed'];
     
     // Relationships
     convertedToLead   : Association to leads.Leads @title: 'Converted to Lead';
@@ -376,6 +401,49 @@ entity MarketingCampaigns : managed, cuid {
     
     // Relationships
     creators          : Composition of many CampaignCreators on creators.campaign = $self;
+}
+
+/**
+ * AccountRecommendations - AI-generated recommendations for account growth
+ */
+entity AccountRecommendations : managed, cuid {
+    account : Association to Accounts not null @title: 'Account' @mandatory;
+    
+    recommendationType : String(50) @title: 'Recommendation Type'
+                       @assert.enum: ['Product', 'Campaign', 'Deal', 'Risk'];
+    recommendationText : LargeString @title: 'Recommendation Text' @mandatory;
+    priority : String(20) @title: 'Priority'
+              @assert.enum: ['High', 'Medium', 'Low'];
+    aiGenerated : Boolean default true @title: 'AI Generated';
+    status : String(20) @title: 'Status' default 'New'
+            @assert.enum: ['New', 'Acknowledged', 'Implemented', 'Dismissed'];
+    
+    // Metadata
+    generatedDate : DateTime @title: 'Generated Date';
+    acknowledgedDate : DateTime @title: 'Acknowledged Date';
+    acknowledgedBy : Association to Users @title: 'Acknowledged By';
+    
+    notes : LargeString @title: 'Notes';
+}
+
+/**
+ * AccountRiskAlerts - AI-detected risk alerts for accounts
+ */
+entity AccountRiskAlerts : managed, cuid {
+    account : Association to Accounts not null @title: 'Account' @mandatory;
+    
+    alertType : String(50) @title: 'Alert Type'
+               @assert.enum: ['DecliningEngagement', 'NegativeSentiment', 'CompetitorTagging', 'PriceComplaint', 'SlowResponse'];
+    severity : String(20) @title: 'Severity'
+              @assert.enum: ['Critical', 'High', 'Medium', 'Low'];
+    alertMessage : LargeString @title: 'Alert Message' @mandatory;
+    
+    detectedDate : DateTime @title: 'Detected Date';
+    resolvedDate : DateTime @title: 'Resolved Date';
+    resolvedBy : Association to Users @title: 'Resolved By';
+    resolutionNotes : LargeString @title: 'Resolution Notes';
+    
+    isResolved : Boolean default false @title: 'Is Resolved';
 }
 
 /**

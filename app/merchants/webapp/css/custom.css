@@ -1,4 +1,4 @@
-/* Custom styles for Merchant Onboarding table - larger text and spacing */
+/* Custom styles for Channel Partner Onboarding table - larger text and spacing */
 
 /* Increase table row height and spacing */
 .sapMListUl .sapMLIB,
@@ -73,7 +73,7 @@
     min-width: 2rem !important;
     height: 1.75rem !important;
     margin: 0.125rem !important;
-`    border: none !important;
+    border: none !important;
     background-color: white !important;
     box-shadow: none !important;
 }
@@ -84,5 +84,50 @@
     display: inline-block !important;
     visibility: visible !important;
     opacity: 1 !important;
+}
+
+/* Floating Action Button - Bottom Right */
+.floating-action-button {
+    position: fixed !important;
+    bottom: 2rem !important;
+    right: 2rem !important;
+    z-index: 10000 !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+    border-radius: 2rem !important;
+    min-width: 8rem !important;
+    height: 3rem !important;
+    padding: 0 1.5rem !important;
+}
+
+.floating-action-button:hover {
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2) !important;
+    transform: translateY(-2px);
+    transition: all 0.2s ease;
+}
+
+/* Ensure button is visible above all content */
+.floating-action-button .sapMBtnContent {
+    font-size: 0.9375rem !important;
+    font-weight: 600 !important;
+}
+
+/* Responsive: Adjust position on smaller screens */
+@media (max-width: 768px) {
+    .floating-action-button {
+        bottom: 1.5rem !important;
+        right: 1.5rem !important;
+        min-width: 3.5rem !important;
+        height: 3.5rem !important;
+        padding: 0 !important;
+        border-radius: 50% !important;
+    }
+    
+    .floating-action-button .sapMBtnText {
+        display: none !important;
+    }
+    
+    .floating-action-button .sapMBtnIcon {
+        margin: 0 !important;
+    }
 }
 

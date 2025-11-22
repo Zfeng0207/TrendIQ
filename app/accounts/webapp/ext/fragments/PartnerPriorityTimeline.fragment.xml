@@ -1,0 +1,137 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:layout="sap.ui.layout" xmlns:form="sap.ui.layout.form">
+    <VBox class="sapUiSmallMargin">
+        <Title text="{i18n>partnerPriorityTimeline}" level="H3" class="sapUiSmallMarginBottom"/>
+        
+        <!-- Timeline Stages -->
+        <ScrollContainer horizontal="true" vertical="false" class="sapUiSmallMargin" height="200px">
+            <layout:HorizontalLayout class="timeline-container" allowWrapping="false">
+                
+                <!-- Onboarding Phase 1 -->
+                <VBox class="timeline-stage" width="11%">
+                    <VBox class="timeline-stage-content" 
+                          class:stage-active="{= ${currentTimelineStage} === 'OnboardingPhase1'}"
+                          class:stage-completed="{= ${currentTimelineStage} !== 'OnboardingPhase1' &amp;&amp; (${currentTimelineStage} === 'OnboardingPhase2' || ${currentTimelineStage} === 'OnboardingLast' || ${currentTimelineStage} === 'DealsDiscussionPhase1' || ${currentTimelineStage} === 'DealsDiscussionPhase2' || ${currentTimelineStage} === 'DealsDiscussionLast' || ${currentTimelineStage} === 'MarketingCampaignPhase1' || ${currentTimelineStage} === 'MarketingCampaignPhase2' || ${currentTimelineStage} === 'MarketingCampaignLast')}"
+                          class:stage-delayed="{= ${currentTimelineStage} === 'OnboardingPhase1' &amp;&amp; ${timelineStageStatus} === 'Delayed'}"
+                          class:stage-blocked="{= ${currentTimelineStage} === 'OnboardingPhase1' &amp;&amp; ${timelineStageStatus} === 'Blocked'}">
+                        <core:Icon src="sap-icon://user-settings" size="1.5rem" class="timeline-icon"/>
+                        <Text text="{i18n>timelineStageOnboardingPhase1}" class="timeline-stage-title"/>
+                    </VBox>
+                </VBox>
+                
+                <!-- Onboarding Phase 2 -->
+                <VBox class="timeline-stage" width="11%">
+                    <VBox class="timeline-stage-content"
+                          class:stage-active="{= ${currentTimelineStage} === 'OnboardingPhase2'}"
+                          class:stage-completed="{= ${currentTimelineStage} !== 'OnboardingPhase2' &amp;&amp; (${currentTimelineStage} === 'OnboardingLast' || ${currentTimelineStage} === 'DealsDiscussionPhase1' || ${currentTimelineStage} === 'DealsDiscussionPhase2' || ${currentTimelineStage} === 'DealsDiscussionLast' || ${currentTimelineStage} === 'MarketingCampaignPhase1' || ${currentTimelineStage} === 'MarketingCampaignPhase2' || ${currentTimelineStage} === 'MarketingCampaignLast')}"
+                          class:stage-delayed="{= ${currentTimelineStage} === 'OnboardingPhase2' &amp;&amp; ${timelineStageStatus} === 'Delayed'}"
+                          class:stage-blocked="{= ${currentTimelineStage} === 'OnboardingPhase2' &amp;&amp; ${timelineStageStatus} === 'Blocked'}">
+                        <core:Icon src="sap-icon://user-settings" size="1.5rem" class="timeline-icon"/>
+                        <Text text="{i18n>timelineStageOnboardingPhase2}" class="timeline-stage-title"/>
+                    </VBox>
+                </VBox>
+                
+                <!-- Onboarding Last -->
+                <VBox class="timeline-stage" width="11%">
+                    <VBox class="timeline-stage-content"
+                          class:stage-active="{= ${currentTimelineStage} === 'OnboardingLast'}"
+                          class:stage-completed="{= ${currentTimelineStage} !== 'OnboardingLast' &amp;&amp; (${currentTimelineStage} === 'DealsDiscussionPhase1' || ${currentTimelineStage} === 'DealsDiscussionPhase2' || ${currentTimelineStage} === 'DealsDiscussionLast' || ${currentTimelineStage} === 'MarketingCampaignPhase1' || ${currentTimelineStage} === 'MarketingCampaignPhase2' || ${currentTimelineStage} === 'MarketingCampaignLast')}"
+                          class:stage-delayed="{= ${currentTimelineStage} === 'OnboardingLast' &amp;&amp; ${timelineStageStatus} === 'Delayed'}"
+                          class:stage-blocked="{= ${currentTimelineStage} === 'OnboardingLast' &amp;&amp; ${timelineStageStatus} === 'Blocked'}">
+                        <core:Icon src="sap-icon://user-settings" size="1.5rem" class="timeline-icon"/>
+                        <Text text="{i18n>timelineStageOnboardingLast}" class="timeline-stage-title"/>
+                    </VBox>
+                </VBox>
+                
+                <!-- Deals Discussion Phase 1 -->
+                <VBox class="timeline-stage" width="11%">
+                    <VBox class="timeline-stage-content"
+                          class:stage-active="{= ${currentTimelineStage} === 'DealsDiscussionPhase1'}"
+                          class:stage-completed="{= ${currentTimelineStage} !== 'DealsDiscussionPhase1' &amp;&amp; (${currentTimelineStage} === 'DealsDiscussionPhase2' || ${currentTimelineStage} === 'DealsDiscussionLast' || ${currentTimelineStage} === 'MarketingCampaignPhase1' || ${currentTimelineStage} === 'MarketingCampaignPhase2' || ${currentTimelineStage} === 'MarketingCampaignLast')}"
+                          class:stage-delayed="{= ${currentTimelineStage} === 'DealsDiscussionPhase1' &amp;&amp; ${timelineStageStatus} === 'Delayed'}"
+                          class:stage-blocked="{= ${currentTimelineStage} === 'DealsDiscussionPhase1' &amp;&amp; ${timelineStageStatus} === 'Blocked'}">
+                        <core:Icon src="sap-icon://money-bills" size="1.5rem" class="timeline-icon"/>
+                        <Text text="{i18n>timelineStageDealsDiscussionPhase1}" class="timeline-stage-title"/>
+                    </VBox>
+                </VBox>
+                
+                <!-- Deals Discussion Phase 2 -->
+                <VBox class="timeline-stage" width="11%">
+                    <VBox class="timeline-stage-content"
+                          class:stage-active="{= ${currentTimelineStage} === 'DealsDiscussionPhase2'}"
+                          class:stage-completed="{= ${currentTimelineStage} !== 'DealsDiscussionPhase2' &amp;&amp; (${currentTimelineStage} === 'DealsDiscussionLast' || ${currentTimelineStage} === 'MarketingCampaignPhase1' || ${currentTimelineStage} === 'MarketingCampaignPhase2' || ${currentTimelineStage} === 'MarketingCampaignLast')}"
+                          class:stage-delayed="{= ${currentTimelineStage} === 'DealsDiscussionPhase2' &amp;&amp; ${timelineStageStatus} === 'Delayed'}"
+                          class:stage-blocked="{= ${currentTimelineStage} === 'DealsDiscussionPhase2' &amp;&amp; ${timelineStageStatus} === 'Blocked'}">
+                        <core:Icon src="sap-icon://money-bills" size="1.5rem" class="timeline-icon"/>
+                        <Text text="{i18n>timelineStageDealsDiscussionPhase2}" class="timeline-stage-title"/>
+                    </VBox>
+                </VBox>
+                
+                <!-- Deals Discussion Last -->
+                <VBox class="timeline-stage" width="11%">
+                    <VBox class="timeline-stage-content"
+                          class:stage-active="{= ${currentTimelineStage} === 'DealsDiscussionLast'}"
+                          class:stage-completed="{= ${currentTimelineStage} !== 'DealsDiscussionLast' &amp;&amp; (${currentTimelineStage} === 'MarketingCampaignPhase1' || ${currentTimelineStage} === 'MarketingCampaignPhase2' || ${currentTimelineStage} === 'MarketingCampaignLast')}"
+                          class:stage-delayed="{= ${currentTimelineStage} === 'DealsDiscussionLast' &amp;&amp; ${timelineStageStatus} === 'Delayed'}"
+                          class:stage-blocked="{= ${currentTimelineStage} === 'DealsDiscussionLast' &amp;&amp; ${timelineStageStatus} === 'Blocked'}">
+                        <core:Icon src="sap-icon://money-bills" size="1.5rem" class="timeline-icon"/>
+                        <Text text="{i18n>timelineStageDealsDiscussionLast}" class="timeline-stage-title"/>
+                    </VBox>
+                </VBox>
+                
+                <!-- Marketing Campaign Phase 1 -->
+                <VBox class="timeline-stage" width="11%">
+                    <VBox class="timeline-stage-content"
+                          class:stage-active="{= ${currentTimelineStage} === 'MarketingCampaignPhase1'}"
+                          class:stage-completed="{= ${currentTimelineStage} !== 'MarketingCampaignPhase1' &amp;&amp; (${currentTimelineStage} === 'MarketingCampaignPhase2' || ${currentTimelineStage} === 'MarketingCampaignLast')}"
+                          class:stage-delayed="{= ${currentTimelineStage} === 'MarketingCampaignPhase1' &amp;&amp; ${timelineStageStatus} === 'Delayed'}"
+                          class:stage-blocked="{= ${currentTimelineStage} === 'MarketingCampaignPhase1' &amp;&amp; ${timelineStageStatus} === 'Blocked'}">
+                        <core:Icon src="sap-icon://marketing-campaign" size="1.5rem" class="timeline-icon"/>
+                        <Text text="{i18n>timelineStageMarketingCampaignPhase1}" class="timeline-stage-title"/>
+                    </VBox>
+                </VBox>
+                
+                <!-- Marketing Campaign Phase 2 -->
+                <VBox class="timeline-stage" width="11%">
+                    <VBox class="timeline-stage-content"
+                          class:stage-active="{= ${currentTimelineStage} === 'MarketingCampaignPhase2'}"
+                          class:stage-completed="{= ${currentTimelineStage} !== 'MarketingCampaignPhase2' &amp;&amp; ${currentTimelineStage} === 'MarketingCampaignLast'}"
+                          class:stage-delayed="{= ${currentTimelineStage} === 'MarketingCampaignPhase2' &amp;&amp; ${timelineStageStatus} === 'Delayed'}"
+                          class:stage-blocked="{= ${currentTimelineStage} === 'MarketingCampaignPhase2' &amp;&amp; ${timelineStageStatus} === 'Blocked'}">
+                        <core:Icon src="sap-icon://marketing-campaign" size="1.5rem" class="timeline-icon"/>
+                        <Text text="{i18n>timelineStageMarketingCampaignPhase2}" class="timeline-stage-title"/>
+                    </VBox>
+                </VBox>
+                
+                <!-- Marketing Campaign Last -->
+                <VBox class="timeline-stage" width="11%">
+                    <VBox class="timeline-stage-content"
+                          class:stage-active="{= ${currentTimelineStage} === 'MarketingCampaignLast'}"
+                          class:stage-completed="{= ${currentTimelineStage} === 'MarketingCampaignLast' &amp;&amp; ${timelineStageStatus} === 'Completed'}"
+                          class:stage-delayed="{= ${currentTimelineStage} === 'MarketingCampaignLast' &amp;&amp; ${timelineStageStatus} === 'Delayed'}"
+                          class:stage-blocked="{= ${currentTimelineStage} === 'MarketingCampaignLast' &amp;&amp; ${timelineStageStatus} === 'Blocked'}">
+                        <core:Icon src="sap-icon://marketing-campaign" size="1.5rem" class="timeline-icon"/>
+                        <Text text="{i18n>timelineStageMarketingCampaignLast}" class="timeline-stage-title"/>
+                    </VBox>
+                </VBox>
+                
+            </layout:HorizontalLayout>
+        </ScrollContainer>
+        
+        <!-- Current Stage Details -->
+        <form:SimpleForm editable="false" layout="ResponsiveGridLayout" class="sapUiSmallMarginTop">
+            <form:content>
+                <Label text="{i18n>nextRecommendedAction}"/>
+                <Text text="{nextRecommendedAction}"/>
+                
+                <Label text="{i18n>timelineStageDeadline}"/>
+                <Text text="{path: 'timelineStageDeadline', type: 'sap.ui.model.type.Date', formatOptions: { style: 'medium' }}"/>
+                
+                <Label text="{i18n>timelineStageOwner}"/>
+                <Text text="{timelineStageOwner/fullName}"/>
+                
+                <Label text="{i18n>timelineStageNotes}"/>
+                <Text text="{timelineStageNotes}"/>
+            </form:content>
+        </form:SimpleForm>
+    </VBox>
+</core:FragmentDefinition>

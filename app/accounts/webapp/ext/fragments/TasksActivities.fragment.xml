@@ -1,0 +1,51 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
+    <VBox class="sapUiSmallMargin">
+        <Title text="{i18n>tasksActivities}" level="H4" class="sapUiSmallMarginBottom"/>
+        
+        <!-- Upcoming Tasks -->
+        <Panel headerText="{i18n>upcomingTasks}" expandable="true" expanded="true" class="sapUiSmallMarginTop">
+            <content>
+                <List 
+                    items="{path: 'activities', filters: [{path: 'status', operator: 'NE', value1: 'Completed'}, {path: 'activityType', operator: 'EQ', value1: 'Task'}]}"
+                    mode="None">
+                    <items>
+                        <StandardListItem 
+                            title="{subject}"
+                            description="{path: 'dueDate', formatter: '.formatDate'}"
+                            info="{status}"
+                            infoState="{path: 'status', formatter: '.formatActivityStatusState'}"
+                            type="Navigation"
+                            press=".onActivityPress"/>
+                    </items>
+                </List>
+            </content>
+        </Panel>
+        
+        <!-- Recent Activities -->
+        <Panel headerText="{i18n>recentActivities}" expandable="true" expanded="false" class="sapUiSmallMarginTop">
+            <content>
+                <List 
+                    items="{path: 'activities', sorter: {path: 'startDateTime', descending: true}}"
+                    mode="None">
+                    <items>
+                        <StandardListItem 
+                            title="{subject}"
+                            description="{activityType} - {path: 'startDateTime', formatter: '.formatDateTime'}"
+                            info="{status}"
+                            infoState="{path: 'status', formatter: '.formatActivityStatusState'}"
+                            type="Navigation"
+                            press=".onActivityPress"/>
+                    </items>
+                </List>
+            </content>
+        </Panel>
+        
+        <!-- Pending Documents -->
+        <Panel headerText="{i18n>pendingDocuments}" expandable="true" expanded="false" class="sapUiSmallMarginTop">
+            <content>
+                <Text text="{i18n>noPendingDocuments}" class="sapUiSmallMargin"/>
+            </content>
+        </Panel>
+    </VBox>
+</core:FragmentDefinition>
+

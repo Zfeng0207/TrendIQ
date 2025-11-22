@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Merchant Onboarding</title>
+    <title>Channel Partner Onboarding</title>
     <link rel="stylesheet" type="text/css" href="css/custom.css">
     <style>
         html, body, body > div, #container, #container-uiarea {
@@ -26,7 +26,7 @@
         }
         .beauty-nav-title {
             color: white;
-            font-size: 16px;
+            font-size: 20px;
             font-weight: 600;
             margin-right: 24px;
         }
@@ -106,15 +106,15 @@
 </head>
 <body class="sapUiBody sapUiSizeCompact" id="content">
     <div class="beauty-nav-bar">
-        <div class="beauty-nav-title">Beauty CRM</div>
+        <div class="beauty-nav-title">Smart Commerce CRM</div>
         <div class="beauty-nav-dropdown">
             <button class="beauty-nav-button" id="navMenuButton">
-                <span>Merchant Onboarding</span>
+                <span>Channel Partner Onboarding</span>
                 <span style="font-size: 10px;">▼</span>
             </button>
             <div class="beauty-nav-menu" id="navMenu">
                 <a href="/beautyleads.leads/index.html" class="beauty-nav-item">Leads</a>
-                <a href="/beautyleads.merchants/index.html" class="beauty-nav-item active">Merchant Onboarding</a>
+                <a href="/beautyleads.merchants/index.html" class="beauty-nav-item active">Channel Partner Onboarding</a>
                 <a href="/beautyleads.accounts/index.html" class="beauty-nav-item">Accounts</a>
                 <a href="/beautyleads.opportunities/index.html" class="beauty-nav-item">Opportunities</a>
                 <a href="/beautyleads.campaigns/index.html" class="beauty-nav-item">Marketing Campaigns</a>
@@ -128,6 +128,15 @@
         data-settings='{"id" : "beautyleads.merchants"}'
         data-handle-validation="true"
     ></div>
+    
+    <!-- Floating Action Button - Add Partner -->
+    <button 
+        id="addPartnerFAB" 
+        class="floating-action-button"
+        style="position: fixed !important; bottom: 2rem !important; right: 2rem !important; z-index: 10000 !important; background-color: #0070f2 !important; color: white !important; border: none !important; border-radius: 2rem !important; min-width: 8rem !important; height: 3rem !important; padding: 0 1.5rem !important; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important; font-size: 0.9375rem !important; font-weight: 600 !important; cursor: pointer !important; display: flex !important; align-items: center !important; justify-content: center !important; gap: 0.5rem !important; visibility: visible !important; opacity: 1 !important; transition: all 0.2s ease !important;">
+        <span style="font-size: 1rem;">+</span>
+        <span>Add Partner</span>
+    </button>
     <script>
         (function() {
             var menuButton = document.getElementById('navMenuButton');
@@ -143,6 +152,309 @@
                     }
                 });
             }
+            
+            // Initialize floating button (button is now in HTML, just need to add handlers)
+            function initFloatingButton() {
+                var button = document.getElementById('addPartnerFAB');
+                if (!button) {
+                    // Button should be in HTML, but if not found, try again
+                    setTimeout(initFloatingButton, 200);
+                    return;
+                }
+                
+                // Ensure button is visible
+                button.style.display = 'flex';
+                button.style.visibility = 'visible';
+                button.style.opacity = '1';
+                
+                // Add hover effect if not already added
+                if (!button.hasAttribute('data-initialized')) {
+                    button.addEventListener('mouseenter', function() {
+                        this.style.boxShadow = '0 6px 16px rgba(0, 0, 0, 0.2) !important';
+                        this.style.transform = 'translateY(-2px)';
+                    });
+                    button.addEventListener('mouseleave', function() {
+                        this.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15) !important';
+                        this.style.transform = 'translateY(0)';
+                    });
+                    button.setAttribute('data-initialized', 'true');
+                }
+                
+                // Prevent button from being removed
+                button.setAttribute('data-persist', 'true');
+                
+                // Add click handler - trigger the UI5 controller method
+                if (!button.hasAttribute('data-click-handler')) {
+                    button.addEventListener('click', function() {
+                    // First try the global controller reference
+                    if (window.__FAB_CONTROLLER__ && window.__FAB_CONTROLLER__.onOpenPartnerInfoForm) {
+                        window.__FAB_CONTROLLER__.onOpenPartnerInfoForm();
+                        return;
+                    }
+                    
+                    // Try to find via UI5 component
+                    try {
+                        var core = sap.ui.getCore();
+                        if (core) {
+                            // Try to get the component
+                            var component = core.getComponent('beautyleads.merchants');
+                            if (component) {
+                                // Try to get the root control
+                                var rootControl = component.getRootControl();
+                                if (rootControl) {
+                                    // Try to find the ListReport component
+                                    var listReport = rootControl.byId && rootControl.byId('MerchantDiscoveriesList');
+                                    if (listReport) {
+                                        // Get the controller extension
+                                        var controller = listReport.getController && listReport.getController();
+                                        if (controller && controller.onOpenPartnerInfoForm) {
+                                            controller.onOpenPartnerInfoForm();
+                                            return;
+                                        }
+                                    }
+                                    
+                                    // Alternative: search for the extension controller in the component
+                                    var allControls = core.all();
+                                    for (var i = 0; i < allControls.length; i++) {
+                                        var control = allControls[i];
+                                        if (control && control.getMetadata && 
+                                            control.getMetadata().getName && 
+                                            control.getMetadata().getName().indexOf('ListReportExt') !== -1) {
+                                            if (control.onOpenPartnerInfoForm) {
+                                                control.onOpenPartnerInfoForm();
+                                                return;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    } catch (e) {
+                        console.error('Error finding controller:', e);
+                    }
+                    
+                    // If still not found, wait a bit and try the global reference again
+                    setTimeout(function() {
+                        if (window.__FAB_CONTROLLER__ && window.__FAB_CONTROLLER__.onOpenPartnerInfoForm) {
+                            window.__FAB_CONTROLLER__.onOpenPartnerInfoForm();
+                        } else {
+                            // Last resort: manually create and open the dialog using UI5
+                            console.warn('Controller not found, attempting manual dialog creation');
+                            createDialogManually();
+                        }
+                    }, 500);
+                    });
+                    button.setAttribute('data-click-handler', 'true');
+                }
+                
+                // Manual dialog creation function
+                function createDialogManually() {
+                    if (typeof sap === 'undefined' || !sap.m || !sap.m.Dialog) {
+                        console.error('UI5 not available for manual dialog creation');
+                        return;
+                    }
+                    
+                    // Check if dialog already exists
+                    var existingDialog = sap.ui.getCore().byId('manualPartnerInfoDialog');
+                    if (existingDialog) {
+                        existingDialog.open();
+                        return;
+                    }
+                    
+                    // Create dialog manually
+                    var oDialog = new sap.m.Dialog({
+                        id: 'manualPartnerInfoDialog',
+                        title: 'Partner Company Information',
+                        contentWidth: '600px',
+                        contentHeight: 'auto',
+                        beginButton: new sap.m.Button({
+                            text: 'Submit',
+                            type: 'Emphasized',
+                            press: function() {
+                                // Get form values
+                                var core = sap.ui.getCore();
+                                var companyNameField = core.byId('manualCompanyName');
+                                var companyName = (companyNameField && companyNameField.getValue) ? companyNameField.getValue() : '';
+                                var companyRegField = core.byId('manualCompanyReg');
+                                var companyReg = (companyRegField && companyRegField.getValue) ? companyRegField.getValue() : '';
+                                var businessAddressField = core.byId('manualBusinessAddress');
+                                var businessAddress = (businessAddressField && businessAddressField.getValue) ? businessAddressField.getValue() : '';
+                                var contactPersonField = core.byId('manualContactPerson');
+                                var contactPerson = (contactPersonField && contactPersonField.getValue) ? contactPersonField.getValue() : '';
+                                var contactEmailField = core.byId('manualContactEmail');
+                                var contactEmail = (contactEmailField && contactEmailField.getValue) ? contactEmailField.getValue() : '';
+                                var contactPhoneField = core.byId('manualContactPhone');
+                                var contactPhone = (contactPhoneField && contactPhoneField.getValue) ? contactPhoneField.getValue() : '';
+                                
+                                // Validate required fields
+                                if (!companyName || !companyReg || !businessAddress || !contactPerson || !contactEmail || !contactPhone) {
+                                    sap.m.MessageToast.show('Please fill in all required fields');
+                                    return;
+                                }
+                                
+                                // Validate email
+                                var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                                if (!emailRegex.test(contactEmail)) {
+                                    sap.m.MessageToast.show('Please enter a valid email address');
+                                    return;
+                                }
+                                
+                                // Close dialog
+                                oDialog.close();
+                                
+                                // Show success message
+                                sap.m.MessageToast.show('File submitted successfully', {
+                                    duration: 3000,
+                                    width: '20rem'
+                                });
+                                
+                                // Reset form
+                                resetManualForm();
+                            }
+                        }),
+                        endButton: new sap.m.Button({
+                            text: 'Cancel',
+                            press: function() {
+                                oDialog.close();
+                                resetManualForm();
+                            }
+                        })
+                    });
+                    
+                    // Create form content
+                    var oForm = new sap.ui.layout.form.SimpleForm({
+                        editable: true,
+                        layout: 'ResponsiveGridLayout',
+                        labelSpanXL: 4,
+                        labelSpanL: 4,
+                        labelSpanM: 12,
+                        labelSpanS: 12,
+                        emptySpanXL: 0,
+                        emptySpanL: 0,
+                        emptySpanM: 0,
+                        emptySpanS: 0,
+                        columnsXL: 2,
+                        columnsL: 2,
+                        columnsM: 1,
+                        content: [
+                            new sap.ui.core.Title({ text: 'Company Information' }),
+                            new sap.m.Label({ text: 'Company Name *' }),
+                            new sap.m.Input({ id: 'manualCompanyName', required: true }),
+                            new sap.m.Label({ text: 'Company Registration Number *' }),
+                            new sap.m.Input({ id: 'manualCompanyReg', required: true }),
+                            new sap.m.Label({ text: 'Business Address *' }),
+                            new sap.m.TextArea({ id: 'manualBusinessAddress', rows: 3, required: true }),
+                            new sap.m.Label({ text: 'Contact Person *' }),
+                            new sap.m.Input({ id: 'manualContactPerson', required: true }),
+                            new sap.m.Label({ text: 'Contact Email *' }),
+                            new sap.m.Input({ id: 'manualContactEmail', type: 'Email', required: true }),
+                            new sap.m.Label({ text: 'Contact Phone *' }),
+                            new sap.m.Input({ id: 'manualContactPhone', type: 'Tel', required: true }),
+                            new sap.m.Label({ text: 'Business Type' }),
+                            new sap.m.Select({
+                                id: 'manualBusinessType',
+                                items: [
+                                    new sap.ui.core.Item({ key: 'Salon', text: 'Salon' }),
+                                    new sap.ui.core.Item({ key: 'Spa', text: 'Spa' }),
+                                    new sap.ui.core.Item({ key: 'Retailer', text: 'Retailer' }),
+                                    new sap.ui.core.Item({ key: 'E-commerce', text: 'E-commerce' }),
+                                    new sap.ui.core.Item({ key: 'Kiosk', text: 'Kiosk' }),
+                                    new sap.ui.core.Item({ key: 'Distributor', text: 'Distributor' })
+                                ]
+                            }),
+                            new sap.m.Label({ text: 'Number of Outlets' }),
+                            new sap.m.Input({ id: 'manualOutlets', type: 'Number' }),
+                            new sap.m.Label({ text: 'Annual Revenue (RM)' }),
+                            new sap.m.Input({ id: 'manualRevenue', type: 'Number' }),
+                            new sap.m.Label({ text: 'Tax ID' }),
+                            new sap.m.Input({ id: 'manualTaxId' }),
+                            new sap.m.Label({ text: 'Bank Name' }),
+                            new sap.m.Input({ id: 'manualBankName' }),
+                            new sap.m.Label({ text: 'Bank Account Number' }),
+                            new sap.m.Input({ id: 'manualBankAccount' }),
+                            new sap.m.Label({ text: 'Additional Notes' }),
+                            new sap.m.TextArea({ id: 'manualNotes', rows: 4 })
+                        ]
+                    });
+                    
+                    oDialog.addContent(oForm);
+                    
+                    // Add dialog to UI area
+                    var oUIArea = sap.ui.getCore().getRoot().getUIArea();
+                    if (oUIArea) {
+                        oUIArea.addContent(oDialog);
+                    } else {
+                        // Fallback: add to body
+                        oDialog.placeAt(document.body);
+                    }
+                    
+                    // Open dialog
+                    oDialog.open();
+                    
+                    function resetManualForm() {
+                        var fields = ['manualCompanyName', 'manualCompanyReg', 'manualBusinessAddress', 
+                                     'manualContactPerson', 'manualContactEmail', 'manualContactPhone',
+                                     'manualOutlets', 'manualRevenue', 'manualTaxId', 'manualBankName', 
+                                     'manualBankAccount', 'manualNotes'];
+                        fields.forEach(function(fieldId) {
+                            var field = sap.ui.getCore().byId(fieldId);
+                            if (field) {
+                                if (field.setValue) field.setValue('');
+                                if (field.setSelectedKey) field.setSelectedKey('');
+                            }
+                        });
+                    }
+                }
+                
+                // Monitor if button gets removed and ensure it stays visible
+                var observer = new MutationObserver(function(mutations) {
+                    var btn = document.getElementById('addPartnerFAB');
+                    if (btn) {
+                        // Ensure it's always visible
+                        btn.style.display = 'flex';
+                        btn.style.visibility = 'visible';
+                        btn.style.opacity = '1';
+                        btn.style.position = 'fixed';
+                        btn.style.zIndex = '10000';
+                    }
+                });
+                
+                if (document.body) {
+                    observer.observe(document.body, {
+                        childList: true,
+                        subtree: true,
+                        attributes: true,
+                        attributeFilter: ['style', 'class']
+                    });
+                }
+                
+                // Also check periodically to ensure button is visible
+                setInterval(function() {
+                    var btn = document.getElementById('addPartnerFAB');
+                    if (btn) {
+                        btn.style.display = 'flex';
+                        btn.style.visibility = 'visible';
+                        btn.style.opacity = '1';
+                        btn.style.position = 'fixed';
+                        btn.style.zIndex = '10000';
+                    }
+                }, 1000);
+            }
+            
+            // Initialize button handlers
+            if (document.readyState === 'complete') {
+                initFloatingButton();
+            } else {
+                document.addEventListener('DOMContentLoaded', initFloatingButton);
+                window.addEventListener('load', function() {
+                    setTimeout(initFloatingButton, 100);
+                });
+            }
+            
+            // Also try after a delay to ensure it's initialized
+            setTimeout(initFloatingButton, 500);
+            setTimeout(initFloatingButton, 1000);
+            setTimeout(initFloatingButton, 2000);
         })();
     </script>
 </body>

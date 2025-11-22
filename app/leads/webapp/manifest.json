@@ -114,7 +114,7 @@
         "LeadsList": {
           "type": "Component",
           "id": "LeadsList",
-          "name": "sap.fe.templates.AnalyticalListPage",
+          "name": "sap.fe.templates.ListReport",
           "options": {
             "settings": {
               "contextPath": "/Leads",
@@ -138,15 +138,7 @@
                   }
                 }
               },
-              "initialLoad": true,
-              "views": {
-                "paths": [
-                  {
-                    "key": "Main",
-                    "annotationPath": "com.sap.vocabularies.UI.v1.SelectionPresentationVariant#Main"
-                  }
-                ]
-              }
+              "initialLoad": true
             }
           }
         },

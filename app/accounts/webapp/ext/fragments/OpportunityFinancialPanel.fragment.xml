@@ -1,0 +1,142 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:layout="sap.ui.layout" xmlns:table="sap.ui.table">
+    <VBox class="sapUiSmallMargin">
+        <Title text="{i18n>opportunityFinancialDeal}" level="H3" class="sapUiSmallMarginBottom"/>
+        
+        <!-- Financial Metrics Cards -->
+        <HBox class="sapUiSmallMarginTop sapUiSmallMarginBottom" wrap="Wrap">
+            <GenericTile 
+                header="{i18n>currentPipelineValue}"
+                subHeader="{path: 'opportunities', formatter: '.formatTotalPipeline'}"
+                class="sapUiTinyMarginEnd sapUiTinyMarginBottom"
+                press=".onNavigateToOpportunities">
+                <tileContent>
+                    <TileContent>
+                        <content>
+                            <NumericContent 
+                                value="{path: 'opportunities', formatter: '.formatTotalPipeline'}"
+                                indicator="Up"
+                                valueColor="Good"/>
+                        </content>
+                    </TileContent>
+                </tileContent>
+            </GenericTile>
+            
+            <GenericTile 
+                header="{i18n>estimatedMonthlyGMV}"
+                subHeader="{path: 'estimatedMonthlyGMV', formatter: '.formatCurrency'}"
+                class="sapUiTinyMarginEnd sapUiTinyMarginBottom">
+                <tileContent>
+                    <TileContent>
+                        <content>
+                            <NumericContent 
+                                value="{path: 'estimatedMonthlyGMV', formatter: '.formatCurrency'}"
+                                indicator="Up"
+                                valueColor="Good"/>
+                        </content>
+                    </TileContent>
+                </tileContent>
+            </GenericTile>
+            
+            <GenericTile 
+                header="{i18n>forecastedRevenue}"
+                subHeader="{path: 'forecastedRevenueContribution', formatter: '.formatCurrency'}"
+                class="sapUiTinyMarginEnd sapUiTinyMarginBottom">
+                <tileContent>
+                    <TileContent>
+                        <content>
+                            <NumericContent 
+                                value="{path: 'forecastedRevenueContribution', formatter: '.formatCurrency'}"
+                                indicator="Up"
+                                valueColor="Neutral"/>
+                        </content>
+                    </TileContent>
+                </tileContent>
+            </GenericTile>
+            
+            <GenericTile 
+                header="{i18n>contractStatus}"
+                subHeader="{contractStatus}"
+                class="sapUiTinyMarginEnd sapUiTinyMarginBottom">
+                <tileContent>
+                    <TileContent>
+                        <content>
+                            <NumericContent 
+                                value="{path: 'contractStatus', formatter: '.formatContractStatus'}"
+                                indicator="None"
+                                valueColor="Neutral"/>
+                        </content>
+                    </TileContent>
+                </tileContent>
+            </GenericTile>
+        </HBox>
+        
+        <!-- Opportunities Table -->
+        <Panel headerText="{i18n>currentDeals}" expandable="true" expanded="true" class="sapUiSmallMarginTop">
+            <content>
+                <Table 
+                    items="{path: 'opportunities', parameters: {expand: 'account'}}"
+                    mode="None"
+                    class="sapUiSmallMargin">
+                    <columns>
+                        <Column>
+                            <Text text="{i18n>dealName}"/>
+                        </Column>
+                        <Column>
+                            <Text text="{i18n>stage}"/>
+                        </Column>
+                        <Column hAlign="End">
+                            <Text text="{i18n>value}"/>
+                        </Column>
+                        <Column hAlign="End">
+                            <Text text="{i18n>probability}"/>
+                        </Column>
+                        <Column hAlign="End">
+                            <Text text="{i18n>dealScore}"/>
+                        </Column>
+                    </columns>
+                    <items>
+                        <ColumnListItem type="Navigation" press=".onNavigateToOpportunity">
+                            <cells>
+                                <Text text="{name}"/>
+                                <ObjectStatus 
+                                    text="{stage}"
+                                    state="{path: 'stage', formatter: '.formatStageState'}"/>
+                                <Text text="{path: 'expectedRevenue', formatter: '.formatCurrency'}"/>
+                                <ProgressIndicator 
+                                    percentValue="{probability}"
+                                    displayValue="{probability}%"
+                                    showValue="true"/>
+                                <Text text="{aiWinScore}"/>
+                            </cells>
+                        </ColumnListItem>
+                    </items>
+                </Table>
+            </content>
+        </Panel>
+        
+        <!-- AI Recommendations for Deals -->
+        <Panel headerText="{i18n>aiRecommendations}" expandable="true" expanded="true" class="sapUiSmallMarginTop">
+            <content>
+                <List 
+                    items="{path: 'recommendations', filters: [{path: 'recommendationType', operator: 'EQ', value1: 'Deal'}]}"
+                    mode="None"
+                    class="sapUiSmallMargin">
+                    <items>
+                        <StandardListItem 
+                            title="{recommendationText}"
+                            description="{priority}"
+                            info="{status}"
+                            infoState="{path: 'priority', formatter: '.formatPriorityState'}"
+                            type="Active"
+                            press=".onRecommendationPress">
+                            <customData>
+                                <core:CustomData key="recommendationID" value="{ID}"/>
+                            </customData>
+                        </StandardListItem>
+                    </items>
+                </List>
+            </content>
+        </Panel>
+    </VBox>
+</core:FragmentDefinition>
+

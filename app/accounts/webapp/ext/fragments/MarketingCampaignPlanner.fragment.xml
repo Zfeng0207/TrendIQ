@@ -1,0 +1,122 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:layout="sap.ui.layout">
+    <VBox class="sapUiSmallMargin">
+        <Title text="{i18n>jointMarketingCampaignPlanner}" level="H3" class="sapUiSmallMarginBottom"/>
+        
+        <!-- Campaigns Table -->
+        <Panel headerText="{i18n>activeCampaigns}" expandable="true" expanded="true" class="sapUiSmallMarginTop">
+            <content>
+                <Table 
+                    items="{path: 'campaigns', parameters: {expand: 'owner'}}"
+                    mode="None"
+                    class="sapUiSmallMargin">
+                    <columns>
+                        <Column>
+                            <Text text="{i18n>campaignName}"/>
+                        </Column>
+                        <Column>
+                            <Text text="{i18n>campaignType}"/>
+                        </Column>
+                        <Column>
+                            <Text text="{i18n>status}"/>
+                        </Column>
+                        <Column hAlign="End">
+                            <Text text="{i18n>budget}"/>
+                        </Column>
+                        <Column>
+                            <Text text="{i18n>performance}"/>
+                        </Column>
+                    </columns>
+                    <items>
+                        <ColumnListItem type="Navigation" press=".onNavigateToCampaign">
+                            <cells>
+                                <Text text="{campaignName}"/>
+                                <Text text="{campaignType}"/>
+                                <ObjectStatus 
+                                    text="{status}"
+                                    state="{path: 'status', formatter: '.formatCampaignStatusState'}"/>
+                                <Text text="{path: 'budget', formatter: '.formatCurrency'}"/>
+                                <Text text="{path: 'performanceMetrics', formatter: '.formatCampaignPerformance'}"/>
+                            </cells>
+                        </ColumnListItem>
+                    </items>
+                </Table>
+            </content>
+        </Panel>
+        
+        <!-- Proposed Campaigns -->
+        <Panel headerText="{i18n>proposedCampaigns}" expandable="true" expanded="false" class="sapUiSmallMarginTop">
+            <content>
+                <List 
+                    items="{path: 'recommendations', filters: [{path: 'recommendationType', operator: 'EQ', value1: 'Campaign'}]}"
+                    mode="None"
+                    class="sapUiSmallMargin">
+                    <items>
+                        <StandardListItem 
+                            title="{recommendationText}"
+                            description="{priority}"
+                            info="{status}"
+                            infoState="{path: 'priority', formatter: '.formatPriorityState'}"
+                            type="Active"
+                            press=".onRecommendationPress">
+                            <customData>
+                                <core:CustomData key="recommendationID" value="{ID}"/>
+                            </customData>
+                        </StandardListItem>
+                    </items>
+                </List>
+            </content>
+        </Panel>
+        
+        <!-- AI Insights Cards -->
+        <HBox class="sapUiSmallMarginTop" wrap="Wrap">
+            <Card class="sapUiTinyMarginEnd sapUiTinyMarginBottom" width="300px">
+                <header>
+                    <Title text="{i18n>trendingKeywords}" level="H4"/>
+                </header>
+                <content>
+                    <VBox class="sapUiSmallMargin">
+                        <Text text="{i18n>trendingKeywordsPlaceholder}" class="sapUiSmallMarginTop"/>
+                        <!-- This would be populated from scraping pipeline -->
+                    </VBox>
+                </content>
+            </Card>
+            
+            <Card class="sapUiTinyMarginEnd sapUiTinyMarginBottom" width="300px">
+                <header>
+                    <Title text="{i18n>campaignROI}" level="H4"/>
+                </header>
+                <content>
+                    <VBox class="sapUiSmallMargin">
+                        <Text text="{i18n>campaignROIPlaceholder}" class="sapUiSmallMarginTop"/>
+                        <!-- This would show ROI predictions -->
+                    </VBox>
+                </content>
+            </Card>
+        </HBox>
+        
+        <!-- Campaign Recommendations -->
+        <Panel headerText="{i18n>aiCampaignInsights}" expandable="true" expanded="true" class="sapUiSmallMarginTop">
+            <content>
+                <List 
+                    items="{path: 'recommendations', filters: [{path: 'recommendationType', operator: 'EQ', value1: 'Campaign'}]}"
+                    mode="None"
+                    class="sapUiSmallMargin">
+                    <items>
+                        <StandardListItem 
+                            title="{recommendationText}"
+                            description="{priority}"
+                            info="{status}"
+                            infoState="{path: 'priority', formatter: '.formatPriorityState'}"
+                            type="Active"
+                            press=".onRecommendationPress">
+                            <customData>
+                                <core:CustomData key="recommendationID" value="{ID}"/>
+                            </customData>
+                        </StandardListItem>
+                    </items>
+                </List>
+            </content>
+        </Panel>
+    </VBox>
+</core:FragmentDefinition>
+

@@ -8,7 +8,7 @@
         apps: [
             {
                 id: 'merchants',
-                title: 'Merchant Onboarding',
+                title: 'Channel Partner Onboarding',
                 url: '/beautyleads.merchants/index.html',
                 icon: 'business-objects-experience'
             },
@@ -56,10 +56,10 @@
         var currentAppTitle = navConfig.apps.find(function(app) {
             return app.id === currentApp;
         });
-        currentAppTitle = currentAppTitle ? currentAppTitle.title : 'Beauty CRM';
+        currentAppTitle = currentAppTitle ? currentAppTitle.title : 'Smart Commerce CRM';
         
         var navHTML = '<div class="beauty-nav-bar">' +
-            '<div class="beauty-nav-title">Beauty CRM</div>' +
+            '<div class="beauty-nav-title">Smart Commerce CRM</div>' +
             '<div class="beauty-nav-dropdown">' +
             '<button class="beauty-nav-button" id="navMenuButton">' +
             '<span>' + currentAppTitle + '</span>' +

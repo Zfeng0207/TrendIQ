@@ -1,0 +1,42 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:layout="sap.ui.layout">
+    <VBox class="sapUiSmallMargin">
+        <Title text="{i18n>partnerHealthScore}" level="H4" class="sapUiSmallMarginBottom"/>
+        
+        <!-- Health Score Visualization -->
+        <VBox alignItems="Center" class="sapUiSmallMarginTop">
+            <ProgressIndicator 
+                percentValue="{healthScore}"
+                displayValue="{healthScore}%"
+                state="{path: 'healthScore', formatter: '.formatHealthState'}"
+                showValue="true"
+                width="100%"
+                class="sapUiSmallMarginBottom"/>
+            
+            <ObjectStatus 
+                text="{path: 'healthScore', formatter: '.formatHealthStatus'}"
+                state="{path: 'healthScore', formatter: '.formatHealthState'}"
+                class="sapUiSmallMarginTop"/>
+        </VBox>
+        
+        <!-- Health Components -->
+        <List class="sapUiSmallMarginTop">
+            <StandardListItem 
+                title="{i18n>sentimentTrend}"
+                info="{recentSentimentTrend}"
+                infoState="{path: 'recentSentimentTrend', formatter: '.formatSentimentState'}"/>
+            <StandardListItem 
+                title="{i18n>salesActivity}"
+                info="{path: 'activities', formatter: '.formatActivityCount'}"
+                infoState="None"/>
+            <StandardListItem 
+                title="{i18n>pipelineVelocity}"
+                info="{path: 'opportunities', formatter: '.formatPipelineVelocity'}"
+                infoState="None"/>
+            <StandardListItem 
+                title="{i18n>overdueTasks}"
+                info="{path: 'activities', formatter: '.formatOverdueTasks'}"
+                infoState="Error"/>
+        </List>
+    </VBox>
+</core:FragmentDefinition>
+

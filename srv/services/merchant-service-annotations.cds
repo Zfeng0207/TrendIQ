@@ -1,11 +1,11 @@
 /**
- * UI Annotations for Merchant Discovery Service
+ * UI Annotations for Channel Partner Discovery Service
  * Defines List Report and Object Page layouts
  */
 using MerchantService from './merchant-service';
 
 // ============================================================================
-// Merchant Discovery List Report Annotations
+// Channel Partner Discovery List Report Annotations
 // ============================================================================
 
 annotate MerchantService.MerchantDiscoveries with @(
@@ -16,7 +16,10 @@ annotate MerchantService.MerchantDiscoveries with @(
             discoverySource,
             businessType,
             merchantScore,
-            autoAssignedTo_ID
+            autoAssignedTo_ID,
+            phase,
+            priorityScore,
+            assignedTo
         ],
 
         // List View Columns
@@ -24,68 +27,79 @@ annotate MerchantService.MerchantDiscoveries with @(
             {
                 $Type: 'UI.DataField',
                 Value: merchantName,
-                Label: 'Merchant Name',
-                ![@UI.Importance]: #High
-            },
-            {
-                $Type: 'UI.DataField',
-                Value: about,
-                Label: 'About',
-                ![@UI.Importance]: #Low
-            },
-            {
-                $Type: 'UI.DataFieldForAction',
-                Action: 'MerchantService.generateAbout',
-                Label: 'Generate AI Summary',
-                Inline: true,
+                Label: 'Channel Partner Name',
                 ![@UI.Importance]: #High
             },
             {
                 $Type: 'UI.DataField',
                 Value: businessType,
-                Label: 'Business Type'
+                Label: 'Business Type',
+                ![@UI.Importance]: #Medium
+            },
+            {
+                $Type: 'UI.DataFieldForAnnotation',
+                Target: '@UI.DataPoint#MerchantScore',
+                Label: 'Channel Partner Score',
+                ![@UI.Importance]: #High
             },
             {
                 $Type: 'UI.DataField',
-                Value: status,
-                Label: 'Status',
-                Criticality: statusCriticality
+                Value: phase,
+                Label: 'Phase',
+                Criticality: phaseCriticality,
+                ![@UI.Importance]: #High
             },
             {
                 $Type: 'UI.DataField',
-                Value: autoAssignedTo.fullName,
-                Label: 'Assigned To'
+                Value: priorityScore,
+                Label: 'Priority Score',
+                Criticality: priorityScoreCriticality,
+                ![@UI.Importance]: #High
+            },
+            {
+                $Type: 'UI.DataField',
+                Value: lastFollowUp,
+                Label: 'Last Follow Up',
+                ![@UI.Importance]: #Medium
+            },
+            {
+                $Type: 'UI.DataField',
+                Value: pendingItems,
+                Label: 'Pending Items',
+                ![@UI.Importance]: #Medium
+            },
+            {
+                $Type: 'UI.DataField',
+                Value: discoverySource,
+                Label: 'Discovery Source',
+                ![@UI.Importance]: #Low
             },
             {
                 $Type: 'UI.DataField',
                 Value: discoveryDate,
-                Label: 'Discovery Date'
+                Label: 'Discovery Date',
+                ![@UI.Importance]: #Medium
             },
             {
-                $Type: 'UI.DataFieldForAction',
-                Action: 'MerchantService.qualifyMerchant',
-                Label: 'Qualify'
-            },
-            {
-                $Type: 'UI.DataFieldForAction',
-                Action: 'MerchantService.convertToLead',
-                Label: 'Convert to Lead',
-                Criticality: 3
+                $Type: 'UI.DataField',
+                Value: assignedTo,
+                Label: 'Assigned To',
+                ![@UI.Importance]: #Medium
             }
         ],
 
         // Data Points for Micro Charts
         DataPoint#MerchantScore: {
             Value: merchantScore,
-            Title: 'Merchant Score',
+            Title: 'Channel Partner Score',
             TargetValue: 100,
             Visualization: #Progress
         },
 
         // Header Info (Object Page Header)
         HeaderInfo: {
-            TypeName: 'Merchant Discovery',
-            TypeNamePlural: 'Merchant Discoveries',
+            TypeName: 'Channel Partner Discovery',
+            TypeNamePlural: 'Channel Partner Discoveries',
             Title: {Value: merchantName},
             Description: {Value: businessType},
             ImageUrl: 'sap-icon://business-objects-experience',
@@ -97,7 +111,7 @@ annotate MerchantService.MerchantDiscoveries with @(
             {
                 $Type: 'UI.ReferenceFacet',
                 Target: '@UI.DataPoint#MerchantScore',
-                Label: 'Merchant Score'
+                Label: 'Channel Partner Score'
             },
             {
                 $Type: 'UI.ReferenceFacet',
@@ -155,12 +169,7 @@ annotate MerchantService.MerchantDiscoveries with @(
         // Field Groups (Form Sections)
         FieldGroup#AIInsights: {
             Data: [
-                {Value: about},
-                {
-                    $Type: 'UI.DataFieldForAction',
-                    Action: 'MerchantService.generateAbout',
-                    Label: 'Regenerate AI Summary'
-                }
+                {Value: about}
             ]
         },
 
@@ -168,7 +177,11 @@ annotate MerchantService.MerchantDiscoveries with @(
             Data: [
                 {Value: merchantName},
                 {Value: businessType},
-                {Value: status},
+                {
+                    $Type: 'UI.DataField',
+                    Value: status,
+                    Label: 'Phases'
+                },
                 {Value: discoveryDate}
             ]
         },
@@ -230,18 +243,19 @@ annotate MerchantService.MerchantDiscoveries with @(
         Identification: [
             {
                 $Type: 'UI.DataFieldForAction',
+                Action: 'MerchantService.initiateAIMeeting',
+                Label: 'AI Meeting Initiator',
+                InvocationGrouping: #Isolated
+            },
+            {
+                $Type: 'UI.DataFieldForAction',
                 Action: 'MerchantService.qualifyMerchant',
-                Label: 'Qualify Merchant'
+                Label: 'Qualify Channel Partner'
             },
             {
                 $Type: 'UI.DataFieldForAction',
                 Action: 'MerchantService.assignToSalesRep',
                 Label: 'Assign to Sales Rep'
-            },
-            {
-                $Type: 'UI.DataFieldForAction',
-                Action: 'MerchantService.convertToLead',
-                Label: 'Convert to Lead'
             }
         ]
     },
@@ -256,6 +270,13 @@ annotate MerchantService.MerchantDiscoveries with @(
 
 annotate MerchantService.MerchantDiscoveries with {
     statusCriticality @UI.Hidden: true;
+    phase @title: 'Phase';
+    phaseCriticality @UI.Hidden: true;
+    priorityScore @title: 'Priority Score';
+    priorityScoreCriticality @UI.Hidden: true;
+    lastFollowUp @title: 'Last Follow Up';
+    pendingItems @title: 'Pending Items';
+    assignedTo @title: 'Assigned To';
 }
 
 // ============================================================================
@@ -263,7 +284,7 @@ annotate MerchantService.MerchantDiscoveries with {
 // ============================================================================
 
 annotate MerchantService.MerchantDiscoveries with {
-    merchantName      @title: 'Merchant Name'
+    merchantName      @title: 'Channel Partner Name'
                       @Common.FieldControl: #Mandatory
                       @UI.TextStyle: #Bold;
 
@@ -284,8 +305,13 @@ annotate MerchantService.MerchantDiscoveries with {
                       @Common: {
                           ValueListWithFixedValues: true
                       };
+    
+    phase             @title: 'Phase'
+                      @Common: {
+                          ValueListWithFixedValues: true
+                      };
 
-    merchantScore     @title: 'Merchant Score'
+    merchantScore     @title: 'Channel Partner Score'
                       @Measures.Unit: '%';
 
     location          @title: 'Location';

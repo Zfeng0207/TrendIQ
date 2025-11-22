@@ -1,0 +1,32 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
+    <VBox class="sapUiSmallMargin">
+        <Title text="{i18n>riskAlerts}" level="H4" class="sapUiSmallMarginBottom"/>
+        
+        <List 
+            items="{path: 'riskAlerts', filters: [{path: 'isResolved', operator: 'EQ', value1: false}]}"
+            mode="None"
+            class="sapUiSmallMarginTop">
+            <items>
+                <StandardListItem 
+                    title="{alertMessage}"
+                    description="{alertType}"
+                    info="{severity}"
+                    infoState="{path: 'severity', formatter: '.formatSeverityState'}"
+                    type="Active"
+                    press=".onRiskAlertPress">
+                    <customData>
+                        <core:CustomData key="alertID" value="{ID}"/>
+                    </customData>
+                </StandardListItem>
+            </items>
+        </List>
+        
+        <Button 
+            text="{i18n>viewAllAlerts}"
+            type="Transparent"
+            press=".onViewAllAlerts"
+            class="sapUiSmallMarginTop"
+            visible="{= ${riskAlerts}.length > 3}"/>
+    </VBox>
+</core:FragmentDefinition>
+

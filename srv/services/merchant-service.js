@@ -10,14 +10,40 @@ const path = require('path');
 module.exports = async function() {
     const { MerchantDiscoveries, Leads, Users } = this.entities;
 
-    // Handler for virtual field: statusCriticality and about placeholder
+    // Handler for virtual fields: statusCriticality, phase, priorityScore, lastFollowUp, pendingItems, assignedTo
     this.on('READ', 'MerchantDiscoveries', async (req, next) => {
         const results = await next();
         
         // Helper to process a single merchant record
         const processMerchant = (merchant) => {
             if (merchant) {
+                // Status criticality (for backward compatibility)
                 merchant.statusCriticality = getStatusCriticality(merchant.status);
+                
+                // Phase (maps status to numbered phases, varied based on merchant data)
+                merchant.phase = mapStatusToPhase(merchant.status, merchant);
+                merchant.phaseCriticality = getPhaseCriticality(merchant.phase);
+                
+                // Priority Score (1-5 scale based on merchantScore)
+                const priorityScore100 = merchant.merchantScore || 0;
+                merchant.priorityScore = convertToPriorityScore1to5(priorityScore100);
+                merchant.priorityScoreCriticality = getPriorityScoreCriticality(merchant.priorityScore);
+                
+                // Last Follow Up
+                merchant.lastFollowUp = generateLastFollowUp(merchant);
+                
+                // Pending Items
+                merchant.pendingItems = generatePendingItemsWithIcons(merchant);
+                
+                // Assigned To
+                if (merchant.autoAssignedTo && typeof merchant.autoAssignedTo === 'object' && merchant.autoAssignedTo.fullName) {
+                    merchant.assignedTo = merchant.autoAssignedTo.fullName;
+                } else if (merchant.autoAssignedTo_ID) {
+                    merchant.assignedTo = generateAssignedToDemo(merchant);
+                } else {
+                    merchant.assignedTo = generateAssignedToDemo(merchant);
+                }
+                
                 // Set placeholder for empty about field (handle null, undefined, empty string)
                 if (!merchant.about || (typeof merchant.about === 'string' && merchant.about.trim() === '')) {
                     merchant.about = '-';
@@ -33,16 +59,165 @@ module.exports = async function() {
         return results;
     });
 
-    // Helper function: Get criticality value for status
+    // Helper function: Get criticality value for status (legacy)
     function getStatusCriticality(status) {
         const criticalityMap = {
-            'Onboarded': 3,  // Positive (Green)
-            'Qualified': 3,  // Positive (Green)
-            'Contacted': 2,  // Critical (Yellow)
-            'Discovered': 2, // Critical (Yellow)
-            'Rejected': 1    // Negative (Red)
+            'Completed': 3,    // Positive (Green)
+            'In Review': 3,    // Positive (Green)
+            'Onboarding': 2,   // Warning (Yellow)
+            'Qualified': 3,    // Positive (Green)
+            'Contacted': 2,   // Warning (Yellow)
+            'Discovered': 2   // Warning (Yellow)
         };
         return criticalityMap[status] || 2;
+    }
+    
+    // Helper function: Map status to numbered phase (varied based on merchant data)
+    function mapStatusToPhase(status, merchant) {
+        // If status explicitly maps to a phase, use that
+        const statusToPhase = {
+            'Completed': 'Phase 3',
+            'In Review': 'Phase 3',
+            'Onboarding': 'Phase 2',
+            'Qualified': 'Phase 2',
+            'Contacted': 'Phase 1',
+            'Discovered': 'Phase 1'
+        };
+        
+        // If status has explicit mapping, use it
+        if (status && statusToPhase[status]) {
+            return statusToPhase[status];
+        }
+        
+        // Otherwise, vary based on merchantScore or ID for demo purposes
+        // Higher scores tend to be in later phases
+        if (merchant && merchant.merchantScore !== undefined) {
+            if (merchant.merchantScore >= 85) {
+                return 'Phase 3';
+            } else if (merchant.merchantScore >= 70) {
+                return 'Phase 2';
+            } else {
+                return 'Phase 1';
+            }
+        }
+        
+        // Fallback: use merchant ID hash for consistent variation
+        if (merchant && merchant.ID) {
+            const hash = merchant.ID.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+            const phaseNum = (hash % 3) + 1;
+            return `Phase ${phaseNum}`;
+        }
+        
+        return 'Phase 1';
+    }
+    
+    // Helper function: Get criticality value for phase
+    function getPhaseCriticality(phase) {
+        const criticalityMap = {
+            'Phase 1': 2,   // Warning (Yellow)
+            'Phase 2': 2,   // Warning (Yellow)
+            'Phase 3': 3    // Positive (Green)
+        };
+        return criticalityMap[phase] || 2;
+    }
+    
+    // Helper: Convert Priority Score from 0-100 to 1-5 scale
+    function convertToPriorityScore1to5(score100) {
+        if (score100 >= 80) return 5; // High Priority
+        if (score100 >= 60) return 4; // Medium-High
+        if (score100 >= 40) return 3; // Medium
+        if (score100 >= 20) return 2; // Low-Medium
+        return 1; // Low Priority
+    }
+    
+    // Helper: Get Priority Score Criticality for color coding
+    // 5 = Red (1), 4 = Orange (2), 3 = Yellow (2), 2 = Light Green (3), 1 = Dark Green (3)
+    function getPriorityScoreCriticality(priorityScore) {
+        switch (priorityScore) {
+            case 5: return 1; // Red (Critical/Negative)
+            case 4: return 2; // Orange (Warning)
+            case 3: return 2; // Yellow (Warning)
+            case 2: return 3; // Light Green (Positive)
+            case 1: return 3; // Dark Green (Positive)
+            default: return 0; // Neutral
+        }
+    }
+    
+    // Helper: Generate Last Follow Up text
+    function generateLastFollowUp(merchant) {
+        // Generate demo values based on merchant ID for consistency
+        const demoValues = [
+            '4 hours ago',
+            '2 days ago',
+            '1 week ago',
+            '3 days ago',
+            '6 hours ago',
+            '5 days ago',
+            '2 weeks ago',
+            '1 day ago',
+            '8 hours ago',
+            '4 days ago'
+        ];
+        
+        // Use merchant ID hash to get consistent demo value
+        if (merchant.ID) {
+            const hash = merchant.ID.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+            return demoValues[hash % demoValues.length];
+        }
+        
+        return '2 days ago'; // Default
+    }
+    
+    // Helper: Generate Pending Items text with icons
+    function generatePendingItemsWithIcons(merchant) {
+        // Generate demo values with icons based on merchant ID for consistency
+        const demoValues = [
+            '📄 2 Documents',
+            '✉️ 1 Email',
+            '📞 1 Call',
+            '🛒 1 Order',
+            '📄 1 Document, ✉️ 1 Email',
+            '📞 2 Calls',
+            '📄 1 Document, 🛒 1 Order',
+            '✉️ 2 Emails',
+            '📞 1 Call, ✉️ 1 Email',
+            '📄 2 Documents, ✉️ 1 Email',
+            '🛒 2 Orders',
+            '📞 1 Call, 📄 1 Document',
+            'No pending items',
+            '✉️ 1 Email, 🛒 1 Order'
+        ];
+        
+        // Use merchant ID hash to get consistent demo value
+        if (merchant.ID) {
+            const hash = merchant.ID.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+            return demoValues[hash % demoValues.length];
+        }
+        
+        return '📄 2 Documents'; // Default
+    }
+    
+    // Helper: Generate AssignedTo demo value
+    function generateAssignedToDemo(merchant) {
+        const demoNames = [
+            'Sarah Tan',
+            'Kevin Tan',
+            'Lisa Wong',
+            'David Lee',
+            'Amy Chen',
+            'Michael Lim',
+            'Jennifer Ng',
+            'James Ho',
+            'Rachel Yap',
+            'Tommy Ong'
+        ];
+        
+        if (merchant.ID) {
+            const hash = merchant.ID.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+            return demoNames[hash % demoNames.length];
+        }
+        
+        return 'Sarah Tan'; // Default
     }
 
     // Action: Qualify Merchant
@@ -107,59 +282,14 @@ module.exports = async function() {
         });
     });
 
-    // Action: Convert to Lead
-    this.on('convertToLead', 'MerchantDiscoveries', async (req) => {
-        const merchantID = req.params[0].ID;
-        const merchant = await SELECT.one.from(MerchantDiscoveries).where({ ID: merchantID });
-
-        if (!merchant) {
-            return req.error(404, `Merchant ${merchantID} not found`);
-        }
-
-        if (merchant.convertedToLead_ID) {
-            return req.error(400, 'Merchant has already been converted to a lead');
-        }
-
-        if (merchant.status !== 'Qualified' && merchant.status !== 'Contacted') {
-            return req.warn(409, 'Merchant should be qualified or contacted before conversion');
-        }
-
-        // Create new Lead entity from MerchantDiscovery
-        const newLead = await INSERT.into(Leads).entries({
-            outletName: merchant.merchantName,
-            brandToPitch: 'TBD', // To be determined by sales rep
-            status: 'New',
-            platform: mapDiscoverySourceToPlatform(merchant.discoverySource),
-            contactEmail: extractEmailFromContactInfo(merchant.contactInfo),
-            contactName: extractNameFromContactInfo(merchant.contactInfo),
-            contactPhone: extractPhoneFromContactInfo(merchant.contactInfo),
-            address: merchant.address,
-            city: merchant.city,
-            state: merchant.state,
-            country: merchant.country || 'Malaysia',
-            postalCode: merchant.postalCode,
-            source: 'Import',
-            sourceDetail: `Auto-discovered from ${merchant.discoverySource}`,
-            leadQuality: merchantScoreToLeadQuality(merchant.merchantScore),
-            estimatedValue: estimateValueFromScore(merchant.merchantScore),
-            assignedTo_ID: merchant.autoAssignedTo_ID,
-            owner_ID: merchant.autoAssignedTo_ID,
-            discoverySource: merchant.discoverySource,
-            autoDiscovered: true,
-            merchantDiscovery_ID: merchantID,
-            aiScore: merchant.merchantScore,
-            notes: `Converted from Merchant Discovery. Original source: ${merchant.discoverySource}. Location: ${merchant.location}`
-        });
-
-        // Update merchant with link to lead
-        await UPDATE(MerchantDiscoveries).set({
-            convertedToLead_ID: newLead.ID,
-            status: 'Contacted'
-        }).where({ ID: merchantID });
-
+    // Action: Initiate AI Meeting
+    // Note: This action is intercepted in the UI controller, but we keep it for compatibility
+    this.on('initiateAIMeeting', 'MerchantDiscoveries', async (req) => {
+        // This should be intercepted by the UI, but if it reaches here, return success
+        // The UI controller will handle showing the toast
         return req.reply({ 
-            message: 'Merchant converted to lead successfully', 
-            leadID: newLead.ID 
+            success: true,
+            message: 'AI Meeting Initiator - handled in UI'
         });
     });
 
@@ -476,12 +606,16 @@ module.exports = async function() {
             let statusNote = `• Current Status: ${merchant.status}`;
             if (merchant.status === 'Discovered') {
                 statusNote += ' - Awaiting qualification and assignment';
-            } else if (merchant.status === 'Qualified') {
-                statusNote += ' - Ready for outreach and partnership discussion';
             } else if (merchant.status === 'Contacted') {
                 statusNote += ' - Initial contact made, follow-up required';
-            } else if (merchant.status === 'Onboarded') {
-                statusNote += ' - Successfully onboarded as partner';
+            } else if (merchant.status === 'Qualified') {
+                statusNote += ' - Ready for outreach and partnership discussion';
+            } else if (merchant.status === 'Onboarding') {
+                statusNote += ' - Currently in onboarding process';
+            } else if (merchant.status === 'In Review') {
+                statusNote += ' - Under review for final approval';
+            } else if (merchant.status === 'Completed') {
+                statusNote += ' - Successfully completed onboarding';
             }
             notes.push(statusNote);
         }

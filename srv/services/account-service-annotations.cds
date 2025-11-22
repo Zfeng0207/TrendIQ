@@ -15,7 +15,12 @@ annotate AccountService.Accounts with @(
             accountTier,
             industry,
             city,
-            accountOwner_ID
+            accountOwner_ID,
+            currentTimelineStage,
+            priorityScore,
+            phase,
+            assignedTo,
+            dateCreated
         ],
 
         LineItem: [
@@ -27,44 +32,45 @@ annotate AccountService.Accounts with @(
             },
             {
                 $Type: 'UI.DataField',
-                Value: accountType,
-                Label: 'Type'
-            },
-            {
-                $Type: 'UI.DataField',
-                Value: status,
-                Label: 'Status',
-                Criticality: statusCriticality
+                Value: priorityScore,
+                Label: 'Priority Score',
+                Criticality: priorityScoreCriticality,
+                ![@UI.Importance]: #High
             },
             {
                 $Type: 'UI.DataFieldForAnnotation',
                 Target: '@UI.DataPoint#HealthScore',
-                Label: 'Health',
+                Label: 'Health Score',
                 ![@UI.Importance]: #High
             },
             {
                 $Type: 'UI.DataField',
-                Value: accountTier,
-                Label: 'Tier'
+                Value: lastFollowUp,
+                Label: 'Last Follow Up'
             },
             {
                 $Type: 'UI.DataField',
-                Value: annualRevenue,
-                Label: 'Annual Revenue'
+                Value: assignedTo,
+                Label: 'Assigned To'
             },
             {
                 $Type: 'UI.DataField',
-                Value: city,
-                Label: 'City'
+                Value: pendingItems,
+                Label: 'Pending Items'
             },
             {
-                $Type: 'UI.DataFieldForAction',
-                Action: 'AccountService.updateAIScore',
-                Label: 'Refresh Health',
-                Inline: true,
-                IconUrl: 'sap-icon://refresh'
+                $Type: 'UI.DataField',
+                Value: dateCreated,
+                Label: 'Date Created'
             }
         ],
+
+        DataPoint#PriorityScore: {
+            Value: priorityScore,
+            Title: 'Priority Score',
+            TargetValue: 100,
+            Visualization: #Progress
+        },
 
         DataPoint#HealthScore: {
             Value: healthScore,
@@ -72,6 +78,13 @@ annotate AccountService.Accounts with @(
             TargetValue: 100,
             Visualization: #Progress,
             Criticality: healthCriticality
+        },
+
+        DataPoint#SentimentScore: {
+            Value: sentimentScore,
+            Title: 'Sentiment Score',
+            TargetValue: 100,
+            Visualization: #Progress
         },
 
         HeaderInfo: {
@@ -87,49 +100,45 @@ annotate AccountService.Accounts with @(
             {
                 $Type: 'UI.ReferenceFacet',
                 Target: '@UI.DataPoint#HealthScore',
-                Label: 'Health Score'
+                Label: 'Partner Health Score'
             },
             {
                 $Type: 'UI.ReferenceFacet',
                 Target: '@UI.FieldGroup#KeyMetrics',
                 Label: 'Key Metrics'
+            },
+            {
+                $Type: 'UI.ReferenceFacet',
+                Target: '@UI.FieldGroup#AccountOverview',
+                Label: 'Account Overview'
             }
         ],
 
         Facets: [
             {
-                $Type: 'UI.CollectionFacet',
-                Label: 'Overview',
-                ID: 'Overview',
-                Facets: [
-                    {
-                        $Type: 'UI.ReferenceFacet',
-                        Target: '@UI.FieldGroup#BasicInfo',
-                        Label: 'Basic Details'
-                    },
-                    {
-                        $Type: 'UI.ReferenceFacet',
-                        Target: '@UI.FieldGroup#AIInsights',
-                        Label: 'AI Insights'
-                    }
-                ]
+                $Type: 'UI.ReferenceFacet',
+                Target: '@UI.FieldGroup#TimelineInfo',
+                Label: 'Partner Priority Timeline'
             },
             {
-                $Type: 'UI.CollectionFacet',
-                Label: 'Business Information',
-                ID: 'BusinessInfo',
-                Facets: [
-                    {
-                        $Type: 'UI.ReferenceFacet',
-                        Target: '@UI.FieldGroup#BusinessInfo',
-                        Label: 'Company Details'
-                    },
-                    {
-                        $Type: 'UI.ReferenceFacet',
-                        Target: '@UI.FieldGroup#FinancialInfo',
-                        Label: 'Financials'
-                    }
-                ]
+                $Type: 'UI.ReferenceFacet',
+                Target: '@UI.FieldGroup#OpportunityFinancial',
+                Label: 'Opportunity & Financial Deal'
+            },
+            {
+                $Type: 'UI.ReferenceFacet',
+                Target: '@UI.FieldGroup#MarketingCampaign',
+                Label: 'Joint Marketing Campaign Planner'
+            },
+            {
+                $Type: 'UI.ReferenceFacet',
+                Target: '@UI.FieldGroup#Recommendations',
+                Label: 'AI Recommendations'
+            },
+            {
+                $Type: 'UI.ReferenceFacet',
+                Target: '@UI.FieldGroup#RiskAlerts',
+                Label: 'Risk Alerts'
             },
             {
                 $Type: 'UI.ReferenceFacet',
@@ -190,8 +199,83 @@ annotate AccountService.Accounts with @(
 
         FieldGroup#KeyMetrics: {
             Data: [
+                {Value: estimatedMonthlyGMV},
+                {Value: forecastedRevenueContribution},
                 {Value: annualRevenue},
-                {Value: employeeCount}
+                {Value: contractStatus}
+            ]
+        },
+
+        FieldGroup#AccountOverview: {
+            Data: [
+                {Value: accountName},
+                {Value: status},
+                {Value: accountTier},
+                {Value: accountManager.fullName},
+                {
+                    $Type: 'UI.DataFieldForAnnotation',
+                    Target: '@UI.DataPoint#HealthScore',
+                    Label: 'Health Score'
+                },
+                {
+                    $Type: 'UI.DataField',
+                    Value: recentSentimentTrend,
+                    Label: 'Sentiment Trend'
+                },
+                {Value: accountType},
+                {Value: industry},
+                {Value: city},
+                {Value: country}
+            ]
+        },
+
+        FieldGroup#TimelineInfo: {
+            Data: [
+                {Value: currentTimelineStage},
+                {Value: timelineStageStatus},
+                {Value: nextRecommendedAction},
+                {Value: timelineStageDeadline},
+                {Value: timelineStageOwner.fullName},
+                {Value: timelineStageNotes}
+            ]
+        },
+
+        FieldGroup#OpportunityFinancial: {
+            Data: [
+                {Value: estimatedMonthlyGMV},
+                {Value: forecastedRevenueContribution},
+                {Value: contractStatus},
+                {Value: creditLimit},
+                {Value: paymentTerms}
+            ]
+        },
+
+        FieldGroup#MarketingCampaign: {
+            Data: [
+                {Value: accountType},
+                {Value: industry}
+            ]
+        },
+
+        FieldGroup#Recommendations: {
+            Data: [
+                {
+                    $Type: 'UI.DataFieldForAction',
+                    Action: 'AccountService.getAIRecommendations',
+                    Label: 'Get AI Recommendations'
+                }
+            ]
+        },
+
+        FieldGroup#RiskAlerts: {
+            Data: [
+                {Value: riskLevel},
+                {Value: recentSentimentTrend},
+                {
+                    $Type: 'UI.DataFieldForAnnotation',
+                    Target: '@UI.DataPoint#SentimentScore',
+                    Label: 'Sentiment Score'
+                }
             ]
         },
 
@@ -219,6 +303,26 @@ annotate AccountService.Accounts with {
     healthScore    @title: 'Health Score';
     annualRevenue  @title: 'Annual Revenue' @Measures.ISOCurrency: 'MYR';
     creditLimit    @title: 'Credit Limit' @Measures.ISOCurrency: 'MYR';
+    estimatedMonthlyGMV @title: 'Estimated Monthly GMV' @Measures.ISOCurrency: 'MYR';
+    forecastedRevenueContribution @title: 'Forecasted Revenue Contribution' @Measures.ISOCurrency: 'MYR';
+    contractStatus @title: 'Contract Status';
+    currentTimelineStage @title: 'Current Timeline Stage';
+    timelineStageStatus @title: 'Timeline Stage Status';
+    nextRecommendedAction @title: 'Next Recommended Action';
+    timelineStageDeadline @title: 'Timeline Stage Deadline';
+    timelineStageNotes @title: 'Timeline Stage Notes';
+    recentSentimentTrend @title: 'Recent Sentiment Trend';
+    sentimentScore @title: 'Sentiment Score';
+    priorityScore @title: 'Priority Score';
+    priorityScoreCriticality @UI.Hidden: true;
+    currentStageSummary @title: 'Current Stage Summary' @UI.MultiLineText: true;
+    nextStepsSummary @title: 'Next Steps Summary' @UI.MultiLineText: true;
+    lastFollowUp @title: 'Last Follow Up';
+    pendingItems @title: 'Pending Items';
+    phase @title: 'Phase';
+    phaseCriticality @UI.Hidden: true;
+    assignedTo @title: 'Assigned To';
+    dateCreated @title: 'Date Created';
 }
 
 // ============================================================================
@@ -228,7 +332,12 @@ annotate AccountService.Accounts with {
 annotate AccountService.Accounts actions {
     updateAIScore @(
         Common.SideEffects: {
-            TargetProperties: ['healthScore', 'sentimentScore', 'sentimentLabel']
+            TargetProperties: ['healthScore', 'sentimentScore', 'recentSentimentTrend']
+        }
+    );
+    updateTimelineStage @(
+        Common.SideEffects: {
+            TargetProperties: ['currentTimelineStage', 'timelineStageStatus', 'timelineStageNotes', 'timelineStageDeadline']
         }
     );
 }
@@ -394,4 +503,112 @@ annotate AccountService.Contacts with {
     isPrimary      @title: 'Primary Contact';
     engagementScore @title: 'Engagement Score';
     notes          @UI.MultiLineText: true;
+}
+
+// ============================================================================
+// Account Recommendations Annotations
+// ============================================================================
+
+annotate AccountService.AccountRecommendations with @(
+    UI: {
+        LineItem: [
+            {
+                $Type: 'UI.DataField',
+                Value: recommendationType,
+                Label: 'Type',
+                ![@UI.Importance]: #High
+            },
+            {
+                $Type: 'UI.DataField',
+                Value: recommendationText,
+                Label: 'Recommendation',
+                ![@UI.Importance]: #High
+            },
+            {
+                $Type: 'UI.DataField',
+                Value: priority,
+                Label: 'Priority'
+            },
+            {
+                $Type: 'UI.DataField',
+                Value: status,
+                Label: 'Status'
+            },
+            {
+                $Type: 'UI.DataField',
+                Value: generatedDate,
+                Label: 'Generated Date'
+            }
+        ],
+
+        HeaderInfo: {
+            TypeName: 'Recommendation',
+            TypeNamePlural: 'Recommendations',
+            Title: {Value: recommendationText},
+            Description: {Value: recommendationType}
+        }
+    }
+);
+
+annotate AccountService.AccountRecommendations with {
+    recommendationType @title: 'Recommendation Type';
+    recommendationText @title: 'Recommendation Text' @Common.FieldControl: #Mandatory;
+    priority @title: 'Priority';
+    aiGenerated @title: 'AI Generated';
+    status @title: 'Status';
+    generatedDate @title: 'Generated Date';
+}
+
+// ============================================================================
+// Account Risk Alerts Annotations
+// ============================================================================
+
+annotate AccountService.AccountRiskAlerts with @(
+    UI: {
+        LineItem: [
+            {
+                $Type: 'UI.DataField',
+                Value: alertType,
+                Label: 'Alert Type',
+                ![@UI.Importance]: #High
+            },
+            {
+                $Type: 'UI.DataField',
+                Value: alertMessage,
+                Label: 'Alert Message',
+                ![@UI.Importance]: #High
+            },
+            {
+                $Type: 'UI.DataField',
+                Value: severity,
+                Label: 'Severity'
+            },
+            {
+                $Type: 'UI.DataField',
+                Value: detectedDate,
+                Label: 'Detected Date'
+            },
+            {
+                $Type: 'UI.DataField',
+                Value: isResolved,
+                Label: 'Resolved'
+            }
+        ],
+
+        HeaderInfo: {
+            TypeName: 'Risk Alert',
+            TypeNamePlural: 'Risk Alerts',
+            Title: {Value: alertMessage},
+            Description: {Value: alertType}
+        }
+    }
+);
+
+annotate AccountService.AccountRiskAlerts with {
+    alertType @title: 'Alert Type';
+    alertMessage @title: 'Alert Message' @Common.FieldControl: #Mandatory;
+    severity @title: 'Severity';
+    detectedDate @title: 'Detected Date';
+    resolvedDate @title: 'Resolved Date';
+    isResolved @title: 'Is Resolved';
 }

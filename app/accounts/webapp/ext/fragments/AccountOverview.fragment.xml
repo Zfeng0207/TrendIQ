@@ -1,0 +1,77 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:layout="sap.ui.layout" xmlns:form="sap.ui.layout.form">
+    <VBox class="sapUiSmallMargin">
+        <Title text="{i18n>accountOverview}" level="H3" class="sapUiSmallMarginBottom"/>
+        
+        <layout:Grid defaultSpan="L12 M12 S12" class="sapUiSmallMarginTop">
+            <layout:content>
+                <!-- Partner Name & Status -->
+                <VBox class="sapUiSmallMargin">
+                    <HBox alignItems="Center" class="sapUiSmallMarginBottom">
+                        <Title text="{accountName}" level="H2" class="sapUiSmallMarginEnd"/>
+                        <ObjectStatus 
+                            text="{status}"
+                            state="{path: 'status', formatter: '.formatStatusState'}"
+                            class="sapUiSmallMarginEnd"/>
+                        <ObjectStatus 
+                            text="{accountTier}"
+                            state="{path: 'accountTier', formatter: '.formatTierState'}"
+                            class="sapUiSmallMarginEnd"/>
+                    </HBox>
+                </VBox>
+                
+                <!-- Account Manager -->
+                <VBox class="sapUiSmallMargin">
+                    <Label text="{i18n>accountManager}" class="sapUiSmallMarginBottom"/>
+                    <HBox alignItems="Center">
+                        <core:Icon src="sap-icon://employee" size="1.5rem" class="sapUiSmallMarginEnd"/>
+                        <Text text="{accountManager/fullName}"/>
+                    </HBox>
+                </VBox>
+                
+                <!-- Health Score -->
+                <VBox class="sapUiSmallMargin">
+                    <Label text="{i18n>healthScore}" class="sapUiSmallMarginBottom"/>
+                    <ProgressIndicator 
+                        percentValue="{healthScore}"
+                        displayValue="{healthScore}%"
+                        state="{path: 'healthScore', formatter: '.formatHealthState'}"
+                        showValue="true"
+                        class="sapUiSmallMarginTop"/>
+                </VBox>
+                
+                <!-- Sentiment Trend -->
+                <VBox class="sapUiSmallMargin">
+                    <Label text="{i18n>sentimentTrend}" class="sapUiSmallMarginBottom"/>
+                    <HBox alignItems="Center">
+                        <core:Icon 
+                            src="{path: 'recentSentimentTrend', formatter: '.formatSentimentIcon'}"
+                            color="{path: 'recentSentimentTrend', formatter: '.formatSentimentColor'}"
+                            size="1.5rem"
+                            class="sapUiSmallMarginEnd"/>
+                        <Text text="{recentSentimentTrend}"/>
+                        <Text text="({sentimentScore})" class="sapUiSmallMarginBegin"/>
+                    </HBox>
+                </VBox>
+                
+                <!-- Account Type & Industry -->
+                <VBox class="sapUiSmallMargin">
+                    <Label text="{i18n>accountType}" class="sapUiSmallMarginBottom"/>
+                    <Text text="{accountType}"/>
+                </VBox>
+                
+                <!-- Region & Category -->
+                <VBox class="sapUiSmallMargin">
+                    <Label text="{i18n>region}" class="sapUiSmallMarginBottom"/>
+                    <Text text="{city}, {country}"/>
+                </VBox>
+                
+                <!-- Industry -->
+                <VBox class="sapUiSmallMargin">
+                    <Label text="{i18n>industry}" class="sapUiSmallMarginBottom"/>
+                    <Text text="{industry}"/>
+                </VBox>
+            </layout:content>
+        </layout:Grid>
+    </VBox>
+</core:FragmentDefinition>
+

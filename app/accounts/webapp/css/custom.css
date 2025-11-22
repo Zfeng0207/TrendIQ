@@ -53,3 +53,348 @@
     margin: 0.25rem !important;
 }
 
+/* Partner Priority Timeline Styles */
+.timeline-container {
+    width: 100%;
+    padding: 1rem 0;
+    border-bottom: 2px solid #e5e5e5;
+    margin-bottom: 1rem;
+}
+
+.timeline-stage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    padding: 0 0.5rem;
+}
+
+.timeline-stage:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 1rem;
+    right: -10%;
+    width: 20%;
+    height: 2px;
+    background-color: #e5e5e5;
+    z-index: 0;
+}
+
+.timeline-stage-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    background-color: #f5f5f5;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+    width: 100%;
+    z-index: 1;
+    position: relative;
+}
+
+.timeline-stage-content.stage-active {
+    background-color: #e5f0ff;
+    border-color: #0070f2;
+    box-shadow: 0 2px 8px rgba(0, 112, 242, 0.2);
+}
+
+.timeline-stage-content.stage-completed {
+    background-color: #e5f5e5;
+    border-color: #2b7c2b;
+}
+
+.timeline-stage-content.stage-delayed {
+    background-color: #fff3e0;
+    border-color: #ff9800;
+}
+
+.timeline-stage-content.stage-blocked {
+    background-color: #ffebee;
+    border-color: #bb0000;
+}
+
+.timeline-icon {
+    margin-bottom: 0.5rem;
+    color: #666666;
+}
+
+.timeline-stage-content.stage-active .timeline-icon {
+    color: #0070f2;
+}
+
+.timeline-stage-content.stage-completed .timeline-icon {
+    color: #2b7c2b;
+}
+
+.timeline-stage-content.stage-delayed .timeline-icon {
+    color: #ff9800;
+}
+
+.timeline-stage-content.stage-blocked .timeline-icon {
+    color: #bb0000;
+}
+
+.timeline-stage-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-align: center;
+    margin-top: 0.5rem;
+    color: #32363a;
+}
+
+/* Health Score Visualization */
+.health-score-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+}
+
+/* Risk Alert Badges */
+.risk-alert-critical {
+    background-color: #ffebee;
+    border-left: 4px solid #bb0000;
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.risk-alert-high {
+    background-color: #fff3e0;
+    border-left: 4px solid #ff9800;
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.risk-alert-medium {
+    background-color: #fff9c4;
+    border-left: 4px solid #fbc02d;
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.risk-alert-low {
+    background-color: #f5f5f5;
+    border-left: 4px solid #666666;
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+}
+
+/* Recommendation Cards */
+.recommendation-card {
+    border-left: 4px solid #0070f2;
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+    background-color: #ffffff;
+    border-radius: 0.25rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.recommendation-card.priority-high {
+    border-left-color: #bb0000;
+}
+
+.recommendation-card.priority-medium {
+    border-left-color: #ff9800;
+}
+
+.recommendation-card.priority-low {
+    border-left-color: #666666;
+}
+
+/* Financial Metrics Tiles */
+.financial-metric-tile {
+    min-width: 200px;
+    margin-right: 1rem;
+    margin-bottom: 1rem;
+}
+
+/* Responsive Layout */
+@media (max-width: 1024px) {
+    .timeline-container {
+        flex-wrap: wrap;
+    }
+    
+    .timeline-stage {
+        width: 50% !important;
+        margin-bottom: 1rem;
+    }
+    
+    .timeline-stage:not(:last-child)::after {
+        display: none;
+    }
+}
+
+@media (max-width: 600px) {
+    .timeline-stage {
+        width: 100% !important;
+    }
+    
+    .financial-metric-tile {
+        width: 100%;
+        margin-right: 0;
+    }
+}
+
+/* Introduction Section Styles */
+.accounts-introduction {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 24px;
+    margin: 16px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    position: relative;
+    z-index: 1;
+}
+
+.accounts-introduction h2 {
+    margin: 0 0 12px 0;
+    font-size: 24px;
+    font-weight: 600;
+    color: white;
+}
+
+.accounts-introduction p {
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.6;
+    opacity: 0.95;
+    color: white;
+}
+
+.accounts-introduction .intro-features {
+    margin-top: 16px;
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.accounts-introduction .intro-feature {
+    flex: 1;
+    min-width: 200px;
+}
+
+.accounts-introduction .intro-feature strong {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 16px;
+    color: white;
+}
+
+.accounts-introduction .intro-feature span {
+    font-size: 14px;
+    opacity: 0.9;
+    color: white;
+    display: block;
+}
+
+/* Responsive Introduction */
+@media (max-width: 768px) {
+    .accounts-introduction {
+        margin: 8px;
+        padding: 16px;
+    }
+    
+    .accounts-introduction h2 {
+        font-size: 20px;
+    }
+    
+    .accounts-introduction p {
+        font-size: 14px;
+    }
+    
+    .accounts-introduction .intro-features {
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .accounts-introduction .intro-feature {
+        min-width: 100%;
+    }
+}
+
+/* Priority Score Badge Styles (1-5 scale) */
+.sapMTable .sapMTableRow .sapMText[data-criticality="1"]:has-text("5"),
+.sapMTable .sapMTableRow .sapMText[data-criticality="1"]:contains("5") {
+    color: #bb0000 !important;
+    font-weight: 600;
+}
+
+.sapMTable .sapMTableRow .sapMText[data-criticality="2"]:has-text("4"),
+.sapMTable .sapMTableRow .sapMText[data-criticality="2"]:contains("4") {
+    color: #ff9800 !important;
+    font-weight: 600;
+}
+
+.sapMTable .sapMTableRow .sapMText[data-criticality="2"]:has-text("3"),
+.sapMTable .sapMTableRow .sapMText[data-criticality="2"]:contains("3") {
+    color: #fbc02d !important;
+    font-weight: 600;
+}
+
+.sapMTable .sapMTableRow .sapMText[data-criticality="3"]:has-text("2"),
+.sapMTable .sapMTableRow .sapMText[data-criticality="3"]:contains("2") {
+    color: #66bb6a !important;
+    font-weight: 600;
+}
+
+.sapMTable .sapMTableRow .sapMText[data-criticality="3"]:has-text("1"),
+.sapMTable .sapMTableRow .sapMText[data-criticality="3"]:contains("1") {
+    color: #2b7c2b !important;
+    font-weight: 600;
+}
+
+/* Phase Color Tags */
+.sapMTable .sapMTableRow .sapMText:contains("Onboarding"),
+.sapMTable .sapMTableRow .sapMObjectStatus:contains("Onboarding") {
+    color: #0070f2 !important;
+    background-color: #e5f0ff !important;
+    padding: 0.25rem 0.5rem !important;
+    border-radius: 0.25rem !important;
+    display: inline-block !important;
+}
+
+.sapMTable .sapMTableRow .sapMText:contains("Dealing"),
+.sapMTable .sapMTableRow .sapMObjectStatus:contains("Dealing") {
+    color: #ff9800 !important;
+    background-color: #fff3e0 !important;
+    padding: 0.25rem 0.5rem !important;
+    border-radius: 0.25rem !important;
+    display: inline-block !important;
+}
+
+.sapMTable .sapMTableRow .sapMText:contains("Running Campaign"),
+.sapMTable .sapMTableRow .sapMObjectStatus:contains("Running Campaign") {
+    color: #9c27b0 !important;
+    background-color: #f3e5f5 !important;
+    padding: 0.25rem 0.5rem !important;
+    border-radius: 0.25rem !important;
+    display: inline-block !important;
+}
+
+.sapMTable .sapMTableRow .sapMText:contains("Discounting"),
+.sapMTable .sapMTableRow .sapMObjectStatus:contains("Discounting") {
+    color: #fbc02d !important;
+    background-color: #fff9c4 !important;
+    padding: 0.25rem 0.5rem !important;
+    border-radius: 0.25rem !important;
+    display: inline-block !important;
+}
+
+.sapMTable .sapMTableRow .sapMText:contains("Completed"),
+.sapMTable .sapMTableRow .sapMObjectStatus:contains("Completed") {
+    color: #2b7c2b !important;
+    background-color: #e5f5e5 !important;
+    padding: 0.25rem 0.5rem !important;
+    border-radius: 0.25rem !important;
+    display: inline-block !important;
+}
+
+/* Priority Score Inline Badge */
+.sapMTable .sapMTableRow .sapMText[data-field="priorityScore"] {
+    font-weight: 600;
+    font-size: 1rem;
+}
+
