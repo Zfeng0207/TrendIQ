@@ -139,6 +139,7 @@
     </button>
     
     <script>
+        // Navigation menu
         (function() {
             var menuButton = document.getElementById('navMenuButton');
             var menu = document.getElementById('navMenu');
@@ -207,6 +208,194 @@
                 
                 aiPlannerButton.setAttribute('data-initialized', 'true');
             }
+        })();
+
+        // Monitor OData requests for convertToAccount action
+        (function() {
+            console.log("=== Lead Conversion Monitor Active ===");
+            
+            // Also intercept XMLHttpRequest for OData calls
+            var originalXHROpen = XMLHttpRequest.prototype.open;
+            var originalXHRSend = XMLHttpRequest.prototype.send;
+            
+            XMLHttpRequest.prototype.open = function(method, url) {
+                console.log("XHR request:", method, url);
+                this._url = url; // Store URL for later use
+                return originalXHROpen.apply(this, arguments);
+            };
+            
+            XMLHttpRequest.prototype.send = function(body) {
+                var xhr = this;
+                var url = this._url;
+                
+                // Check if this is a batch request with convertToAccount
+                if (url && url.indexOf('$batch') >= 0 && body && body.indexOf && body.indexOf('convertToAccount') >= 0) {
+                    console.log("=== CONVERT TO ACCOUNT BATCH REQUEST DETECTED ===");
+                    console.log("Batch body:", body);
+                    
+                    this.addEventListener('load', function() {
+                        console.log("=== BATCH RESPONSE RECEIVED ===");
+                        console.log("Response text:", this.responseText);
+                        
+                        try {
+                            // Parse batch response
+                            var responseText = this.responseText;
+                            
+                            // Look for accountID in the batch response
+                            var accountIDMatch = responseText.match(/"accountID"\s*:\s*"([^"]+)"/);
+                            
+                            if (accountIDMatch && accountIDMatch[1]) {
+                                var accountID = accountIDMatch[1];
+                                console.log("=== ACCOUNT ID FOUND IN BATCH ===", accountID);
+                                
+                                setTimeout(function() {
+                                    var onboardingUrl = "/beautyleads.accounts/index.html#/Accounts(" + accountID + ")?onboarding=true";
+                                    console.log("=== NAVIGATING TO ONBOARDING ===", onboardingUrl);
+                                    window.location.href = onboardingUrl;
+                                }, 2000);
+                            } else {
+                                console.warn("No accountID found in batch response");
+                            }
+                        } catch(e) {
+                            console.error("Error parsing batch response:", e);
+                        }
+                    });
+                } else if (url && url.indexOf('convertToAccount') >= 0) {
+                    console.log("=== CONVERT TO ACCOUNT DIRECT REQUEST DETECTED ===");
+                    
+                    this.addEventListener('load', function() {
+                        console.log("XHR response:", this.responseText);
+                        try {
+                            var data = JSON.parse(this.responseText);
+                            console.log("Parsed data:", data);
+                            
+                            var accountID = data.accountID || (data.value && data.value.accountID);
+                            
+                            if (accountID) {
+                                console.log("Account ID found:", accountID);
+                                setTimeout(function() {
+                                    var onboardingUrl = "/beautyleads.accounts/index.html#/Accounts(" + accountID + ")?onboarding=true";
+                                    console.log("Navigating to:", onboardingUrl);
+                                    window.location.href = onboardingUrl;
+                                }, 2000);
+                            }
+                        } catch(e) {
+                            console.error("Error parsing XHR response:", e);
+                        }
+                    });
+                }
+                
+                return originalXHRSend.apply(this, arguments);
+            };
+            
+            // Intercept fetch API
+            var originalFetch = window.fetch;
+            window.fetch = function(url, options) {
+                console.log("Fetch request:", url);
+                
+                return originalFetch.apply(this, arguments).then(function(response) {
+                    // Check if this is a convertToAccount action
+                    if (url && typeof url === 'string' && url.indexOf('convertToAccount') >= 0) {
+                        console.log("=== CONVERT TO ACCOUNT ACTION DETECTED ===");
+                        
+                        // Clone the response to read it
+                        var clonedResponse = response.clone();
+                        clonedResponse.json().then(function(data) {
+                            console.log("Action response data:", data);
+                            
+                            var accountID = data.accountID || (data.value && data.value.accountID);
+                            
+                            if (accountID) {
+                                console.log("Account ID found:", accountID);
+                                console.log("Navigating to onboarding...");
+                                
+                                setTimeout(function() {
+                                    var onboardingUrl = "/beautyleads.accounts/index.html#/Accounts(" + accountID + ")/onboarding";
+                                    console.log("Navigation URL:", onboardingUrl);
+                                    window.location.href = onboardingUrl;
+                                }, 2000);
+                            } else {
+                                console.log("No accountID in response, trying to get from context");
+                                
+                                // Try to get from UI5 model
+                                setTimeout(function() {
+                                    try {
+                                        sap.ui.require(["sap/ui/core/Core"], function(Core) {
+                                            var oView = Core.byId("beautyleads.leads::LeadsObjectPage");
+                                            if (oView) {
+                                                var oContext = oView.getBindingContext();
+                                                if (oContext) {
+                                                    var sConvertedToID = oContext.getProperty("convertedTo_ID");
+                                                    console.log("ConvertedTo_ID from context:", sConvertedToID);
+                                                    
+                                    if (sConvertedToID) {
+                                        var onboardingUrl = "/beautyleads.accounts/index.html#/Accounts(" + sConvertedToID + ")?onboarding=true";
+                                        console.log("Navigation URL:", onboardingUrl);
+                                        window.location.href = onboardingUrl;
+                                    }
+                                                }
+                                            }
+                                        });
+                                    } catch(e) {
+                                        console.error("Error getting context:", e);
+                                    }
+                                }, 2000);
+                            }
+                        }).catch(function(err) {
+                            console.error("Error parsing response:", err);
+                        });
+                    }
+                    
+                    return response;
+                });
+            };
+            
+            console.log("Fetch and XHR interceptors installed");
+            
+            // Log when button is clicked - check status IMMEDIATELY to avoid race condition
+            document.addEventListener('click', function(e) {
+                var target = e.target;
+                var text = target.innerText || target.textContent;
+                if (text && text.indexOf('Convert') >= 0) {
+                    console.log("=== BUTTON CLICKED ===", text);
+                    console.log("Button element:", target);
+                    
+                    // Check lead status IMMEDIATELY (not after timeout to avoid race condition)
+                    try {
+                        sap.ui.require(["sap/ui/core/Core"], function(Core) {
+                            var allViews = Core.byId("beautyleads.leads::LeadsObjectPage");
+                            if (allViews) {
+                                var context = allViews.getBindingContext();
+                                if (context) {
+                                    var leadData = context.getObject();
+                                    console.log("Lead data BEFORE action:", leadData);
+                                    console.log("Lead status:", leadData.status);
+                                    console.log("Lead already converted:", leadData.converted);
+                                    console.log("Lead ID:", leadData.ID);
+                                    
+                                    if (leadData.status !== 'Qualified') {
+                                        console.warn("⚠️ Lead must be Qualified before conversion. Current status:", leadData.status);
+                                    }
+                                    if (leadData.converted) {
+                                        console.warn("⚠️ Lead already converted!");
+                                    }
+                                }
+                            }
+                        });
+                    } catch(err) {
+                        console.error("Error checking lead status:", err);
+                    }
+                }
+            }, true);
+            
+            // Catch all errors
+            window.addEventListener('error', function(e) {
+                console.error("=== GLOBAL ERROR ===", e.message, e.error);
+            });
+            
+            window.addEventListener('unhandledrejection', function(e) {
+                console.error("=== UNHANDLED PROMISE REJECTION ===", e.reason);
+            });
         })();
     </script>
 </body>

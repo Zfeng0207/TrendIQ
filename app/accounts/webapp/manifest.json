@@ -84,11 +84,6 @@
           "target": "AccountsList"
         },
         {
-          "pattern": "Accounts({key})/onboarding:?query:",
-          "name": "AccountsOnboarding",
-          "target": "AccountsOnboarding"
-        },
-        {
           "pattern": "Accounts({key}):?query:",
           "name": "AccountsObjectPage",
           "target": "AccountsObjectPage"
@@ -137,38 +132,6 @@
               "sap.ui.controllerExtensions": {
                 "sap.fe.templates.ListReport.ListReportController": {
                   "controllerName": "beautyleads.accounts.ext.controller.ListReportExt"
-                }
-              }
-            }
-          }
-        },
-        "AccountsOnboarding": {
-          "type": "Component",
-          "id": "AccountsOnboarding",
-          "name": "sap.fe.templates.ObjectPage",
-          "options": {
-            "settings": {
-              "editableHeaderContent": true,
-              "contextPath": "/Accounts",
-              "content": {
-                "header": {
-                  "actions": {
-                    "CompleteOnboarding": {
-                      "press": "beautyleads.accounts.ext.controller.AccountsOnboardingExt.onCompleteOnboarding",
-                      "text": "Complete Onboarding",
-                      "enabled": true,
-                      "type": "Emphasized"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "extends": {
-            "extensions": {
-              "sap.ui.controllerExtensions": {
-                "sap.fe.templates.ObjectPage.ObjectPageController": {
-                  "controllerName": "beautyleads.accounts.ext.controller.AccountsOnboardingExt"
                 }
               }
             }

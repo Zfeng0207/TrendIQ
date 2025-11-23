@@ -10,6 +10,35 @@ sap.ui.define([
         // Lifecycle hooks
         onInit: function () {
             this._loadRelatedData();
+            this._checkOnboardingParameter();
+        },
+        
+        _checkOnboardingParameter: function () {
+            // Check if onboarding parameter is present
+            const oRouter = this.base.getView().getController().getOwnerComponent().getRouter();
+            const oRoute = oRouter.getRoute("AccountsObjectPage");
+            
+            oRoute.attachPatternMatched(function(oEvent) {
+                const oQuery = oEvent.getParameter("arguments")["?query"];
+                
+                if (oQuery && oQuery.onboarding === "true") {
+                    // Show onboarding welcome message
+                    setTimeout(() => {
+                        MessageBox.information(
+                            "Welcome to your new account! The lead has been successfully converted. " +
+                            "You can now:\n" +
+                            "• Create opportunities\n" +
+                            "• Schedule activities\n" +
+                            "• Manage contacts\n" +
+                            "• Track account health",
+                            {
+                                title: "🎉 Account Created Successfully",
+                                styleClass: "sapUiSizeCompact"
+                            }
+                        );
+                    }, 500);
+                }
+            }, this);
         },
 
         // Load related data (opportunities, campaigns, activities, recommendations, risk alerts)

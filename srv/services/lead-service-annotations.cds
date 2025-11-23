@@ -516,7 +516,7 @@ annotate LeadService.LeadsBySource with @(
 annotate LeadService.Leads actions {
     convertToAccount @(
         Common.SideEffects: {
-            TargetProperties: ['converted', 'convertedDate', 'status']
+            TargetProperties: ['converted', 'convertedDate', 'status', 'convertedTo_ID']
         }
     );
     qualifyLead @(

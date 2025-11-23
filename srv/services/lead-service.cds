@@ -13,7 +13,10 @@ service LeadService @(path: '/lead') {
         virtual null as statusCriticality : Integer,
         virtual null as leadQualityCriticality : Integer
     } actions {
-        action convertToAccount();
+        action convertToAccount() returns {
+            message: String;
+            accountID: UUID;
+        };
         action qualifyLead();
         action updateAIScore() returns Leads;
         action generateAISummary() returns String; // Generate AI Summary - returns summary text

@@ -113,7 +113,8 @@ module.exports = async function() {
             status: 'Converted'
         }).where({ ID: leadID });
 
-        return req.reply({ message: 'Lead converted successfully', accountID: newAccountID });
+        console.log('Lead converted successfully. Account ID:', newAccountID);
+        return { message: 'Lead converted successfully', accountID: newAccountID };
     });
 
     // Action: Qualify Lead
