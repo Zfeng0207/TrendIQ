@@ -376,6 +376,19 @@ entity MerchantDiscovery : managed, cuid, aspects.Address {
     status            : String(20) @title: 'Status' default 'Discovered'
                       @assert.enum: ['Discovered', 'Contacted', 'Qualified', 'Onboarding', 'In Review', 'Completed'];
     
+    // Parsed contact information fields (populated from contactInfo JSON)
+    contactName       : String(200) @title: 'Contact Name';
+    contactEmail      : String(200) @title: 'Email';
+    contactPhone      : String(50) @title: 'Phone';
+    
+    // Parsed discovery metadata fields (populated from discoveryMetadata JSON)
+    convertedFromLeadID : UUID @title: 'Converted From Lead ID';
+    leadQuality       : String(20) @title: 'Lead Quality';
+    brandToPitch      : String(100) @title: 'Brand To Pitch';
+    estimatedValue    : Decimal(15,2) @title: 'Estimated Value';
+    aiScore           : Integer @title: 'AI Score';
+    sentimentScore    : Integer @title: 'Sentiment Score';
+    
     // Relationships
     convertedToLead   : Association to leads.Leads @title: 'Converted to Lead';
 }

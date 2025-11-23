@@ -44,6 +44,42 @@ module.exports = async function() {
                     merchant.assignedTo = generateAssignedToDemo(merchant);
                 }
                 
+                // Parse contactInfo JSON for display if fields not already populated
+                if (merchant.contactInfo && !merchant.contactName) {
+                    try {
+                        const contactData = JSON.parse(merchant.contactInfo);
+                        merchant.contactName = contactData.name || null;
+                        merchant.contactEmail = contactData.email || null;
+                        merchant.contactPhone = contactData.phone || null;
+                    } catch (e) {
+                        // If not valid JSON, set to null
+                        merchant.contactName = null;
+                        merchant.contactEmail = null;
+                        merchant.contactPhone = null;
+                    }
+                }
+                
+                // Parse discoveryMetadata JSON for display if fields not already populated
+                if (merchant.discoveryMetadata && !merchant.leadQuality) {
+                    try {
+                        const metadata = JSON.parse(merchant.discoveryMetadata);
+                        merchant.convertedFromLeadID = metadata.convertedFromLeadID || null;
+                        merchant.leadQuality = metadata.leadQuality || null;
+                        merchant.brandToPitch = metadata.brandToPitch || null;
+                        merchant.estimatedValue = metadata.estimatedValue || null;
+                        merchant.aiScore = metadata.aiScore || null;
+                        merchant.sentimentScore = metadata.sentimentScore || null;
+                    } catch (e) {
+                        // If not valid JSON, set to null
+                        merchant.convertedFromLeadID = null;
+                        merchant.leadQuality = null;
+                        merchant.brandToPitch = null;
+                        merchant.estimatedValue = null;
+                        merchant.aiScore = null;
+                        merchant.sentimentScore = null;
+                    }
+                }
+                
                 // Set placeholder for empty about field (handle null, undefined, empty string)
                 if (!merchant.about || (typeof merchant.about === 'string' && merchant.about.trim() === '')) {
                     merchant.about = '-';
@@ -404,13 +440,28 @@ module.exports = async function() {
             const merchantScore = calculateMerchantScoreFromData(discovery);
             const autoAssignedTo = await autoAssignMerchant(discovery);
 
+            // Parse contact info if it's a JSON string
+            let contactName = null, contactEmail = null, contactPhone = null;
+            if (discovery.contactInfo) {
+                try {
+                    const contactData = typeof discovery.contactInfo === 'string' 
+                        ? JSON.parse(discovery.contactInfo) 
+                        : discovery.contactInfo;
+                    contactName = contactData.name || null;
+                    contactEmail = contactData.email || null;
+                    contactPhone = contactData.phone || null;
+                } catch (e) {
+                    // If not JSON, leave as null
+                }
+            }
+            
             const newMerchant = await INSERT.into(MerchantDiscoveries).entries({
                 merchantName: discovery.merchantName,
                 discoverySource: discovery.discoverySource || 'Other',
                 discoveryDate: new Date().toISOString(),
                 location: discovery.location || '',
                 businessType: discovery.businessType || 'Retailer',
-                contactInfo: discovery.contactInfo || '',
+                contactInfo: typeof discovery.contactInfo === 'string' ? discovery.contactInfo : JSON.stringify(discovery.contactInfo || {}),
                 socialMediaLinks: discovery.socialMediaLinks || '',
                 merchantScore: merchantScore,
                 autoAssignedTo_ID: autoAssignedTo,
@@ -420,7 +471,11 @@ module.exports = async function() {
                 city: discovery.city || '',
                 state: discovery.state || '',
                 country: discovery.country || 'Malaysia',
-                postalCode: discovery.postalCode || ''
+                postalCode: discovery.postalCode || '',
+                // Populate parsed fields
+                contactName: contactName,
+                contactEmail: contactEmail,
+                contactPhone: contactPhone
             });
 
             created.push(newMerchant.ID);

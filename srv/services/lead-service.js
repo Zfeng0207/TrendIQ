@@ -122,7 +122,17 @@ module.exports = async function() {
             city: lead.city,
             state: lead.state,
             country: lead.country,
-            postalCode: lead.postalCode
+            postalCode: lead.postalCode,
+            // Populate parsed fields directly
+            contactName: lead.contactName,
+            contactEmail: lead.contactEmail,
+            contactPhone: lead.contactPhone,
+            convertedFromLeadID: leadID,
+            leadQuality: lead.leadQuality,
+            brandToPitch: lead.brandToPitch,
+            estimatedValue: lead.estimatedValue,
+            aiScore: lead.aiScore,
+            sentimentScore: lead.sentimentScore
         });
 
         // Create contact from lead if contact information exists

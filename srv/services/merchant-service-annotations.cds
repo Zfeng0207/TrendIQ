@@ -206,8 +206,26 @@ annotate MerchantService.MerchantDiscoveries with @(
 
         FieldGroup#ContactSocial: {
             Data: [
-                {Value: contactInfo},
-                {Value: socialMediaLinks}
+                {
+                    $Type: 'UI.DataField',
+                    Value: contactName,
+                    Label: 'Contact Name'
+                },
+                {
+                    $Type: 'UI.DataField',
+                    Value: contactEmail,
+                    Label: 'Email'
+                },
+                {
+                    $Type: 'UI.DataField',
+                    Value: contactPhone,
+                    Label: 'Phone'
+                },
+                {
+                    $Type: 'UI.DataField',
+                    Value: socialMediaLinks,
+                    Label: 'Social Media Links'
+                }
             ]
         },
 
@@ -220,7 +238,31 @@ annotate MerchantService.MerchantDiscoveries with @(
 
         FieldGroup#AdditionalInfo: {
             Data: [
-                {Value: discoveryMetadata}
+                {
+                    $Type: 'UI.DataField',
+                    Value: leadQuality,
+                    Label: 'Lead Quality'
+                },
+                {
+                    $Type: 'UI.DataField',
+                    Value: brandToPitch,
+                    Label: 'Brand To Pitch'
+                },
+                {
+                    $Type: 'UI.DataField',
+                    Value: estimatedValue,
+                    Label: 'Estimated Value (MYR)'
+                },
+                {
+                    $Type: 'UI.DataField',
+                    Value: aiScore,
+                    Label: 'AI Score'
+                },
+                {
+                    $Type: 'UI.DataField',
+                    Value: sentimentScore,
+                    Label: 'Sentiment Score'
+                }
             ]
         },
 
@@ -319,6 +361,19 @@ annotate MerchantService.MerchantDiscoveries with {
     socialMediaLinks  @title: 'Social Media Links';
     discoveryMetadata @title: 'Discovery Metadata';
     discoveryDate     @title: 'Discovery Date';
+    
+    // Virtual fields for parsed contact info
+    contactName       @title: 'Contact Name';
+    contactEmail      @title: 'Email';
+    contactPhone      @title: 'Phone';
+    
+    // Virtual fields for parsed discovery metadata
+    convertedFromLeadID @title: 'Converted From Lead ID';
+    leadQuality       @title: 'Lead Quality';
+    brandToPitch      @title: 'Brand To Pitch';
+    estimatedValue    @title: 'Estimated Value (MYR)';
+    aiScore           @title: 'AI Score';
+    sentimentScore    @title: 'Sentiment Score';
 }
 
 // ============================================================================
