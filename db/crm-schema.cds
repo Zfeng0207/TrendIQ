@@ -70,7 +70,7 @@ entity Accounts : managed, cuid, aspects.Address, aspects.SocialMedia, aspects.C
     accountManager : Association to Users @title: 'Account Manager';
     accountTier    : String(20) @title: 'Account Tier'
                      @assert.enum: ['Platinum', 'Gold', 'Silver', 'Bronze'];
-    
+
     // Operational fields for List Report
     assignedTo     : String(200) @title: 'Assigned To'; // Sales rep name as string
     dateCreated    : Date @title: 'Date Created';

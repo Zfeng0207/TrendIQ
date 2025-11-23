@@ -16,6 +16,7 @@ service LeadService @(path: '/lead') {
         action convertToAccount();
         action qualifyLead();
         action updateAIScore() returns Leads;
+        action generateAISummary() returns String; // Generate AI Summary - returns summary text
     };
 
     // Read-only views for lead analytics

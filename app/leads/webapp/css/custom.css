@@ -53,3 +53,41 @@
     margin: 0.25rem !important;
 }
 
+/* AI Planner Button - Bottom Right (ObjectPage) */
+.ai-planner-btn {
+    position: fixed !important;
+    bottom: 24px !important;
+    right: 24px !important;
+    z-index: 9999 !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+    border-radius: 2rem !important;
+    min-width: 8rem !important;
+    height: 3rem !important;
+    padding: 0 1.5rem !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    display: block !important;
+}
+
+.ai-planner-btn:hover {
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2) !important;
+    transform: translateY(-2px);
+    transition: all 0.2s ease;
+}
+
+.ai-planner-btn .sapMBtnContent {
+    font-size: 0.9375rem !important;
+    font-weight: 600 !important;
+}
+
+/* Ensure button DOM element is visible */
+#aiPlannerFABLeads {
+    position: fixed !important;
+    bottom: 24px !important;
+    right: 24px !important;
+    z-index: 9999 !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    display: block !important;
+}
+

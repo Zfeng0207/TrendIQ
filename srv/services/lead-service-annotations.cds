@@ -274,8 +274,15 @@ annotate LeadService.Leads with @(
             {
                 $Type: 'UI.DataFieldForAction',
                 Action: 'LeadService.convertToAccount',
-                Label: 'Convert to Account',
+                Label: 'Onboard Partner',
                 ![@UI.Importance]: #High
+            },
+            {
+                $Type: 'UI.DataFieldForAction',
+                Action: 'LeadService.generateAISummary',
+                Label: 'Generate AI Summary',
+                InvocationGrouping: #Isolated,
+                ![@UI.Importance]: #Medium
             },
             {
                 $Type: 'UI.DataFieldForAction',

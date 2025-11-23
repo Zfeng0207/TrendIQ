@@ -128,6 +128,16 @@
         data-settings='{"id" : "beautyleads.leads"}'
         data-handle-validation="true"
     ></div>
+    
+    <!-- AI Planner Button - ObjectPage only (hidden by default, shown by controller) -->
+    <button 
+        id="aiPlannerFABLeads" 
+        class="ai-planner-btn"
+        style="position: fixed !important; bottom: 24px !important; right: 24px !important; z-index: 9999 !important; background-color: #0070f2 !important; color: white !important; border: none !important; border-radius: 2rem !important; min-width: 8rem !important; height: 3rem !important; padding: 0 1.5rem !important; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important; font-size: 0.9375rem !important; font-weight: 600 !important; cursor: pointer !important; display: none !important; visibility: hidden !important; opacity: 0 !important; transition: all 0.2s ease !important;">
+        <span style="font-size: 1rem;">💡</span>
+        <span>AI Planner</span>
+    </button>
+    
     <script>
         (function() {
             var menuButton = document.getElementById('navMenuButton');
@@ -142,6 +152,60 @@
                         menu.classList.remove('show');
                     }
                 });
+            }
+            
+            // AI Planner Button Handler (for ObjectPage)
+            var aiPlannerButton = document.getElementById('aiPlannerFABLeads');
+            if (aiPlannerButton && !aiPlannerButton.hasAttribute('data-initialized')) {
+                // Show button only on ObjectPage (when URL contains Leads with key)
+                function checkAndShowAIPlanner() {
+                    var currentPath = window.location.pathname;
+                    var currentHash = window.location.hash;
+                    
+                    // Check if we're on ObjectPage (has key in URL)
+                    if (currentHash.indexOf('Leads(') >= 0 || 
+                        currentPath.indexOf('Leads(') >= 0) {
+                        // We're on ObjectPage - show AI Planner
+                        if (aiPlannerButton) {
+                            aiPlannerButton.style.display = 'flex';
+                            aiPlannerButton.style.visibility = 'visible';
+                            aiPlannerButton.style.opacity = '1';
+                        }
+                    } else {
+                        // We're on ListReport - hide AI Planner
+                        if (aiPlannerButton) {
+                            aiPlannerButton.style.display = 'none';
+                        }
+                    }
+                }
+                
+                // Check on load
+                checkAndShowAIPlanner();
+                
+                // Check on hash change (navigation)
+                window.addEventListener('hashchange', checkAndShowAIPlanner);
+                
+                // Check periodically
+                setInterval(checkAndShowAIPlanner, 1000);
+                
+                // Add click handler for AI Planner
+                aiPlannerButton.addEventListener('click', function() {
+                    // Try to get controller
+                    if (window.__LEADS_OBJECTPAGE_CONTROLLER__ && window.__LEADS_OBJECTPAGE_CONTROLLER__.onShowAIPlannerToast) {
+                        window.__LEADS_OBJECTPAGE_CONTROLLER__.onShowAIPlannerToast();
+                        return;
+                    }
+                    
+                    // Fallback: show toast directly
+                    if (typeof sap !== 'undefined' && sap.m && sap.m.MessageToast) {
+                        sap.m.MessageToast.show('AI Planner: Meeting script generated successfully', {
+                            duration: 3000,
+                            width: '20rem'
+                        });
+                    }
+                });
+                
+                aiPlannerButton.setAttribute('data-initialized', 'true');
             }
         })();
     </script>

@@ -152,6 +152,15 @@
               "contextPath": "/Leads",
               "navigation": {}
             }
+          },
+          "extends": {
+            "extensions": {
+              "sap.ui.controllerExtensions": {
+                "sap.fe.templates.ObjectPage.ObjectPageController": {
+                  "controllerName": "beautyleads.leads.ext.controller.ObjectPageExt"
+                }
+              }
+            }
           }
         }
       }

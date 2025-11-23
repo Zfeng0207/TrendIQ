@@ -305,7 +305,7 @@ annotate MerchantService.MerchantDiscoveries with {
                       @Common: {
                           ValueListWithFixedValues: true
                       };
-    
+
     phase             @title: 'Phase'
                       @Common: {
                           ValueListWithFixedValues: true

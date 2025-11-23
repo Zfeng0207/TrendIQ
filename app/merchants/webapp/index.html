@@ -129,13 +129,22 @@
         data-handle-validation="true"
     ></div>
     
-    <!-- Floating Action Button - Add Partner -->
+    <!-- Floating Action Button - Add Partner (ListReport only) -->
     <button 
         id="addPartnerFAB" 
         class="floating-action-button"
         style="position: fixed !important; bottom: 2rem !important; right: 2rem !important; z-index: 10000 !important; background-color: #0070f2 !important; color: white !important; border: none !important; border-radius: 2rem !important; min-width: 8rem !important; height: 3rem !important; padding: 0 1.5rem !important; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important; font-size: 0.9375rem !important; font-weight: 600 !important; cursor: pointer !important; display: flex !important; align-items: center !important; justify-content: center !important; gap: 0.5rem !important; visibility: visible !important; opacity: 1 !important; transition: all 0.2s ease !important;">
         <span style="font-size: 1rem;">+</span>
         <span>Add Partner</span>
+    </button>
+    
+    <!-- AI Planner Button - ObjectPage only (hidden by default, shown by controller) -->
+    <button 
+        id="aiPlannerFAB" 
+        class="ai-planner-btn"
+        style="position: fixed !important; bottom: 24px !important; right: 24px !important; z-index: 9999 !important; background-color: #0070f2 !important; color: white !important; border: none !important; border-radius: 2rem !important; min-width: 8rem !important; height: 3rem !important; padding: 0 1.5rem !important; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important; font-size: 0.9375rem !important; font-weight: 600 !important; cursor: pointer !important; display: none !important; visibility: hidden !important; opacity: 0 !important; transition: all 0.2s ease !important;">
+        <span style="font-size: 1rem;">💡</span>
+        <span>AI Planner</span>
     </button>
     <script>
         (function() {
@@ -245,6 +254,83 @@
                     }, 500);
                     });
                     button.setAttribute('data-click-handler', 'true');
+                }
+                
+                // AI Planner Button Handler (for ObjectPage)
+                var aiPlannerButton = document.getElementById('aiPlannerFAB');
+                if (aiPlannerButton && !aiPlannerButton.hasAttribute('data-initialized')) {
+                    // Show button only on ObjectPage (when URL contains MerchantDiscoveries with key)
+                    function checkAndShowAIPlanner() {
+                        var currentPath = window.location.pathname;
+                        var currentHash = window.location.hash;
+                        var addPartnerBtn = document.getElementById('addPartnerFAB');
+                        
+                        // Check if we're on ObjectPage (has key in URL)
+                        if (currentHash.indexOf('MerchantDiscoveries(') >= 0 || 
+                            currentPath.indexOf('MerchantDiscoveries(') >= 0) {
+                            // We're on ObjectPage - show AI Planner, hide Add Partner
+                            if (aiPlannerButton) {
+                                aiPlannerButton.style.display = 'flex';
+                                aiPlannerButton.style.visibility = 'visible';
+                                aiPlannerButton.style.opacity = '1';
+                            }
+                            if (addPartnerBtn) {
+                                addPartnerBtn.style.display = 'none';
+                                addPartnerBtn.style.visibility = 'hidden';
+                                addPartnerBtn.style.opacity = '0';
+                            }
+                            if (button) {
+                                button.style.display = 'none';
+                                button.style.visibility = 'hidden';
+                                button.style.opacity = '0';
+                            }
+                        } else {
+                            // We're on ListReport - show Add Partner, hide AI Planner
+                            if (aiPlannerButton) {
+                                aiPlannerButton.style.display = 'none';
+                                aiPlannerButton.style.visibility = 'hidden';
+                                aiPlannerButton.style.opacity = '0';
+                            }
+                            if (addPartnerBtn) {
+                                addPartnerBtn.style.display = 'flex';
+                                addPartnerBtn.style.visibility = 'visible';
+                                addPartnerBtn.style.opacity = '1';
+                            }
+                            if (button) {
+                                button.style.display = 'flex';
+                                button.style.visibility = 'visible';
+                                button.style.opacity = '1';
+                            }
+                        }
+                    }
+                    
+                    // Check on load
+                    checkAndShowAIPlanner();
+                    
+                    // Check on hash change (navigation)
+                    window.addEventListener('hashchange', checkAndShowAIPlanner);
+                    
+                    // Check periodically
+                    setInterval(checkAndShowAIPlanner, 1000);
+                    
+                    // Add click handler for AI Planner
+                    aiPlannerButton.addEventListener('click', function() {
+                        // Try to get controller
+                        if (window.__MERCHANTS_OBJECTPAGE_CONTROLLER__ && window.__MERCHANTS_OBJECTPAGE_CONTROLLER__.onShowAIPlannerToast) {
+                            window.__MERCHANTS_OBJECTPAGE_CONTROLLER__.onShowAIPlannerToast();
+                            return;
+                        }
+                        
+                        // Fallback: show toast directly
+                        if (typeof sap !== 'undefined' && sap.m && sap.m.MessageToast) {
+                            sap.m.MessageToast.show('AI Planner: Meeting script generated successfully', {
+                                duration: 3000,
+                                width: '20rem'
+                            });
+                        }
+                    });
+                    
+                    aiPlannerButton.setAttribute('data-initialized', 'true');
                 }
                 
                 // Manual dialog creation function
@@ -406,16 +492,27 @@
                     }
                 }
                 
-                // Monitor if button gets removed and ensure it stays visible
+                // Monitor if button gets removed and ensure it stays visible (only on ListReport)
                 var observer = new MutationObserver(function(mutations) {
                     var btn = document.getElementById('addPartnerFAB');
                     if (btn) {
-                        // Ensure it's always visible
-                        btn.style.display = 'flex';
-                        btn.style.visibility = 'visible';
-                        btn.style.opacity = '1';
-                        btn.style.position = 'fixed';
-                        btn.style.zIndex = '10000';
+                        // Check if we're on ObjectPage - if so, hide it
+                        var currentHash = window.location.hash;
+                        var currentPath = window.location.pathname;
+                        var isObjectPage = currentHash.indexOf('MerchantDiscoveries(') >= 0 || 
+                                          currentPath.indexOf('MerchantDiscoveries(') >= 0;
+                        
+                        if (isObjectPage) {
+                            // On ObjectPage - hide Add Partner button
+                            btn.style.display = 'none';
+                        } else {
+                            // On ListReport - show Add Partner button
+                            btn.style.display = 'flex';
+                            btn.style.visibility = 'visible';
+                            btn.style.opacity = '1';
+                            btn.style.position = 'fixed';
+                            btn.style.zIndex = '10000';
+                        }
                     }
                 });
                 
@@ -428,15 +525,27 @@
                     });
                 }
                 
-                // Also check periodically to ensure button is visible
+                // Also check periodically to ensure button visibility is correct
                 setInterval(function() {
                     var btn = document.getElementById('addPartnerFAB');
                     if (btn) {
-                        btn.style.display = 'flex';
-                        btn.style.visibility = 'visible';
-                        btn.style.opacity = '1';
-                        btn.style.position = 'fixed';
-                        btn.style.zIndex = '10000';
+                        // Check if we're on ObjectPage - if so, hide it
+                        var currentHash = window.location.hash;
+                        var currentPath = window.location.pathname;
+                        var isObjectPage = currentHash.indexOf('MerchantDiscoveries(') >= 0 || 
+                                          currentPath.indexOf('MerchantDiscoveries(') >= 0;
+                        
+                        if (isObjectPage) {
+                            // On ObjectPage - hide Add Partner button
+                            btn.style.display = 'none';
+                        } else {
+                            // On ListReport - show Add Partner button
+                            btn.style.display = 'flex';
+                            btn.style.visibility = 'visible';
+                            btn.style.opacity = '1';
+                            btn.style.position = 'fixed';
+                            btn.style.zIndex = '10000';
+                        }
                     }
                 }, 1000);
             }

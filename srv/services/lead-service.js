@@ -43,6 +43,16 @@ module.exports = async function() {
         return results;
     });
 
+    // Action: Generate AI Summary
+    this.on('generateAISummary', 'Leads', async (req) => {
+        // This action is handled in the UI controller to show toast
+        // Return success - the actual toast will be shown in the UI controller
+        return req.reply({ 
+            success: true,
+            message: 'AI Summary generated'
+        });
+    });
+
     // Action: Convert Lead to Account
     this.on('convertToAccount', 'Leads', async (req) => {
         const leadID = req.params[0].ID;

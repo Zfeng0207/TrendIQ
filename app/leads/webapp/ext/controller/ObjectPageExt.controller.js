@@ -5,7 +5,7 @@ sap.ui.define([
 ], function (ControllerExtension, MessageToast, Button) {
     "use strict";
 
-    return ControllerExtension.extend("beautyleads.merchants.ext.controller.ObjectPageExt", {
+    return ControllerExtension.extend("beautyleads.leads.ext.controller.ObjectPageExt", {
         
         /**
          * Called when the controller is instantiated
@@ -17,19 +17,27 @@ sap.ui.define([
             }
 
             // Store global reference for button access
-            window.__MERCHANTS_OBJECTPAGE_CONTROLLER__ = this;
+            window.__LEADS_OBJECTPAGE_CONTROLLER__ = this;
 
             // Intercept model calls to prevent backend action
             this._preventBackendCall();
 
-            // Add AI Planner floating button
+            // Add AI Planner floating button - try multiple times
             setTimeout(function () {
                 this._addAIPlannerButton();
-            }.bind(this), 1000);
+            }.bind(this), 500);
+            
+            setTimeout(function () {
+                this._addAIPlannerButton();
+            }.bind(this), 1500);
+            
+            setTimeout(function () {
+                this._addAIPlannerButton();
+            }.bind(this), 3000);
         },
 
         /**
-         * Prevent backend call for initiateAIMeeting
+         * Prevent backend call for generateAISummary
          */
         _preventBackendCall: function () {
             try {
@@ -56,12 +64,12 @@ sap.ui.define([
                     oModel._originalCallFunction = oModel.callFunction;
                 }
 
-                // Override to intercept initiateAIMeeting
+                // Override to intercept generateAISummary
                 oModel.callFunction = function (sPath, mParameters) {
-                    if (sPath && sPath.toLowerCase().indexOf("initiateaimeeting") >= 0) {
-                        console.log("Preventing backend call for initiateAIMeeting");
+                    if (sPath && sPath.toLowerCase().indexOf("generateaisummary") >= 0) {
+                        console.log("Preventing backend call for generateAISummary");
                         // Show toast and return success without calling backend
-                        MessageToast.show("AI Meeting Initiator script generated successfully", {
+                        MessageToast.show("AI Summary generated successfully", {
                             duration: 3000,
                             width: "20rem"
                         });
@@ -79,7 +87,7 @@ sap.ui.define([
 
         /**
          * Called after the view has been rendered
-         * Find and attach handler to AI Meeting Initiator button
+         * Find and attach handler to Generate AI Summary button
          */
         onAfterRendering: function () {
             // Call base controller's onAfterRendering if available
@@ -87,7 +95,7 @@ sap.ui.define([
                 this.base.onAfterRendering.apply(this.base, arguments);
             }
 
-            // Add AI Planner button - try multiple times
+            // Add AI Planner button
             this._addAIPlannerButton();
             setTimeout(function () {
                 this._addAIPlannerButton();
@@ -120,7 +128,7 @@ sap.ui.define([
         _addAIPlannerButton: function () {
             try {
                 // Check if button already exists
-                const sButtonId = "aiPlannerFAB";
+                const sButtonId = "aiPlannerFABLeads";
                 const oExistingButton = sap.ui.getCore().byId(sButtonId);
                 if (oExistingButton) {
                     console.log("AI Planner button already exists");
@@ -159,7 +167,7 @@ sap.ui.define([
                 const oAIPlannerButton = new Button({
                     id: sButtonId,
                     text: sButtonText,
-                    icon: "sap-icon://lightbulb", // Using lightbulb icon (AI icon might not be available)
+                    icon: "sap-icon://lightbulb",
                     type: "Emphasized",
                     press: this.onShowAIPlannerToast.bind(this)
                 });
@@ -175,42 +183,12 @@ sap.ui.define([
                 }
 
                 // Also show the HTML button if it exists
-                const oHTMLButton = document.getElementById("aiPlannerFAB");
+                const oHTMLButton = document.getElementById("aiPlannerFABLeads");
                 if (oHTMLButton) {
                     oHTMLButton.style.display = "flex";
                     oHTMLButton.style.visibility = "visible";
                     oHTMLButton.style.opacity = "1";
                     console.log("AI Planner HTML button shown");
-                }
-
-                // Hide Add Partner button on ObjectPage (ensure it stays hidden)
-                const oAddPartnerButton = document.getElementById("addPartnerFAB");
-                if (oAddPartnerButton) {
-                    oAddPartnerButton.style.display = "none";
-                    oAddPartnerButton.style.visibility = "hidden";
-                    oAddPartnerButton.style.opacity = "0";
-                    console.log("Add Partner button hidden on ObjectPage");
-                }
-                
-                // Set up interval to keep Add Partner button hidden on ObjectPage
-                if (!this._hideAddPartnerInterval) {
-                    this._hideAddPartnerInterval = setInterval(function() {
-                        const oAddPartnerBtn = document.getElementById("addPartnerFAB");
-                        if (oAddPartnerBtn) {
-                            // Check if we're still on ObjectPage
-                            const currentHash = window.location.hash;
-                            const currentPath = window.location.pathname;
-                            const isObjectPage = currentHash.indexOf('MerchantDiscoveries(') >= 0 || 
-                                                currentPath.indexOf('MerchantDiscoveries(') >= 0;
-                            
-                            if (isObjectPage) {
-                                // Keep it hidden on ObjectPage
-                                oAddPartnerBtn.style.display = "none";
-                                oAddPartnerBtn.style.visibility = "hidden";
-                                oAddPartnerBtn.style.opacity = "0";
-                            }
-                        }
-                    }, 500);
                 }
 
                 // Place button directly in body - multiple attempts
@@ -237,24 +215,6 @@ sap.ui.define([
                                 }, 500);
                             }
                         }, 200);
-                        
-                        // Use MutationObserver to ensure button stays visible
-                        const oObserver = new MutationObserver(function (mutations) {
-                            const oButtonDom = document.getElementById(sButtonId);
-                            if (oButtonDom && oButtonDom.parentElement === document.body || oButtonDom.parentElement.id === "content") {
-                                // Button is in correct place
-                            } else if (oButtonDom) {
-                                // Button was moved, re-apply styles
-                                oButtonDom.style.cssText = "position: fixed !important; bottom: 24px !important; right: 24px !important; z-index: 9999 !important; visibility: visible !important; opacity: 1 !important; display: block !important;";
-                            }
-                        });
-                        
-                        // Observe body for changes
-                        oObserver.observe(document.body, {
-                            childList: true,
-                            subtree: true
-                        });
-                        
                     } else {
                         setTimeout(placeButton, 200);
                     }
@@ -281,10 +241,10 @@ sap.ui.define([
                     return;
                 }
 
-                // Get partner data from binding context
+                // Get lead data from binding context
                 const oBindingContext = oView.getBindingContext();
                 if (!oBindingContext) {
-                    MessageToast.show("Error: No partner data available", {
+                    MessageToast.show("Error: No lead data available", {
                         duration: 3000,
                         width: "20rem"
                     });
@@ -293,24 +253,28 @@ sap.ui.define([
 
                 const oData = oBindingContext.getObject();
                 
-                // Extract partner information with fallbacks
-                const sPartnerName = oData.merchantName || "Channel Partner";
-                const sBusinessType = oData.businessType || "N/A";
-                const sLocation = oData.city || oData.location || "N/A";
-                const sDiscoverySource = oData.discoverySource || "N/A";
-                const iScore = oData.merchantScore || 0;
-                const sContactName = oData.contactInfo || sPartnerName;
-                const sSocialLinks = oData.socialMediaLinks || "Not available";
+                // Extract lead information with fallbacks
+                const sLeadName = oData.outletName || oData.contactName || "Lead";
+                const sContactName = oData.contactName || sLeadName;
+                const sContactEmail = oData.contactEmail || "N/A";
+                const sContactPhone = oData.contactPhone || "N/A";
+                const sBrandToPitch = oData.brandToPitch || "N/A";
+                const sSource = oData.source || "N/A";
+                const iAIScore = oData.aiScore || 0;
+                const sStatus = oData.status || "N/A";
+                const sQuality = oData.quality || "N/A";
 
                 // Generate AI meeting planning text
                 const sMeetingText = this._generateAIPlannerText(
-                    sPartnerName,
-                    sBusinessType,
-                    sLocation,
-                    sDiscoverySource,
-                    iScore,
+                    sLeadName,
                     sContactName,
-                    sSocialLinks
+                    sContactEmail,
+                    sContactPhone,
+                    sBrandToPitch,
+                    sSource,
+                    iAIScore,
+                    sStatus,
+                    sQuality
                 );
 
                 // Show toast with the meeting text
@@ -329,36 +293,39 @@ sap.ui.define([
         },
 
         /**
-         * Generate AI Planner meeting text
+         * Generate AI Planner meeting text for Leads
          */
-        _generateAIPlannerText: function (sPartnerName, sBusinessType, sLocation, sDiscoverySource, iScore, sContactName, sSocialLinks) {
-            let sText = "AI Meeting Planner for " + sPartnerName + "\n\n";
+        _generateAIPlannerText: function (sLeadName, sContactName, sContactEmail, sContactPhone, sBrandToPitch, sSource, iAIScore, sStatus, sQuality) {
+            let sText = "AI Meeting Planner for " + sLeadName + "\n\n";
             
             sText += "Suggested Opening:\n";
             sText += "\"Hi " + sContactName + ", thanks for taking the time to meet with us. ";
-            sText += "Based on your presence in the " + sBusinessType + " space at " + sLocation + ", ";
-            sText += "we believe there is strong potential for collaboration.\"\n\n";
+            sText += "Based on your interest in " + sBrandToPitch + " and your " + sQuality.toLowerCase() + " lead status, ";
+            sText += "we believe there is strong potential for partnership.\"\n\n";
             
             sText += "Business Context:\n";
-            sText += "• Business Type: " + sBusinessType + "\n";
-            sText += "• Location: " + sLocation + "\n";
-            sText += "• Discovery Source: " + sDiscoverySource + "\n";
-            sText += "• Social Reach: " + sSocialLinks + "\n\n";
+            sText += "• Lead Name: " + sLeadName + "\n";
+            sText += "• Contact: " + sContactName + " (" + sContactEmail + ", " + sContactPhone + ")\n";
+            sText += "• Brand Interest: " + sBrandToPitch + "\n";
+            sText += "• Source: " + sSource + "\n";
+            sText += "• Lead Quality: " + sQuality + "\n";
+            sText += "• AI Score: " + iAIScore + "%\n";
+            sText += "• Status: " + sStatus + "\n\n";
             
             sText += "Recommended Talking Points:\n";
-            sText += "1. Explore growth opportunities based on your channel partner score (" + iScore + "%).\n";
-            sText += "2. Discuss onboarding readiness and next steps.\n";
+            sText += "1. Explore partnership opportunities based on your AI score (" + iAIScore + "%).\n";
+            sText += "2. Discuss " + sBrandToPitch + " product portfolio and benefits.\n";
             sText += "3. Identify ideal first SKUs or campaigns to pilot.\n";
             sText += "4. Align on commercial expectations & timelines.\n\n";
             
             sText += "Next Action:\n";
-            sText += "Let's discuss how SmartCommerce CRM can support your growth as an early channel partner.";
+            sText += "Let's discuss how SmartCommerce CRM can support your growth as a channel partner.";
 
             return sText;
         },
 
         /**
-         * Attach handler to AI Meeting Initiator button
+         * Attach handler to Generate AI Summary button
          */
         _attachButtonHandler: function () {
             try {
@@ -374,8 +341,8 @@ sap.ui.define([
                 const aButtons = oView.findAggregatedObjects(true, function (oControl) {
                     if (oControl.isA && oControl.isA("sap.m.Button")) {
                         const sText = oControl.getText && oControl.getText();
-                        if (sText && (sText.indexOf("AI Meeting Initiator") >= 0 || 
-                                     sText.indexOf("Meeting Initiator") >= 0)) {
+                        if (sText && (sText.indexOf("Generate AI Summary") >= 0 || 
+                                     sText.indexOf("AI Summary") >= 0)) {
                             return true;
                         }
                     }
@@ -393,7 +360,7 @@ sap.ui.define([
                         const aHeaderButtons = oHeader.findAggregatedObjects(true, function (oControl) {
                             if (oControl.isA && oControl.isA("sap.m.Button")) {
                                 const sText = oControl.getText && oControl.getText();
-                                return sText && sText.indexOf("Meeting") >= 0;
+                                return sText && sText.indexOf("Summary") >= 0;
                             }
                             return false;
                         });
@@ -405,7 +372,7 @@ sap.ui.define([
 
                 if (oButton) {
                     // Check if already attached
-                    if (oButton._aiMeetingHandlerAttached) {
+                    if (oButton._aiSummaryHandlerAttached) {
                         return;
                     }
                     
@@ -419,21 +386,16 @@ sap.ui.define([
                             oEvent.stopPropagation();
                         }
                         // Show toast directly - no backend call
-                        MessageToast.show("AI Meeting Initiator script generated successfully", {
+                        MessageToast.show("AI Summary generated successfully", {
                             duration: 3000,
                             width: "20rem"
                         });
                     });
                     
                     // Mark as attached
-                    oButton._aiMeetingHandlerAttached = true;
+                    oButton._aiSummaryHandlerAttached = true;
                     
-                    // Style the button
-                    oButton.setType("Emphasized");
-                    oButton.setIcon("sap-icon://lightbulb");
-                    oButton.setIconFirst(true);
-                    
-                    console.log("AI Meeting Initiator button handler attached successfully");
+                    console.log("Generate AI Summary button handler attached successfully");
                 }
             } catch (e) {
                 console.error("Error attaching button handler:", e);
@@ -441,11 +403,11 @@ sap.ui.define([
         },
 
         /**
-         * Handler for AI Meeting Initiator button click
+         * Handler for Generate AI Summary button click
          * Also accessible via global reference
          */
-        onInitiateAIMeeting: function () {
-            MessageToast.show("AI Meeting Initiator script generated successfully", {
+        onGenerateAISummary: function () {
+            MessageToast.show("AI Summary generated successfully", {
                 duration: 3000,
                 width: "20rem"
             });
