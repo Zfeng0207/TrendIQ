@@ -267,6 +267,12 @@ annotate LeadService.Leads with @(
         Identification: [
             {
                 $Type: 'UI.DataFieldForAction',
+                Action: 'LeadService.qualifyLead',
+                Label: 'Qualify Lead',
+                ![@UI.Importance]: #High
+            },
+            {
+                $Type: 'UI.DataFieldForAction',
                 Action: 'LeadService.convertToAccount',
                 Label: 'Convert to Account',
                 ![@UI.Importance]: #High
@@ -504,6 +510,11 @@ annotate LeadService.Leads actions {
     convertToAccount @(
         Common.SideEffects: {
             TargetProperties: ['converted', 'convertedDate', 'status']
+        }
+    );
+    qualifyLead @(
+        Common.SideEffects: {
+            TargetProperties: ['status', 'leadQuality', 'statusCriticality', 'leadQualityCriticality']
         }
     );
     updateAIScore @(

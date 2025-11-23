@@ -60,10 +60,14 @@ module.exports = async function() {
             return req.warn(409, 'Lead should be qualified before conversion');
         }
 
+        // Generate new Account ID
+        const newAccountID = cds.utils.uuid();
+
         // Create new account from lead
-        const newAccount = await INSERT.into(Accounts).entries({
+        await INSERT.into(Accounts).entries({
+            ID: newAccountID,
             accountName: lead.outletName,
-            accountType: 'Customer',
+            accountType: 'Salon', // Default to Salon as it is a valid enum value
             status: 'Active',
             address: lead.address,
             city: lead.city,
@@ -72,14 +76,14 @@ module.exports = async function() {
             postalCode: lead.postalCode,
             website: lead.source === 'Web' ? lead.sourceDetail : null,
             phone: lead.contactPhone,
-            owner_ID: lead.owner_ID
+            accountOwner_ID: lead.owner_ID
         });
 
         // Create contact from lead if contact information exists
         if (lead.contactName || lead.contactEmail) {
             const nameParts = (lead.contactName || '').split(' ');
             await INSERT.into(Contacts).entries({
-                account_ID: newAccount.ID,
+                account_ID: newAccountID,
                 firstName: nameParts[0] || '',
                 lastName: nameParts.slice(1).join(' ') || '',
                 fullName: lead.contactName,
@@ -95,11 +99,36 @@ module.exports = async function() {
         await UPDATE(Leads).set({
             converted: true,
             convertedDate: new Date().toISOString(),
-            convertedTo_ID: newAccount.ID,
+            convertedTo_ID: newAccountID,
             status: 'Converted'
         }).where({ ID: leadID });
 
-        return req.reply({ message: 'Lead converted successfully', accountID: newAccount.ID });
+        return req.reply({ message: 'Lead converted successfully', accountID: newAccountID });
+    });
+
+    // Action: Qualify Lead
+    this.on('qualifyLead', 'Leads', async (req) => {
+        const leadID = req.params[0].ID;
+        const lead = await SELECT.one.from(Leads).where({ ID: leadID });
+
+        if (!lead) {
+            return req.error(404, `Lead ${leadID} not found`);
+        }
+
+        if (lead.status === 'Qualified') {
+            return req.warn(400, 'Lead is already qualified');
+        }
+
+        if (lead.status === 'Converted') {
+            return req.error(400, 'Cannot qualify a converted lead');
+        }
+
+        await UPDATE(Leads).set({
+            status: 'Qualified',
+            leadQuality: 'Hot'
+        }).where({ ID: leadID });
+
+        return req.reply({ message: 'Lead qualified successfully' });
     });
 
     // Action: Update AI Score

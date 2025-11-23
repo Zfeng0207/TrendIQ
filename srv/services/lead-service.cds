@@ -14,6 +14,7 @@ service LeadService @(path: '/lead') {
         virtual null as leadQualityCriticality : Integer
     } actions {
         action convertToAccount();
+        action qualifyLead();
         action updateAIScore() returns Leads;
     };
 
