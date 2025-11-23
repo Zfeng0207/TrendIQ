@@ -166,6 +166,39 @@
                     "navigationProperty": "convertedToLead"
                   }
                 }
+              },
+              "controlConfiguration": {
+                "@com.sap.vocabularies.UI.v1.Identification": {
+                  "actions": {
+                    "DataFieldForAction::MerchantService.initiateAIMeeting": {
+                      "visible": false
+                    },
+                    "CustomAIMeeting": {
+                      "press": "beautyleads.merchants.ext.actions.AIMeetingActions.onAIMeetingInitiator",
+                      "text": "AI Meeting Initiator",
+                      "visible": true,
+                      "enabled": true,
+                      "type": "Emphasized",
+                      "position": {
+                        "placement": "After",
+                        "anchor": "DataFieldForAction::MerchantService.assignToSalesRep"
+                      }
+                    }
+                  }
+                }
+              },
+              "content": {
+                "header": {
+                  "actions": {
+                    "CustomAIMeetingHeader": {
+                      "press": "beautyleads.merchants.ext.actions.AIMeetingActions.onAIMeetingInitiator",
+                      "text": "AI Meeting Initiator",
+                      "visible": true,
+                      "enabled": true,
+                      "type": "Emphasized"
+                    }
+                  }
+                }
               }
             }
           },

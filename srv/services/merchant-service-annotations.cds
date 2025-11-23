@@ -285,12 +285,6 @@ annotate MerchantService.MerchantDiscoveries with @(
         Identification: [
             {
                 $Type: 'UI.DataFieldForAction',
-                Action: 'MerchantService.initiateAIMeeting',
-                Label: 'AI Meeting Initiator',
-                InvocationGrouping: #Isolated
-            },
-            {
-                $Type: 'UI.DataFieldForAction',
                 Action: 'MerchantService.qualifyMerchant',
                 Label: 'Qualify Channel Partner'
             },

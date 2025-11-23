@@ -149,6 +149,221 @@
     display: block !important;
 }
 
+/* AI Meeting Planner Dialog Styles */
+#aiMeetingPlannerDialog .sapMDialogTitle {
+    font-size: 1.25rem !important;
+    font-weight: 600 !important;
+}
+
+#aiMeetingPlannerDialog .sapMPanel {
+    margin-bottom: 0.5rem !important;
+}
+
+#aiMeetingPlannerDialog .sapMPanelHdr {
+    background-color: #f7f7f7 !important;
+    font-weight: 600 !important;
+}
+
+#aiMeetingPlannerDialog .sapMText {
+    line-height: 1.6 !important;
+}
+
+#aiMeetingPlannerDialog .sapMLabel {
+    font-weight: 500 !important;
+    color: #32363a !important;
+}
+
+#aiMeetingPlannerDialog .sapUiIcon {
+    color: #0070f2 !important;
+}
+
+/* Style for talking points list */
+#talkingPointsList .sapMHBox {
+    align-items: flex-start !important;
+    margin-bottom: 0.5rem !important;
+}
+
+#talkingPointsList .sapMText {
+    flex: 1 !important;
+}
+
+/* Modern AI Meeting Planner Card Styles */
+.aiMeetingPlannerContent {
+    background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%) !important;
+}
+
+/* Card Base Styles */
+.partnerOverviewCard,
+.suggestedOpeningCard,
+.businessContextCard,
+.talkingPointsCard,
+.nextActionCard {
+    background: #ffffff !important;
+    border-radius: 12px !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+    padding: 0 !important;
+    overflow: hidden;
+    transition: all 0.3s ease !important;
+}
+
+.partnerOverviewCard:hover,
+.suggestedOpeningCard:hover,
+.businessContextCard:hover,
+.talkingPointsCard:hover,
+.nextActionCard:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12) !important;
+    transform: translateY(-2px);
+}
+
+/* Card Headers */
+.cardHeader {
+    background: linear-gradient(90deg, #f8f9fa 0%, #ffffff 100%) !important;
+    padding: 0.75rem 1rem !important;
+    border-bottom: 2px solid #e8ecf1 !important;
+}
+
+.cardHeader .sapUiIcon {
+    font-size: 1rem !important;
+}
+
+.cardHeader .sapMTitle {
+    color: #32363a !important;
+    font-weight: 600 !important;
+    font-size: 0.9375rem !important;
+}
+
+/* Card Content */
+.cardContent {
+    padding: 1rem !important;
+}
+
+/* Partner Overview Card */
+.partnerOverviewCard {
+    border-left: 4px solid #0070f2 !important;
+}
+
+.infoRow {
+    margin-bottom: 0.75rem !important;
+}
+
+.infoLabel {
+    font-size: 0.6875rem !important;
+    color: #6a6d70 !important;
+    font-weight: 500 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.3px !important;
+    margin-bottom: 0.125rem !important;
+}
+
+.infoValue {
+    font-size: 0.875rem !important;
+    color: #32363a !important;
+    font-weight: 600 !important;
+}
+
+.scoreValue {
+    font-size: 1rem !important;
+    color: #2b7c2b !important;
+    font-weight: 700 !important;
+}
+
+/* Suggested Opening Card */
+.suggestedOpeningCard {
+    border-left: 4px solid #2b7c2b !important;
+}
+
+.openingScript .scriptText {
+    background: #f8f9fa !important;
+    padding: 0.75rem !important;
+    border-radius: 6px !important;
+    border-left: 3px solid #2b7c2b !important;
+    font-size: 0.875rem !important;
+    line-height: 1.5 !important;
+    color: #32363a !important;
+}
+
+/* Business Context Card */
+.businessContextCard {
+    border-left: 4px solid #e09d00 !important;
+}
+
+.contextItem {
+    padding: 0.5rem 0 !important;
+    border-bottom: 1px solid #f0f0f0 !important;
+}
+
+.contextItem:last-child {
+    border-bottom: none !important;
+}
+
+.contextIcon {
+    margin-right: 0.75rem !important;
+    margin-top: 0.125rem !important;
+    font-size: 0.875rem !important;
+}
+
+.contextDetails {
+    flex: 1 !important;
+}
+
+.contextLabel {
+    font-size: 0.6875rem !important;
+    color: #6a6d70 !important;
+    font-weight: 500 !important;
+    margin-bottom: 0.125rem !important;
+}
+
+.contextValue {
+    font-size: 0.875rem !important;
+    color: #32363a !important;
+    font-weight: 500 !important;
+}
+
+/* Talking Points Card */
+.talkingPointsCard {
+    border-left: 4px solid #bb0000 !important;
+}
+
+.talkingPointsList .sapMHBox {
+    align-items: flex-start !important;
+    padding: 0.5rem 0 !important;
+    border-bottom: 1px dashed #e8ecf1 !important;
+}
+
+.talkingPointsList .sapMHBox:last-child {
+    border-bottom: none !important;
+}
+
+.talkingPointsList .sapUiIcon {
+    color: #bb0000 !important;
+    font-size: 0.875rem !important;
+    margin-right: 0.5rem !important;
+    margin-top: 0.125rem !important;
+}
+
+.talkingPointsList .sapMText {
+    font-size: 0.875rem !important;
+    line-height: 1.4 !important;
+    color: #32363a !important;
+}
+
+/* Next Action Card */
+.nextActionCard {
+    border-left: 4px solid #5e696e !important;
+}
+
+.nextActionText {
+    font-size: 0.875rem !important;
+    line-height: 1.5 !important;
+    color: #32363a !important;
+}
+
+/* Dialog Buttons */
+#aiMeetingPlannerDialog .sapMBtn {
+    border-radius: 6px !important;
+    font-weight: 500 !important;
+}
+
 /* Responsive: Adjust position on smaller screens */
 @media (max-width: 768px) {
     .floating-action-button {
@@ -166,6 +381,25 @@
     
     .floating-action-button .sapMBtnIcon {
         margin: 0 !important;
+    }
+
+    #aiMeetingPlannerDialog {
+        width: 95% !important;
+        max-width: 95% !important;
+    }
+
+    .cardContent {
+        padding: 0.75rem !important;
+    }
+
+    .cardHeader {
+        padding: 0.5rem 0.75rem !important;
+    }
+
+    .infoValue,
+    .contextValue,
+    .talkingPointsList .sapMText {
+        font-size: 0.8125rem !important;
     }
 }
 
