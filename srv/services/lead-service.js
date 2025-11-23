@@ -70,8 +70,9 @@ module.exports = async function() {
             return req.warn(409, 'Lead should be qualified before conversion');
         }
 
-        // Generate new Account ID
+        // Generate new IDs
         const newAccountID = cds.utils.uuid();
+        const merchantDiscoveryID = cds.utils.uuid();
 
         // Create new account from lead
         await INSERT.into(Accounts).entries({
@@ -87,6 +88,41 @@ module.exports = async function() {
             website: lead.source === 'Web' ? lead.sourceDetail : null,
             phone: lead.contactPhone,
             accountOwner_ID: lead.owner_ID
+        });
+
+        // Create MerchantDiscovery record for Channel Partner Onboarding
+        const { MerchantDiscovery } = cds.entities('beauty.crm');
+        await INSERT.into(MerchantDiscovery).entries({
+            ID: merchantDiscoveryID,
+            merchantName: lead.outletName,
+            about: lead.notes || '',
+            discoverySource: lead.source === 'Web' ? 'Online Web' : 'Other',
+            discoveryDate: new Date().toISOString(),
+            location: [lead.address, lead.city, lead.state, lead.country].filter(Boolean).join(', '),
+            businessType: 'Salon', // Default to Salon
+            contactInfo: JSON.stringify({
+                name: lead.contactName,
+                email: lead.contactEmail,
+                phone: lead.contactPhone
+            }),
+            socialMediaLinks: lead.source === 'Instagram' ? lead.sourceDetail : '',
+            merchantScore: lead.aiScore || 0,
+            autoAssignedTo_ID: lead.owner_ID,
+            discoveryMetadata: JSON.stringify({
+                convertedFromLeadID: leadID,
+                leadQuality: lead.leadQuality,
+                brandToPitch: lead.brandToPitch,
+                estimatedValue: lead.estimatedValue,
+                aiScore: lead.aiScore,
+                sentimentScore: lead.sentimentScore
+            }),
+            status: 'Onboarding', // Set to Onboarding for channel partner flow
+            convertedToLead_ID: leadID,
+            address: lead.address,
+            city: lead.city,
+            state: lead.state,
+            country: lead.country,
+            postalCode: lead.postalCode
         });
 
         // Create contact from lead if contact information exists
@@ -114,7 +150,9 @@ module.exports = async function() {
         }).where({ ID: leadID });
 
         console.log('Lead converted successfully. Account ID:', newAccountID);
-        return { message: 'Lead converted successfully', accountID: newAccountID };
+        console.log('Merchant Discovery ID:', merchantDiscoveryID);
+        // Return the merchant discovery ID instead of account ID for redirect
+        return { message: 'Lead converted successfully', accountID: merchantDiscoveryID };
     });
 
     // Action: Qualify Lead

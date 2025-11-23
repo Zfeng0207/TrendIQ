@@ -249,8 +249,8 @@
                                 console.log("=== ACCOUNT ID FOUND IN BATCH ===", accountID);
                                 
                                 setTimeout(function() {
-                                    var onboardingUrl = "/beautyleads.accounts/index.html#/Accounts(" + accountID + ")?onboarding=true";
-                                    console.log("=== NAVIGATING TO ONBOARDING ===", onboardingUrl);
+                                    var onboardingUrl = "/beautyleads.merchants/index.html#/MerchantDiscoveries(" + accountID + ")";
+                                    console.log("=== NAVIGATING TO CHANNEL PARTNER ONBOARDING ===", onboardingUrl);
                                     window.location.href = onboardingUrl;
                                 }, 2000);
                             } else {
@@ -274,7 +274,7 @@
                             if (accountID) {
                                 console.log("Account ID found:", accountID);
                                 setTimeout(function() {
-                                    var onboardingUrl = "/beautyleads.accounts/index.html#/Accounts(" + accountID + ")?onboarding=true";
+                                    var onboardingUrl = "/beautyleads.merchants/index.html#/MerchantDiscoveries(" + accountID + ")";
                                     console.log("Navigating to:", onboardingUrl);
                                     window.location.href = onboardingUrl;
                                 }, 2000);
@@ -329,7 +329,7 @@
                                                     console.log("ConvertedTo_ID from context:", sConvertedToID);
                                                     
                                     if (sConvertedToID) {
-                                        var onboardingUrl = "/beautyleads.accounts/index.html#/Accounts(" + sConvertedToID + ")?onboarding=true";
+                                        var onboardingUrl = "/beautyleads.merchants/index.html#/MerchantDiscoveries(" + sConvertedToID + ")";
                                         console.log("Navigation URL:", onboardingUrl);
                                         window.location.href = onboardingUrl;
                                     }
