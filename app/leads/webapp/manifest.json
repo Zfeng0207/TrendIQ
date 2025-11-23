@@ -157,7 +157,7 @@
             "extensions": {
               "sap.ui.controllerExtensions": {
                 "sap.fe.templates.ObjectPage.ObjectPageController": {
-                  "controllerName": "beautyleads.leads.ext.controller.ObjectPageExt"
+                  "controllerName": "beautyleads.leads.ext.CustomActions"
                 }
               }
             }

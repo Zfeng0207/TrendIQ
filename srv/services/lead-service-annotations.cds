@@ -267,14 +267,14 @@ annotate LeadService.Leads with @(
         Identification: [
             {
                 $Type: 'UI.DataFieldForAction',
-                Action: 'LeadService.qualifyLead',
-                Label: 'Qualify Lead',
+                Action: 'LeadService.convertToAccount',
+                Label: 'Convert to Account',
                 ![@UI.Importance]: #High
             },
             {
                 $Type: 'UI.DataFieldForAction',
-                Action: 'LeadService.convertToAccount',
-                Label: 'Onboard Partner',
+                Action: 'LeadService.qualifyLead',
+                Label: 'Qualify Lead',
                 ![@UI.Importance]: #High
             },
             {

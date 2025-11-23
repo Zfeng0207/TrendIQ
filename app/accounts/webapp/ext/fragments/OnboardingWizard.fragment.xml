@@ -1,0 +1,91 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:f="sap.ui.layout.form"
+    xmlns:l="sap.ui.layout">
+    
+    <VBox class="sapUiSmallMargin">
+        <!-- Onboarding Progress Indicator -->
+        <MessageStrip
+            text="Welcome to Account Onboarding! Complete the steps below to set up your new account."
+            type="Information"
+            showIcon="true"
+            class="sapUiMediumMarginBottom">
+        </MessageStrip>
+
+        <!-- Onboarding Checklist -->
+        <Panel headerText="Onboarding Checklist" expandable="true" expanded="true">
+            <content>
+                <VBox class="sapUiSmallMargin">
+                    <HBox class="sapUiTinyMarginBottom">
+                        <core:Icon src="sap-icon://inbox" class="sapUiTinyMarginEnd" color="Default" />
+                        <Text text="Step 1: Review and complete account details (Name, Type, Address)" />
+                    </HBox>
+                    <HBox class="sapUiTinyMarginBottom">
+                        <core:Icon src="sap-icon://group" class="sapUiTinyMarginEnd" color="Default" />
+                        <Text text="Step 2: Add key contacts and decision makers" />
+                    </HBox>
+                    <HBox class="sapUiTinyMarginBottom">
+                        <core:Icon src="sap-icon://sales-quote" class="sapUiTinyMarginEnd" color="Default" />
+                        <Text text="Step 3: Create initial opportunities" />
+                    </HBox>
+                    <HBox class="sapUiTinyMarginBottom">
+                        <core:Icon src="sap-icon://settings" class="sapUiTinyMarginEnd" color="Default" />
+                        <Text text="Step 4: Configure account preferences and settings" />
+                    </HBox>
+                </VBox>
+            </content>
+        </Panel>
+
+        <!-- Quick Actions -->
+        <Panel headerText="Quick Actions" expandable="true" expanded="true" class="sapUiSmallMarginTop">
+            <content>
+                <VBox class="sapUiSmallMargin">
+                    <Button
+                        text="Add Primary Contact"
+                        icon="sap-icon://add-contact"
+                        type="Transparent"
+                        class="sapUiTinyMarginBottom"
+                        press=".onAddContact" />
+                    <Button
+                        text="Create First Opportunity"
+                        icon="sap-icon://add-product"
+                        type="Transparent"
+                        class="sapUiTinyMarginBottom"
+                        press=".onCreateOpportunity" />
+                    <Button
+                        text="View Account Overview"
+                        icon="sap-icon://document"
+                        type="Transparent"
+                        press=".onViewOverview" />
+                </VBox>
+            </content>
+        </Panel>
+
+        <!-- Tips -->
+        <Panel headerText="Onboarding Tips" expandable="true" expanded="false" class="sapUiSmallMarginTop">
+            <content>
+                <VBox class="sapUiSmallMargin">
+                    <Text text="💡 Complete all account details to ensure smooth operations" class="sapUiTinyMarginBottom" />
+                    <Text text="💡 Add multiple contacts to maintain strong relationships" class="sapUiTinyMarginBottom" />
+                    <Text text="💡 Set up opportunities early to track potential revenue" class="sapUiTinyMarginBottom" />
+                    <Text text="💡 Use the AI insights to prioritize your engagement strategy" />
+                </VBox>
+            </content>
+        </Panel>
+
+        <!-- Action Buttons -->
+        <Toolbar class="sapUiSmallMarginTop">
+            <ToolbarSpacer />
+            <Button
+                text="Skip Onboarding"
+                type="Ghost"
+                press=".onCompleteOnboarding" />
+            <Button
+                text="Complete Onboarding"
+                type="Emphasized"
+                press=".onCompleteOnboarding" />
+        </Toolbar>
+    </VBox>
+</core:FragmentDefinition>
+
