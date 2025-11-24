@@ -1,0 +1,7 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" core:require="{formatter: 'beautyleads/campaigns/ext/formatters/PerformanceFormatter'}">
+    <VBox class="sapUiSmallMargin">
+        <FormattedText 
+            htmlText="{path: 'performanceMetrics', formatter: 'formatter.formatPerformanceMetrics'}" 
+            class="performanceMetricsDisplay"/>
+    </VBox>
+</core:FragmentDefinition>

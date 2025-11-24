@@ -22,20 +22,30 @@
                         <Column hAlign="End">
                             <Text text="{i18n>budget}"/>
                         </Column>
-                        <Column>
+                        <Column minScreenWidth="Desktop" demandPopin="true">
                             <Text text="{i18n>performance}"/>
                         </Column>
                     </columns>
                     <items>
                         <ColumnListItem type="Navigation" press=".onNavigateToCampaign">
                             <cells>
-                                <Text text="{campaignName}"/>
+                                <VBox>
+                                    <Text text="{campaignName}" class="sapMTextBold"/>
+                                    <Text text="{triggerKeyword}" class="sapUiTinyMarginTop"/>
+                                </VBox>
                                 <Text text="{campaignType}"/>
                                 <ObjectStatus 
                                     text="{status}"
                                     state="{path: 'status', formatter: '.formatCampaignStatusState'}"/>
-                                <Text text="{path: 'budget', formatter: '.formatCurrency'}"/>
-                                <Text text="{path: 'performanceMetrics', formatter: '.formatCampaignPerformance'}"/>
+                                <VBox>
+                                    <Text text="{path: 'budget', formatter: '.formatCurrency'}" class="sapMTextBold"/>
+                                    <Text text="{i18n>budget}" class="sapUiTinyMarginTop"/>
+                                </VBox>
+                                <VBox class="campaignPerformanceCell">
+                                    <Text 
+                                        text="{path: 'performanceMetrics', formatter: '.formatCampaignPerformance'}" 
+                                        class="sapUiTinyMarginTop"/>
+                                </VBox>
                             </cells>
                         </ColumnListItem>
                     </items>

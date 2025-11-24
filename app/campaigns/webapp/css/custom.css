@@ -53,3 +53,70 @@
     margin: 0.25rem !important;
 }
 
+/* Performance Metrics Cards Styling */
+.performanceKpiCard {
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.performanceKpiCard:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px);
+}
+
+.performanceKpiCard .sapMCardContent {
+    padding: 0 !important;
+}
+
+.kpiValue {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #0070f2;
+    line-height: 1.2;
+}
+
+.kpiLabel {
+    font-size: 0.75rem;
+    color: #6c757d;
+    text-align: center;
+}
+
+/* Performance Insights Panel */
+.sapMPanel .sapMPanelContent {
+    padding: 1rem;
+}
+
+/* Make field labels bold */
+.sapMLabel {
+    font-weight: 600 !important;
+}
+
+/* Responsive grid for KPI cards */
+@media (max-width: 768px) {
+    .performanceKpiCard {
+        width: 100% !important;
+        margin-bottom: 0.5rem;
+    }
+    
+    .kpiValue {
+        font-size: 1.5rem;
+    }
+}
+
+/* Status colors for performance state */
+.sapUiSizeCompact .sapMObjStatus {
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+}
+
+/* Performance Metrics Display */
+.performanceMetricsDisplay {
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e5e5e5;
+}
+

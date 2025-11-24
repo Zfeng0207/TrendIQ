@@ -95,7 +95,20 @@
       }
     },
     "resources": {
-      "css": []
+      "css": [
+        {
+          "uri": "css/custom.css"
+        }
+      ]
+    },
+    "extends": {
+      "extensions": {
+        "sap.ui.controllerExtensions": {
+          "sap.fe.templates.ObjectPage.ObjectPageController": {
+            "controllerName": "beautyleads.campaigns.ext.controller.ObjectPageExt"
+          }
+        }
+      }
     },
     "routing": {
       "config": {},
@@ -151,6 +164,20 @@
             "settings": {
               "editableHeaderContent": true,
               "contextPath": "/MarketingCampaigns",
+              "content": {
+                "body": {
+                  "sections": {
+                    "PerformanceSection": {
+                      "template": "beautyleads.campaigns.ext.fragments.PerformanceMetrics",
+                      "position": {
+                        "placement": "After",
+                        "anchor": "CampaignBrief"
+                      },
+                      "title": "Performance Metrics"
+                    }
+                  }
+                }
+              },
               "navigation": {
                 "creators": {
                   "detail": {

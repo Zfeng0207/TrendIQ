@@ -376,7 +376,28 @@ sap.ui.define([
             // Parse JSON performance metrics
             try {
                 const oMetrics = JSON.parse(sMetrics || "{}");
-                return oMetrics.roi ? "ROI: " + oMetrics.roi + "%" : "N/A";
+                const parts = [];
+                
+                // Format ROI
+                if (oMetrics.roi !== undefined && oMetrics.roi !== null) {
+                    const roi = parseFloat(oMetrics.roi).toFixed(1);
+                    parts.push("ROI: " + roi + "%");
+                }
+                
+                // Format Clicks
+                if (oMetrics.clicks !== undefined && oMetrics.clicks !== null) {
+                    const clicks = new Intl.NumberFormat('en-MY').format(Math.round(oMetrics.clicks));
+                    parts.push(clicks + " clicks");
+                }
+                
+                // Format Conversions
+                if (oMetrics.conversions !== undefined && oMetrics.conversions !== null) {
+                    const conversions = new Intl.NumberFormat('en-MY').format(Math.round(oMetrics.conversions));
+                    parts.push(conversions + " conv.");
+                }
+                
+                // Return formatted string or N/A
+                return parts.length > 0 ? parts.join(" • ") : "No data";
             } catch (e) {
                 return "N/A";
             }

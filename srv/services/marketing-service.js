@@ -197,7 +197,7 @@ module.exports = async function() {
             return req.error(404, `Campaign ${campaignID} not found`);
         }
 
-        // Parse existing performance metrics
+        // Parse existing performance metrics or generate mock data
         let metrics = {};
         if (campaign.performanceMetrics) {
             try {
@@ -207,10 +207,57 @@ module.exports = async function() {
             }
         }
 
-        // Calculate ROI if we have clicks and conversions
-        if (metrics.clicks && metrics.conversions && campaign.budget) {
-            const revenue = metrics.conversions * 100; // Mock: 100 RM per conversion
-            metrics.roi = ((revenue - campaign.budget) / campaign.budget) * 100;
+        // Generate comprehensive mock performance data if not present
+        if (!metrics.impressions) {
+            // Generate realistic mock data based on campaign type and budget
+            const budgetFactor = campaign.budget ? campaign.budget / 1000 : 5;
+            const baseImpressions = Math.floor(10000 * budgetFactor * (0.8 + Math.random() * 0.4));
+            
+            metrics.impressions = baseImpressions;
+            metrics.clicks = Math.floor(baseImpressions * (0.02 + Math.random() * 0.03)); // 2-5% CTR
+            metrics.conversions = Math.floor(metrics.clicks * (0.03 + Math.random() * 0.07)); // 3-10% conversion rate
+            metrics.cost = campaign.budget || 5000;
+            
+            // Calculate derived metrics
+            metrics.ctr = (metrics.clicks / metrics.impressions) * 100;
+            metrics.conversionRate = (metrics.conversions / metrics.clicks) * 100;
+            
+            // Revenue calculation (assume 100-300 RM per conversion)
+            const avgOrderValue = 100 + Math.random() * 200;
+            metrics.revenue = metrics.conversions * avgOrderValue;
+            
+            // ROI calculation
+            metrics.roi = ((metrics.revenue - metrics.cost) / metrics.cost) * 100;
+            
+            // Cost per conversion
+            metrics.costPerConversion = metrics.conversions > 0 ? metrics.cost / metrics.conversions : 0;
+            
+            // Engagement metrics
+            metrics.engagementRate = 1.5 + Math.random() * 3.5; // 1.5-5%
+            metrics.avgEngagementTime = 45 + Math.floor(Math.random() * 180); // 45-225 seconds
+            
+            // Additional metrics for specific campaign types
+            if (campaign.campaignType === 'Influencer' || campaign.campaignType === 'TikTok' || campaign.campaignType === 'Instagram') {
+                metrics.likes = Math.floor(metrics.impressions * (0.05 + Math.random() * 0.1));
+                metrics.shares = Math.floor(metrics.likes * (0.1 + Math.random() * 0.2));
+                metrics.comments = Math.floor(metrics.likes * (0.05 + Math.random() * 0.1));
+            }
+            
+            // Round all numbers for cleaner display
+            Object.keys(metrics).forEach(key => {
+                if (typeof metrics[key] === 'number') {
+                    metrics[key] = Math.round(metrics[key] * 100) / 100;
+                }
+            });
+        } else {
+            // Recalculate derived metrics if base data exists
+            if (metrics.clicks && metrics.conversions && campaign.budget) {
+                const revenue = metrics.revenue || (metrics.conversions * 150); // Default 150 RM per conversion
+                metrics.roi = ((revenue - campaign.budget) / campaign.budget) * 100;
+                metrics.ctr = (metrics.clicks / metrics.impressions) * 100;
+                metrics.conversionRate = (metrics.conversions / metrics.clicks) * 100;
+                metrics.costPerConversion = campaign.budget / metrics.conversions;
+            }
         }
 
         // Update performance metrics

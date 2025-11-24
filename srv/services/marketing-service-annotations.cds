@@ -91,11 +91,6 @@ annotate MarketingService.MarketingCampaigns with @(
                 $Type: 'UI.ReferenceFacet',
                 Target: '@UI.FieldGroup#CampaignStatus',
                 Label: 'Status & Budget'
-            },
-            {
-                $Type: 'UI.ReferenceFacet',
-                Target: '@UI.FieldGroup#PerformanceMetrics',
-                Label: 'Performance'
             }
         ],
 
@@ -122,11 +117,6 @@ annotate MarketingService.MarketingCampaigns with @(
                 $Type: 'UI.ReferenceFacet',
                 Target: '@UI.FieldGroup#CampaignBrief',
                 Label: 'Campaign Brief'
-            },
-            {
-                $Type: 'UI.ReferenceFacet',
-                Target: '@UI.FieldGroup#PerformanceMetrics',
-                Label: 'Performance Metrics'
             },
             {
                 $Type: 'UI.ReferenceFacet',
@@ -161,7 +151,21 @@ annotate MarketingService.MarketingCampaigns with @(
 
         FieldGroup#PerformanceMetrics: {
             Data: [
-                {Value: performanceMetrics}
+                {
+                    $Type: 'UI.DataField',
+                    Value: performanceMetrics,
+                    Label: 'Performance Summary'
+                }
+            ]
+        },
+        
+        FieldGroup#PerformanceDetails: {
+            Data: [
+                {
+                    $Type: 'UI.DataField',
+                    Value: performanceMetrics,
+                    Label: 'Full Metrics Data'
+                }
             ]
         },
 
@@ -295,6 +299,7 @@ annotate MarketingService.MarketingCampaigns with {
     campaignBrief     @title: 'Campaign Brief'
                       @UI.MultiLineText: true;
     performanceMetrics @title: 'Performance Metrics'
-                      @UI.MultiLineText: true;
+                      @UI.MultiLineText: true
+                      @Common.Text: {$value: performanceMetrics, ![@UI.TextArrangement]: #TextOnly};
 }
 

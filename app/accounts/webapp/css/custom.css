@@ -398,3 +398,41 @@
     font-size: 1rem;
 }
 
+/* Campaign Performance Cell Styling */
+.campaignPerformanceCell {
+    background-color: #f8f9fa;
+    padding: 0.5rem;
+    border-radius: 4px;
+    border-left: 3px solid #0070f2;
+}
+
+.campaignPerformanceCell .sapMText {
+    font-size: 0.875rem !important;
+    color: #32363a;
+    font-weight: 500;
+}
+
+/* Bold text styling for campaign name and budget */
+.sapMTextBold {
+    font-weight: 600 !important;
+    color: #32363a;
+}
+
+/* Campaign name and keyword container */
+.sapMTable .sapMTableRow .sapMVBox .sapMText:first-child {
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+}
+
+.sapMTable .sapMTableRow .sapMVBox .sapMText:last-child {
+    font-size: 0.875rem !important;
+    color: #6c757d;
+    font-style: italic;
+}
+
+/* Performance metrics highlight */
+.campaignPerformanceCell .sapMText:contains("ROI") {
+    color: #2b78c5;
+    font-weight: 600;
+}
+
