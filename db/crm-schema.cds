@@ -401,6 +401,7 @@ entity MarketingCampaigns : managed, cuid {
     campaignType      : String(50) @title: 'Campaign Type'
                       @assert.enum: ['Influencer', 'SocialAds', 'Email', 'TikTok', 'Instagram', 'ShopeeAds'];
     triggerKeyword    : String(200) @title: 'Trigger Keyword';
+    ESGTag            : String(100) @title: 'ESG Tag';
     triggerProduct    : Association to Products @title: 'Trigger Product';
     status            : String(20) @title: 'Status' default 'Draft'
                       @assert.enum: ['Draft', 'PendingApproval', 'Active', 'Paused', 'Completed'];

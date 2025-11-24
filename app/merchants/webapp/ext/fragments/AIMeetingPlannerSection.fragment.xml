@@ -1,0 +1,29 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:layout="sap.ui.layout" xmlns:uxap="sap.uxap">
+    <uxap:ObjectPageSection 
+        id="AIMeetingPlannerSection"
+        title="AI Meeting Planner"
+        titleUppercase="false">
+        <uxap:subSections>
+            <uxap:ObjectPageSubSection id="AIMeetingPlannerSubSection">
+                <layout:VerticalLayout 
+                    width="100%"
+                    class="ai-meeting-planner-content">
+                    <layout:content>
+                        <Toolbar style="Clear">
+                            <Title text="AI Meeting Initiator" level="H5"/>
+                            <ToolbarSpacer/>
+                            <Button 
+                                text="AI Meeting Initiator"
+                                type="Emphasized"
+                                press=".onGenerateAIPlanner"/>
+                        </Toolbar>
+                        <FormattedText 
+                            id="AIPlannerContent"
+                            htmlText="{aiPlanner>/content}" />
+                    </layout:content>
+                </layout:VerticalLayout>
+            </uxap:ObjectPageSubSection>
+        </uxap:subSections>
+    </uxap:ObjectPageSection>
+</core:FragmentDefinition>
+

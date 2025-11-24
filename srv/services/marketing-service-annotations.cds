@@ -42,6 +42,11 @@ annotate MarketingService.MarketingCampaigns with @(
             },
             {
                 $Type: 'UI.DataField',
+                Value: ESGTag,
+                Label: 'ESG Tag'
+            },
+            {
+                $Type: 'UI.DataField',
                 Value: budget,
                 Label: 'Budget'
             },
@@ -132,6 +137,11 @@ annotate MarketingService.MarketingCampaigns with @(
                 {Value: campaignType},
                 {Value: status},
                 {Value: triggerKeyword},
+                {
+                    $Type: 'UI.DataField',
+                    Value: ESGTag,
+                    Label: 'ESG Tag'
+                },
                 {Value: triggerProduct.productName}
             ]
         },
@@ -193,6 +203,11 @@ annotate MarketingService.MarketingCampaigns with @(
 
         // Actions in Identification section
         Identification: [
+            {
+                $Type: 'UI.DataField',
+                Value: ESGTag,
+                Label: 'ESG Tag'
+            },
             {
                 $Type: 'UI.DataFieldForAction',
                 Action: 'MarketingService.generateCampaignBrief',
@@ -291,6 +306,7 @@ annotate MarketingService.MarketingCampaigns with {
                       };
 
     triggerKeyword    @title: 'Trigger Keyword';
+    ESGTag            @title: 'ESG Tag';
     budget            @title: 'Budget'
                       @Measures.ISOCurrency: 'MYR';
     startDate         @title: 'Start Date';
