@@ -131,9 +131,21 @@ annotate AccountService.Accounts with @(
                 Label: 'Joint Marketing Campaign Planner'
             },
             {
-                $Type: 'UI.ReferenceFacet',
-                Target: '@UI.FieldGroup#Recommendations',
-                Label: 'AI Recommendations'
+                $Type: 'UI.CollectionFacet',
+                Label: 'AI Recommendations',
+                ID: 'AIRecommendations',
+                Facets: [
+                    {
+                        $Type: 'UI.ReferenceFacet',
+                        Target: '@UI.FieldGroup#Recommendations',
+                        Label: 'Actions'
+                    },
+                    {
+                        $Type: 'UI.ReferenceFacet',
+                        Target: 'recommendations/@UI.LineItem',
+                        Label: 'Recommendations List'
+                    }
+                ]
             },
             {
                 $Type: 'UI.ReferenceFacet',
@@ -287,6 +299,12 @@ annotate AccountService.Accounts with @(
             },
             {
                 $Type: 'UI.DataFieldForAction',
+                Action: 'AccountService.getAIRecommendations',
+                Label: 'Get AI Recommendations',
+                ![@UI.Hidden]: false
+            },
+            {
+                $Type: 'UI.DataFieldForAction',
                 Action: 'AccountService.mergeAccount',
                 Label: 'Merge Account'
             }
@@ -338,6 +356,14 @@ annotate AccountService.Accounts actions {
     updateTimelineStage @(
         Common.SideEffects: {
             TargetProperties: ['currentTimelineStage', 'timelineStageStatus', 'timelineStageNotes', 'timelineStageDeadline']
+        }
+    );
+    getAIRecommendations @(
+        Common.IsActionCritical: false,
+        Common.SideEffects: {
+            $Type: 'Common.SideEffectsType',
+            TargetProperties: [],
+            TargetEntities: []
         }
     );
 }

@@ -266,19 +266,30 @@ module.exports = async function() {
 
     // Action: Get AI Recommendations
     this.on('getAIRecommendations', 'Accounts', async (req) => {
+        console.log('[getAIRecommendations] Action triggered');
+        console.log('[getAIRecommendations] Request params:', req.params);
+        
         const accountID = req.params[0].ID;
+        console.log('[getAIRecommendations] Account ID:', accountID);
+        
         const account = await SELECT.one.from(Accounts).where({ ID: accountID });
 
         if (!account) {
+            console.error('[getAIRecommendations] Account not found:', accountID);
             return req.error(404, `Account ${accountID} not found`);
         }
+
+        console.log('[getAIRecommendations] Account found:', account.accountName);
 
         // Get related opportunities and campaigns
         const opportunities = await SELECT.from(Opportunities).where({ account_ID: accountID });
         const campaigns = await SELECT.from(MarketingCampaigns).where({ owner_ID: account.accountOwner_ID });
+        
+        console.log('[getAIRecommendations] Found', opportunities.length, 'opportunities and', campaigns.length, 'campaigns');
 
         // Generate recommendations
         const recommendations = generateRecommendations(account, opportunities, campaigns);
+        console.log('[getAIRecommendations] Generated', recommendations.length, 'recommendations');
 
         // Store recommendations
         const recommendationEntries = recommendations.map(rec => ({
@@ -292,12 +303,19 @@ module.exports = async function() {
         }));
 
         await INSERT.into(AccountRecommendations).entries(recommendationEntries);
+        console.log('[getAIRecommendations] Recommendations stored in database');
 
         // Return recommendations
         const savedRecommendations = await SELECT.from(AccountRecommendations)
             .where({ account_ID: accountID, status: 'New' })
             .orderBy('priority desc');
 
+        console.log('[getAIRecommendations] Returning', savedRecommendations.length, 'recommendations');
+        console.log('[getAIRecommendations] Action completed successfully');
+        
+        // Return a simple success result with the recommendations
+        req.notify(200, `Successfully generated ${recommendations.length} AI recommendations! Please refresh the page to see them.`);
+        
         return savedRecommendations;
     });
 

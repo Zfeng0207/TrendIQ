@@ -11,6 +11,50 @@ sap.ui.define([
         onInit: function () {
             this._loadRelatedData();
             this._checkOnboardingParameter();
+            this._interceptActionResponses();
+            console.log("=== AccountsObjectPageExt Controller Initialized ===");
+        },
+        
+        // Intercept OData responses to detect when our action completes
+        _interceptActionResponses: function() {
+            const that = this;
+            const oView = this.base.getView();
+            
+            // Wait for view to be fully loaded
+            setTimeout(() => {
+                const oModel = oView.getModel();
+                if (!oModel) {
+                    console.warn("Model not found, retrying...");
+                    setTimeout(() => that._interceptActionResponses(), 500);
+                    return;
+                }
+                
+                console.log("Setting up action response interceptor");
+                
+                // Listen for request completed events
+                oModel.attachRequestCompleted((oEvent) => {
+                    const sUrl = oEvent.getParameter("url");
+                    console.log("Request completed:", sUrl);
+                    
+                    // Check if this was our getAIRecommendations action  
+                    if (sUrl && sUrl.indexOf("getAIRecommendations") > -1) {
+                        console.log("=== getAIRecommendations action completed! ===");
+                        
+                        // Show success message with instruction
+                        MessageBox.success(
+                            "AI Recommendations have been generated successfully!\n\n" +
+                            "Please scroll down to the 'AI Recommendations' section to view them, or refresh the page (F5) to see all updates.",
+                            {
+                                title: "Success",
+                                onClose: function() {
+                                    // Refresh the page
+                                    window.location.reload();
+                                }
+                            }
+                        );
+                    }
+                });
+            }, 1000);
         },
         
         _checkOnboardingParameter: function () {
