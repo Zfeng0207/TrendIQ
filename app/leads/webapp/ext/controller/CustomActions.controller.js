@@ -17,20 +17,20 @@ sap.ui.define([
         },
 
         /**
-         * Navigate to account onboarding
+         * Navigate to merchant discovery onboarding page
          * @private
          */
-        _navigateToOnboarding: function(sAccountID) {
+        _navigateToOnboarding: function(sMerchantDiscoveryID) {
             console.log("=== NAVIGATING TO ONBOARDING ===");
-            console.log("Account ID:", sAccountID);
+            console.log("Merchant Discovery ID:", sMerchantDiscoveryID);
             
             MessageToast.show("Lead converted successfully! Redirecting to onboarding...", {
                 duration: 1500
             });
 
-            // Navigate to the accounts app onboarding page
+            // Navigate to the merchant discovery (onboarding) page
             setTimeout(function() {
-                var sUrl = "/beautyleads.accounts/index.html#/Accounts(" + sAccountID + ")/onboarding";
+                var sUrl = "/beautyleads.merchants/index.html#/MerchantDiscoveries(" + sMerchantDiscoveryID + ")";
                 console.log("Navigation URL:", sUrl);
                 window.location.href = sUrl;
             }, 1500);

@@ -23,6 +23,10 @@ service MerchantService @(path: '/merchant') {
         action bulkImport(discoveries: String); // JSON array
         action generateAbout() returns MerchantDiscoveries; // AI-generated channel partner about information
         action initiateAIMeeting() returns String; // AI Meeting Initiator - returns meeting script
+        action completeOnboarding() returns {
+            message: String;
+            accountID: UUID;
+        };
     };
     
     @readonly entity MerchantDiscoveriesBySource as projection on crm.MerchantDiscovery {

@@ -87,7 +87,8 @@ module.exports = async function() {
             postalCode: lead.postalCode,
             website: lead.source === 'Web' ? lead.sourceDetail : null,
             phone: lead.contactPhone,
-            accountOwner_ID: lead.owner_ID
+            accountOwner_ID: lead.owner_ID,
+            sourceMerchantDiscovery_ID: merchantDiscoveryID
         });
 
         // Create MerchantDiscovery record for Channel Partner Onboarding
@@ -118,6 +119,7 @@ module.exports = async function() {
             }),
             status: 'Onboarding', // Set to Onboarding for channel partner flow
             convertedToLead_ID: leadID,
+            convertedToAccount_ID: newAccountID,
             address: lead.address,
             city: lead.city,
             state: lead.state,
@@ -156,13 +158,18 @@ module.exports = async function() {
             converted: true,
             convertedDate: new Date().toISOString(),
             convertedTo_ID: newAccountID,
+            merchantDiscovery_ID: merchantDiscoveryID,
             status: 'Converted'
         }).where({ ID: leadID });
 
         console.log('Lead converted successfully. Account ID:', newAccountID);
         console.log('Merchant Discovery ID:', merchantDiscoveryID);
-        // Return the merchant discovery ID instead of account ID for redirect
-        return { message: 'Lead converted successfully', accountID: merchantDiscoveryID };
+        // Return the merchant discovery ID for redirect to onboarding page
+        return { 
+            message: 'Lead converted successfully', 
+            accountID: newAccountID,
+            merchantDiscoveryID: merchantDiscoveryID 
+        };
     });
 
     // Action: Qualify Lead

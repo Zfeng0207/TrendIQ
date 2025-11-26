@@ -329,6 +329,37 @@ module.exports = async function() {
         });
     });
 
+    // Action: Complete Onboarding
+    this.on('completeOnboarding', 'MerchantDiscoveries', async (req) => {
+        const merchantID = req.params[0].ID;
+        const merchant = await SELECT.one.from(MerchantDiscoveries).where({ ID: merchantID });
+
+        if (!merchant) {
+            return req.error(404, `Merchant ${merchantID} not found`);
+        }
+
+        if (!merchant.convertedToAccount_ID) {
+            return req.error(400, 'No account associated with this merchant discovery. Please convert from lead first.');
+        }
+
+        if (merchant.status === 'Completed') {
+            return req.warn(409, 'Onboarding already completed');
+        }
+
+        // Update merchant status to Completed
+        await UPDATE(MerchantDiscoveries).set({
+            status: 'Completed'
+        }).where({ ID: merchantID });
+
+        console.log('Onboarding completed. Merchant ID:', merchantID);
+        console.log('Account ID:', merchant.convertedToAccount_ID);
+
+        return { 
+            message: 'Onboarding completed successfully', 
+            accountID: merchant.convertedToAccount_ID
+        };
+    });
+
     // Action: Generate About (Mock from CSV)
     this.on('generateAbout', 'MerchantDiscoveries', async (req) => {
         const merchantID = req.params[0].ID;

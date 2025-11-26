@@ -292,6 +292,12 @@ annotate MerchantService.MerchantDiscoveries with @(
                 $Type: 'UI.DataFieldForAction',
                 Action: 'MerchantService.assignToSalesRep',
                 Label: 'Assign to Sales Rep'
+            },
+            {
+                $Type: 'UI.DataFieldForAction',
+                Action: 'MerchantService.completeOnboarding',
+                Label: 'Complete Onboarding',
+                ![@UI.Importance]: #High
             }
         ]
     },
@@ -380,6 +386,14 @@ annotate MerchantService.MerchantDiscoveries actions {
             'about',
             'merchantScore',
             'statusCriticality'
+        ]
+    };
+    completeOnboarding @Common.SideEffects: {
+        TargetProperties: [
+            'status',
+            'statusCriticality',
+            'phase',
+            'phaseCriticality'
         ]
     };
 }

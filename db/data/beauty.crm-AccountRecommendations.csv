@@ -1,0 +1,17 @@
+ID;account_ID;recommendationType;recommendationText;priority;aiGenerated;status;generatedDate;acknowledgedDate;acknowledgedBy_ID;notes
+rec-001;02345678-0001-0000-0000-000000000001;Product;Based on account type (Salon), recommend skincare product bundles for professional use. Consider introducing our new Professional Hydration Serum line.;High;true;New;2025-01-15T10:00:00Z;;;
+rec-002;02345678-0001-0000-0000-000000000001;Campaign;Account shows high engagement on Instagram. Launch a joint social media campaign featuring before/after transformations to increase brand visibility.;Medium;true;New;2025-01-15T10:00:00Z;;;
+rec-003;02345678-0001-0000-0000-000000000001;Deal;High-value pipeline detected (RM 285,000). Prioritize deal closure by scheduling a meeting with decision makers within next 2 weeks.;High;true;New;2025-01-15T10:00:00Z;;;
+rec-004;02345678-0001-0000-0000-000000000001;Risk;Recent sentiment shows slight decline. Recommend immediate follow-up call to address any concerns and maintain relationship health.;Medium;true;New;2025-01-15T10:00:00Z;;;
+rec-005;02345678-0002-0000-0000-000000000002;Product;E-commerce account with growing online presence. Recommend introducing exclusive online-only product bundles to drive digital sales.;High;true;New;2025-01-16T09:00:00Z;;;
+rec-006;02345678-0002-0000-0000-000000000002;Campaign;No active marketing campaigns detected. Consider launching a TikTok influencer campaign to tap into Gen-Z audience.;High;true;New;2025-01-16T09:00:00Z;;;
+rec-007;02345678-0002-0000-0000-000000000002;Deal;Account has no active opportunities. Create new opportunity focused on seasonal product promotion for Q2.;Medium;true;New;2025-01-16T09:00:00Z;;;
+rec-008;02345678-0003-0000-0000-000000000003;Product;Spa account with focus on luxury treatments. Recommend premium anti-aging product line with higher profit margins.;High;true;New;2025-01-17T11:30:00Z;;;
+rec-009;02345678-0003-0000-0000-000000000003;Campaign;Perfect candidate for wellness-focused email marketing campaign. Create content around holistic beauty and self-care.;Medium;true;New;2025-01-17T11:30:00Z;;;
+rec-010;02345678-0003-0000-0000-000000000003;Risk;Account health score is excellent (92%). Continue current engagement strategy and consider upsell opportunities.;Low;true;Acknowledged;2025-01-17T11:30:00Z;2025-01-18T14:00:00Z;user-001;
+rec-011;02345678-0004-0000-0000-000000000004;Deal;Retailer account showing interest in expanding product range. Propose volume discount for bulk orders to secure long-term commitment.;High;true;New;2025-01-18T08:00:00Z;;;
+rec-012;02345678-0004-0000-0000-000000000004;Campaign;Strong offline presence but weak online visibility. Recommend hybrid campaign combining in-store promotions with social media awareness.;Medium;true;New;2025-01-18T08:00:00Z;;;
+rec-013;02345678-0005-0000-0000-000000000005;Product;Influencer account with 50K+ followers. Perfect for new product launches and exclusive early access campaigns.;High;true;New;2025-01-19T10:15:00Z;;;
+rec-014;02345678-0005-0000-0000-000000000005;Campaign;High engagement rate detected. Create ambassador program with monthly product allocation and performance bonuses.;High;true;New;2025-01-19T10:15:00Z;;;
+rec-015;02345678-0005-0000-0000-000000000005;Deal;Negotiate content creation package: 12 posts over 3 months with guaranteed reach targets.;Medium;true;New;2025-01-19T10:15:00Z;;;
+

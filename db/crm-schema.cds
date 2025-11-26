@@ -112,6 +112,9 @@ entity Accounts : managed, cuid, aspects.Address, aspects.SocialMedia, aspects.C
     // Relationships (associations - references)
     activities : Association to many Activities on activities.relatedAccount = $self;
 
+    // Source tracking - link to originating MerchantDiscovery
+    sourceMerchantDiscovery : Association to MerchantDiscovery @title: 'Source Merchant Discovery';
+
     // Notes
     description : LargeString @title: 'Description';
     notes       : LargeString @title: 'Notes';
@@ -391,6 +394,7 @@ entity MerchantDiscovery : managed, cuid, aspects.Address {
     
     // Relationships
     convertedToLead   : Association to leads.Leads @title: 'Converted to Lead';
+    convertedToAccount : Association to Accounts @title: 'Converted to Account';
 }
 
 /**

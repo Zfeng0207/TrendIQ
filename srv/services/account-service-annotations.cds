@@ -117,6 +117,11 @@ annotate AccountService.Accounts with @(
         Facets: [
             {
                 $Type: 'UI.ReferenceFacet',
+                Target: '@UI.FieldGroup#SourceInfo',
+                Label: 'Lead Source Information'
+            },
+            {
+                $Type: 'UI.ReferenceFacet',
                 Target: '@UI.FieldGroup#TimelineInfo',
                 Label: 'Partner Priority Timeline'
             },
@@ -238,6 +243,41 @@ annotate AccountService.Accounts with @(
                 {Value: industry},
                 {Value: city},
                 {Value: country}
+            ]
+        },
+
+        FieldGroup#SourceInfo: {
+            Data: [
+                {
+                    $Type: 'UI.DataField',
+                    Value: sourceMerchantDiscovery.merchantName,
+                    Label: 'Source Merchant Discovery'
+                },
+                {
+                    $Type: 'UI.DataField',
+                    Value: sourceMerchantDiscovery.leadQuality,
+                    Label: 'Lead Quality'
+                },
+                {
+                    $Type: 'UI.DataField',
+                    Value: sourceMerchantDiscovery.brandToPitch,
+                    Label: 'Brand to Pitch'
+                },
+                {
+                    $Type: 'UI.DataField',
+                    Value: sourceMerchantDiscovery.estimatedValue,
+                    Label: 'Estimated Value'
+                },
+                {
+                    $Type: 'UI.DataField',
+                    Value: sourceMerchantDiscovery.aiScore,
+                    Label: 'AI Score'
+                },
+                {
+                    $Type: 'UI.DataField',
+                    Value: sourceMerchantDiscovery.discoveryDate,
+                    Label: 'Discovery Date'
+                }
             ]
         },
 

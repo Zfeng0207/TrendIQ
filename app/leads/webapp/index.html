@@ -241,20 +241,20 @@
                             // Parse batch response
                             var responseText = this.responseText;
                             
-                            // Look for accountID in the batch response
-                            var accountIDMatch = responseText.match(/"accountID"\s*:\s*"([^"]+)"/);
+                            // Look for merchantDiscoveryID in the batch response (for navigation to onboarding)
+                            var merchantIDMatch = responseText.match(/"merchantDiscoveryID"\s*:\s*"([^"]+)"/);
                             
-                            if (accountIDMatch && accountIDMatch[1]) {
-                                var accountID = accountIDMatch[1];
-                                console.log("=== ACCOUNT ID FOUND IN BATCH ===", accountID);
+                            if (merchantIDMatch && merchantIDMatch[1]) {
+                                var merchantDiscoveryID = merchantIDMatch[1];
+                                console.log("=== MERCHANT DISCOVERY ID FOUND IN BATCH ===", merchantDiscoveryID);
                                 
                                 setTimeout(function() {
-                                    var onboardingUrl = "/beautyleads.merchants/index.html#/MerchantDiscoveries(" + accountID + ")";
+                                    var onboardingUrl = "/beautyleads.merchants/index.html#/MerchantDiscoveries(" + merchantDiscoveryID + ")";
                                     console.log("=== NAVIGATING TO CHANNEL PARTNER ONBOARDING ===", onboardingUrl);
                                     window.location.href = onboardingUrl;
                                 }, 2000);
                             } else {
-                                console.warn("No accountID found in batch response");
+                                console.warn("No merchantDiscoveryID found in batch response");
                             }
                         } catch(e) {
                             console.error("Error parsing batch response:", e);
@@ -269,12 +269,12 @@
                             var data = JSON.parse(this.responseText);
                             console.log("Parsed data:", data);
                             
-                            var accountID = data.accountID || (data.value && data.value.accountID);
+                            var merchantDiscoveryID = data.merchantDiscoveryID || (data.value && data.value.merchantDiscoveryID);
                             
-                            if (accountID) {
-                                console.log("Account ID found:", accountID);
+                            if (merchantDiscoveryID) {
+                                console.log("Merchant Discovery ID found:", merchantDiscoveryID);
                                 setTimeout(function() {
-                                    var onboardingUrl = "/beautyleads.merchants/index.html#/MerchantDiscoveries(" + accountID + ")";
+                                    var onboardingUrl = "/beautyleads.merchants/index.html#/MerchantDiscoveries(" + merchantDiscoveryID + ")";
                                     console.log("Navigating to:", onboardingUrl);
                                     window.location.href = onboardingUrl;
                                 }, 2000);
@@ -303,19 +303,19 @@
                         clonedResponse.json().then(function(data) {
                             console.log("Action response data:", data);
                             
-                            var accountID = data.accountID || (data.value && data.value.accountID);
+                            var merchantDiscoveryID = data.merchantDiscoveryID || (data.value && data.value.merchantDiscoveryID);
                             
-                            if (accountID) {
-                                console.log("Account ID found:", accountID);
+                            if (merchantDiscoveryID) {
+                                console.log("Merchant Discovery ID found:", merchantDiscoveryID);
                                 console.log("Navigating to onboarding...");
                                 
                                 setTimeout(function() {
-                                    var onboardingUrl = "/beautyleads.accounts/index.html#/Accounts(" + accountID + ")/onboarding";
+                                    var onboardingUrl = "/beautyleads.merchants/index.html#/MerchantDiscoveries(" + merchantDiscoveryID + ")";
                                     console.log("Navigation URL:", onboardingUrl);
                                     window.location.href = onboardingUrl;
                                 }, 2000);
                             } else {
-                                console.log("No accountID in response, trying to get from context");
+                                console.log("No merchantDiscoveryID in response, trying to get from context");
                                 
                                 // Try to get from UI5 model
                                 setTimeout(function() {
@@ -325,11 +325,11 @@
                                             if (oView) {
                                                 var oContext = oView.getBindingContext();
                                                 if (oContext) {
-                                                    var sConvertedToID = oContext.getProperty("convertedTo_ID");
-                                                    console.log("ConvertedTo_ID from context:", sConvertedToID);
+                                                    var sMerchantDiscoveryID = oContext.getProperty("merchantDiscovery_ID");
+                                                    console.log("merchantDiscovery_ID from context:", sMerchantDiscoveryID);
                                                     
-                                    if (sConvertedToID) {
-                                        var onboardingUrl = "/beautyleads.merchants/index.html#/MerchantDiscoveries(" + sConvertedToID + ")";
+                                    if (sMerchantDiscoveryID) {
+                                        var onboardingUrl = "/beautyleads.merchants/index.html#/MerchantDiscoveries(" + sMerchantDiscoveryID + ")";
                                         console.log("Navigation URL:", onboardingUrl);
                                         window.location.href = onboardingUrl;
                                     }
