@@ -40,7 +40,7 @@
       "db": {
         "kind": "sqlite",
         "credentials": {
-          "url": ":memory:"
+          "url": "db.sqlite"
         }
       },
       "[production]": {
