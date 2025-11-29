@@ -1,0 +1,554 @@
+/**
+ * Smart Beauty CRM Dashboard - Creatio-inspired Styles
+ * Modern, colorful dashboard design with clean aesthetics
+ */
+
+/* ==========================================
+   ROOT VARIABLES & THEME
+   ========================================== */
+:root {
+    /* Primary Colors - Creatio-inspired palette */
+    --dashboard-blue: #0A6ED1;
+    --dashboard-blue-dark: #0854A0;
+    --dashboard-green: #107E3E;
+    --dashboard-green-light: #2E9E50;
+    --dashboard-orange: #E76500;
+    --dashboard-orange-light: #F58B00;
+    --dashboard-red: #BB0000;
+    --dashboard-red-light: #E53935;
+    --dashboard-purple: #6C3483;
+    --dashboard-purple-light: #884EA0;
+    --dashboard-teal: #0097A7;
+    --dashboard-teal-light: #00BCD4;
+    
+    /* Neutral Colors */
+    --dashboard-bg: #F5F6F7;
+    --dashboard-card-bg: #FFFFFF;
+    --dashboard-border: #E5E5E5;
+    --dashboard-text: #32363A;
+    --dashboard-text-secondary: #6A6D70;
+    
+    /* Shadows */
+    --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --card-shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.12);
+    --tile-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* ==========================================
+   PAGE & LAYOUT
+   ========================================== */
+.dashboardPage {
+    background-color: var(--dashboard-bg) !important;
+}
+
+.dashboardPage .sapMPageBgSolid {
+    background-color: var(--dashboard-bg) !important;
+}
+
+.dashboardContent {
+    padding: 0.5rem 1rem 2rem 1rem;
+}
+
+.dashboardTitle {
+    font-size: 1.5rem !important;
+    font-weight: 600 !important;
+    color: var(--dashboard-text) !important;
+}
+
+.lastUpdatedText {
+    color: var(--dashboard-text-secondary);
+    font-size: 0.8125rem;
+}
+
+/* ==========================================
+   SECTION 1: KPI TILE BAR (Creatio-style)
+   ========================================== */
+.kpiTileBar {
+    margin-bottom: 1rem;
+    gap: 0.75rem;
+    padding: 0.5rem 0;
+}
+
+.kpiTile {
+    min-width: 180px;
+    max-width: 220px;
+    flex: 1 1 180px;
+    border-radius: 12px !important;
+    box-shadow: var(--tile-shadow) !important;
+    transition: all 0.2s ease-in-out !important;
+    overflow: hidden;
+}
+
+.kpiTile:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--card-shadow-hover) !important;
+}
+
+/* Colored KPI Tiles - Creatio style solid backgrounds */
+.kpiTileOrange {
+    background: linear-gradient(135deg, var(--dashboard-orange) 0%, var(--dashboard-orange-light) 100%) !important;
+}
+
+.kpiTileBlue {
+    background: linear-gradient(135deg, var(--dashboard-blue-dark) 0%, var(--dashboard-blue) 100%) !important;
+}
+
+.kpiTileGreen {
+    background: linear-gradient(135deg, var(--dashboard-green) 0%, var(--dashboard-green-light) 100%) !important;
+}
+
+.kpiTileRed {
+    background: linear-gradient(135deg, var(--dashboard-red) 0%, var(--dashboard-red-light) 100%) !important;
+}
+
+.kpiTilePurple {
+    background: linear-gradient(135deg, var(--dashboard-purple) 0%, var(--dashboard-purple-light) 100%) !important;
+}
+
+.kpiTileTeal {
+    background: linear-gradient(135deg, var(--dashboard-teal) 0%, var(--dashboard-teal-light) 100%) !important;
+}
+
+/* KPI Tile Text - White text on colored backgrounds */
+.kpiTile .sapMGTHdrContent,
+.kpiTile .sapMGTHdrTxt,
+.kpiTile .sapMGTSubHdrTxt,
+.kpiTile .sapMNCValue,
+.kpiTile .sapMNCScale,
+.kpiTile .sapMNCIndIcon,
+.kpiTile .sapMText {
+    color: #FFFFFF !important;
+}
+
+.kpiTile .sapMNCValueScr {
+    color: #FFFFFF !important;
+    opacity: 0.9;
+}
+
+/* KPI Tile Header */
+.kpiTile .sapMGTHdrTxt {
+    font-weight: 600 !important;
+    font-size: 0.9375rem !important;
+}
+
+.kpiTile .sapMGTSubHdrTxt {
+    font-size: 0.75rem !important;
+    opacity: 0.85;
+}
+
+/* KPI Value */
+.kpiTile .sapMNCValue {
+    font-size: 2rem !important;
+    font-weight: 700 !important;
+}
+
+/* ==========================================
+   SECTION 2: PIPELINE FUNNELS
+   ========================================== */
+.funnelSection {
+    margin-bottom: 1rem;
+}
+
+/* ==========================================
+   SECTION 3: AI INSIGHTS CARDS
+   ========================================== */
+.aiInsightsSection {
+    margin-bottom: 1rem;
+}
+
+.aiCard {
+    min-height: 400px;
+}
+
+/* Health Distribution Box */
+.healthDistributionBox {
+    padding: 0.5rem;
+}
+
+.healthGauges {
+    padding: 1rem 0;
+    margin-bottom: 0.5rem;
+    border-bottom: 1px solid var(--dashboard-border);
+}
+
+.healthGaugeItem {
+    text-align: center;
+    padding: 0 0.5rem;
+}
+
+.gaugeLabel {
+    margin-top: 0.5rem !important;
+    font-size: 0.75rem !important;
+    font-weight: 600;
+}
+
+.gaugeValue {
+    font-size: 1.25rem !important;
+    font-weight: 700 !important;
+}
+
+.gaugeNumber {
+    margin-bottom: 0.5rem !important;
+}
+
+.gaugeNumber .sapMObjectNumberText {
+    font-size: 1.5rem !important;
+    font-weight: 700 !important;
+}
+
+.healthProgress {
+    width: 100% !important;
+    height: 8px !important;
+}
+
+.healthProgress .sapMPIBar {
+    border-radius: 4px !important;
+}
+
+.percentText {
+    font-size: 0.75rem !important;
+    color: var(--dashboard-text-secondary) !important;
+    margin-top: 0.25rem !important;
+}
+
+.healthyLabel {
+    color: var(--dashboard-green) !important;
+}
+
+.monitorLabel {
+    color: var(--dashboard-orange) !important;
+}
+
+.atRiskLabel {
+    color: var(--dashboard-red) !important;
+}
+
+/* Pipeline Progress Bars */
+.pipelineRow {
+    padding: 0.5rem 0;
+    gap: 1rem;
+}
+
+.pipelineLabel {
+    font-weight: 500 !important;
+    font-size: 0.875rem !important;
+    color: var(--dashboard-text) !important;
+}
+
+.pipelineProgress {
+    height: 24px !important;
+}
+
+.pipelineProgress .sapMPIBar {
+    border-radius: 4px !important;
+}
+
+.pipelineProgress .sapMPIBarRemaining {
+    background-color: #E8E8E8 !important;
+    border-radius: 4px !important;
+}
+
+/* ==========================================
+   SECTION 4: ACTIVITIES
+   ========================================== */
+.activitySection {
+    margin-bottom: 1rem;
+}
+
+/* ==========================================
+   SECTION 5: PRODUCTS & CAMPAIGNS
+   ========================================== */
+.productCampaignSection {
+    margin-bottom: 1rem;
+}
+
+/* ==========================================
+   CARDS - Generic Dashboard Card Styling
+   ========================================== */
+.dashboardCard {
+    border-radius: 12px !important;
+    box-shadow: var(--card-shadow) !important;
+    background-color: var(--dashboard-card-bg) !important;
+    transition: box-shadow 0.2s ease-in-out !important;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+}
+
+.dashboardCard:hover {
+    box-shadow: var(--card-shadow-hover) !important;
+}
+
+/* Card Header */
+.dashboardCard .sapFCardHeader {
+    padding: 1rem 1rem 0.75rem 1rem !important;
+    border-bottom: 1px solid var(--dashboard-border);
+}
+
+.dashboardCard .sapFCardHeaderTitle {
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    color: var(--dashboard-text) !important;
+}
+
+.dashboardCard .sapFCardHeaderSubtitle {
+    font-size: 0.8125rem !important;
+    color: var(--dashboard-text-secondary) !important;
+}
+
+.dashboardCard .sapFCardHeaderStatus {
+    font-size: 0.8125rem !important;
+    color: var(--dashboard-blue) !important;
+    font-weight: 500 !important;
+}
+
+/* Card Content */
+.dashboardCard .sapFCardContent {
+    padding: 0 !important;
+}
+
+/* Card Footer Toolbar */
+.cardFooterToolbar {
+    border-top: 1px solid var(--dashboard-border);
+    background-color: #FAFAFA !important;
+}
+
+.cardFooterToolbar .sapMBtn {
+    font-weight: 500 !important;
+}
+
+/* ==========================================
+   LISTS - Enhanced List Styling
+   ========================================== */
+.dashboardCard .sapMList {
+    background-color: transparent !important;
+}
+
+.dashboardCard .sapMListHdrText {
+    font-size: 0.8125rem !important;
+    font-weight: 600 !important;
+    color: var(--dashboard-text-secondary) !important;
+    padding: 0.75rem 1rem 0.5rem 1rem !important;
+}
+
+.dashboardCard .sapMObjLItem {
+    padding: 0.75rem 1rem !important;
+    border-bottom: 1px solid #F0F0F0 !important;
+}
+
+.dashboardCard .sapMObjLItem:last-child {
+    border-bottom: none !important;
+}
+
+.dashboardCard .sapMObjLTitle {
+    font-weight: 500 !important;
+    font-size: 0.875rem !important;
+}
+
+.dashboardCard .sapMObjLNumber {
+    font-weight: 700 !important;
+    font-size: 1rem !important;
+}
+
+.dashboardCard .sapMObjLNumberUnit {
+    font-size: 0.6875rem !important;
+    color: var(--dashboard-text-secondary) !important;
+}
+
+.dashboardCard .sapMObjLAttrRow {
+    margin-top: 0.25rem !important;
+}
+
+.dashboardCard .sapMObjLAttrValue {
+    font-size: 0.75rem !important;
+    color: var(--dashboard-text-secondary) !important;
+}
+
+/* Standard List Items */
+.dashboardCard .sapMSLI {
+    padding: 0.625rem 1rem !important;
+    border-bottom: 1px solid #F0F0F0 !important;
+}
+
+.dashboardCard .sapMSLITitle {
+    font-weight: 500 !important;
+}
+
+.dashboardCard .sapMSLIDescription {
+    color: var(--dashboard-text-secondary) !important;
+}
+
+/* Feed List Items (Activities) */
+.dashboardCard .sapMFeedListItem {
+    padding: 0.75rem 1rem !important;
+    border-bottom: 1px solid #F0F0F0 !important;
+}
+
+.dashboardCard .sapMFeedListItemText {
+    font-size: 0.8125rem !important;
+}
+
+.dashboardCard .sapMFeedListItemFooter {
+    font-size: 0.6875rem !important;
+    color: var(--dashboard-text-secondary) !important;
+}
+
+/* ==========================================
+   STATUS BADGES - Enhanced styling
+   ========================================== */
+.sapMObjStatus {
+    font-weight: 500 !important;
+    font-size: 0.6875rem !important;
+    padding: 0.125rem 0.5rem !important;
+    border-radius: 4px !important;
+}
+
+.sapMObjStatusInverted {
+    border-radius: 4px !important;
+}
+
+/* ==========================================
+   CHARTS - VizFrame Styling
+   ========================================== */
+.dashboardCard .sapVizFrame {
+    padding: 0.5rem !important;
+}
+
+/* Chart titles */
+.v-m-root .v-m-title .v-morpheus-label-element {
+    font-weight: 500 !important;
+}
+
+/* ==========================================
+   MICRO CHARTS - Radial/Bullet Charts
+   ========================================== */
+.sapSuiteRMC {
+    margin: 0 auto;
+}
+
+/* ==========================================
+   RESPONSIVE ADJUSTMENTS
+   ========================================== */
+@media screen and (max-width: 1024px) {
+    .kpiTile {
+        min-width: 150px;
+        max-width: 180px;
+        flex: 1 1 150px;
+    }
+    
+    .kpiTile .sapMNCValue {
+        font-size: 1.5rem !important;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .dashboardContent {
+        padding: 0.5rem;
+    }
+    
+    .kpiTileBar {
+        gap: 0.5rem;
+    }
+    
+    .kpiTile {
+        min-width: 140px;
+        max-width: 160px;
+        flex: 1 1 140px;
+    }
+    
+    .kpiTile .sapMNCValue {
+        font-size: 1.25rem !important;
+    }
+    
+    .kpiTile .sapMGTHdrTxt {
+        font-size: 0.8125rem !important;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .kpiTile {
+        min-width: 100%;
+        max-width: 100%;
+        flex: 1 1 100%;
+    }
+}
+
+/* ==========================================
+   ANIMATIONS & TRANSITIONS
+   ========================================== */
+.dashboardCard,
+.kpiTile {
+    animation: fadeInUp 0.3s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Staggered animation delays for cards */
+.dashboardCard:nth-child(1) { animation-delay: 0.05s; }
+.dashboardCard:nth-child(2) { animation-delay: 0.1s; }
+.dashboardCard:nth-child(3) { animation-delay: 0.15s; }
+.dashboardCard:nth-child(4) { animation-delay: 0.2s; }
+.dashboardCard:nth-child(5) { animation-delay: 0.25s; }
+.dashboardCard:nth-child(6) { animation-delay: 0.3s; }
+
+/* KPI Tile staggered animations */
+.kpiTile:nth-child(1) { animation-delay: 0s; }
+.kpiTile:nth-child(2) { animation-delay: 0.05s; }
+.kpiTile:nth-child(3) { animation-delay: 0.1s; }
+.kpiTile:nth-child(4) { animation-delay: 0.15s; }
+.kpiTile:nth-child(5) { animation-delay: 0.2s; }
+.kpiTile:nth-child(6) { animation-delay: 0.25s; }
+
+/* ==========================================
+   SCROLLBAR STYLING
+   ========================================== */
+.dashboardPage ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.dashboardPage ::-webkit-scrollbar-track {
+    background: #F5F5F5;
+    border-radius: 4px;
+}
+
+.dashboardPage ::-webkit-scrollbar-thumb {
+    background: #CCC;
+    border-radius: 4px;
+}
+
+.dashboardPage ::-webkit-scrollbar-thumb:hover {
+    background: #AAA;
+}
+
+/* ==========================================
+   LOADING STATES
+   ========================================== */
+.dashboardCard.loading {
+    opacity: 0.7;
+}
+
+.dashboardCard.loading::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+

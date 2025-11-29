@@ -1,0 +1,39 @@
+specVersion: "3.1"
+metadata:
+  name: beautyleads.dashboard
+type: application
+server:
+  customMiddleware:
+    - name: fiori-tools-proxy
+      afterMiddleware: compression
+      configuration:
+        ignoreCertError: false
+        ui5:
+          path:
+            - /resources
+            - /test-resources
+          url: https://sapui5.hana.ondemand.com
+        backend:
+          - path: /dashboard
+            url: http://localhost:4004
+          - path: /lead
+            url: http://localhost:4004
+          - path: /account
+            url: http://localhost:4004
+          - path: /opportunity
+            url: http://localhost:4004
+          - path: /activity
+            url: http://localhost:4004
+          - path: /product
+            url: http://localhost:4004
+          - path: /prospect
+            url: http://localhost:4004
+          - path: /marketing
+            url: http://localhost:4004
+    - name: fiori-tools-appreload
+      afterMiddleware: compression
+      configuration:
+        port: 35730
+        path: webapp
+        delay: 300
+

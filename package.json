@@ -18,6 +18,7 @@
     "start": "cds-serve",
     "watch": "cds watch",
     "watch-launchpad": "cds watch --open index.html",
+    "watch-dashboard": "cds watch --open beautyleads.dashboard/index.html?sap-ui-xx-viewCache=false",
     "watch-merchants": "cds watch --open beautyleads.merchants/index.html?sap-ui-xx-viewCache=false",
     "watch-campaigns": "cds watch --open beautyleads.campaigns/index.html?sap-ui-xx-viewCache=false",
     "watch-leads": "cds watch --open beautyleads.leads/index.html?sap-ui-xx-viewCache=false",
@@ -29,6 +30,7 @@
     "app/*"
   ],
   "sapux": [
+    "app/dashboard",
     "app/merchants",
     "app/campaigns",
     "app/leads",

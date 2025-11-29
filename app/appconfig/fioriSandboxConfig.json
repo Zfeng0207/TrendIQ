@@ -1,4 +1,53 @@
 {
   "defaultRenderer": "fiori2",
-  "applications": {}
+  "applications": {
+    "dashboard-display": {
+      "title": "CRM Dashboard",
+      "description": "Unified analytics dashboard",
+      "additionalInformation": "SAPUI5.Component=beautyleads.dashboard",
+      "applicationType": "URL",
+      "url": "../dashboard/webapp",
+      "navigationMode": "embedded"
+    },
+    "leads-manage": {
+      "title": "Leads",
+      "description": "Manage sales leads",
+      "additionalInformation": "SAPUI5.Component=beautyleads.leads",
+      "applicationType": "URL",
+      "url": "../leads/webapp",
+      "navigationMode": "embedded"
+    },
+    "accounts-manage": {
+      "title": "Accounts",
+      "description": "Manage customer accounts",
+      "additionalInformation": "SAPUI5.Component=beautyleads.accounts",
+      "applicationType": "URL",
+      "url": "../accounts/webapp",
+      "navigationMode": "embedded"
+    },
+    "opportunities-manage": {
+      "title": "Opportunities",
+      "description": "Manage sales opportunities",
+      "additionalInformation": "SAPUI5.Component=beautyleads.opportunities",
+      "applicationType": "URL",
+      "url": "../opportunities/webapp",
+      "navigationMode": "embedded"
+    },
+    "campaigns-manage": {
+      "title": "Campaigns",
+      "description": "Marketing campaigns",
+      "additionalInformation": "SAPUI5.Component=beautyleads.campaigns",
+      "applicationType": "URL",
+      "url": "../campaigns/webapp",
+      "navigationMode": "embedded"
+    },
+    "merchants-manage": {
+      "title": "Prospects",
+      "description": "Prospect discovery",
+      "additionalInformation": "SAPUI5.Component=beautyleads.merchants",
+      "applicationType": "URL",
+      "url": "../merchants/webapp",
+      "navigationMode": "embedded"
+    }
+  }
 }

@@ -30,6 +30,12 @@
                 }
             },
             applications: {
+                "dashboard-display": {
+                    title: "CRM Dashboard",
+                    description: "Unified analytics dashboard for sales reps",
+                    applicationType: "URL",
+                    url: "/beautyleads.dashboard/index.html"
+                },
                 "leads-manage": {
                     title: "Leads",
                     description: "Capture and qualify potential customers",
@@ -63,11 +69,31 @@
             },
             groups: [
                 {
+                    id: "dashboard-group",
+                    title: "Dashboard",
+                    isPreset: true,
+                    isVisible: true,
+                    isDefaultGroup: true,
+                    tiles: [
+                        {
+                            id: "dashboard-tile",
+                            tileType: "sap.ushell.ui.tile.StaticTile",
+                            properties: {
+                                title: "CRM Dashboard",
+                                subtitle: "Analytics Overview",
+                                infoState: "Neutral",
+                                info: "AI-Powered",
+                                icon: "sap-icon://business-objects-experience",
+                                targetURL: "#dashboard-display"
+                            }
+                        }
+                    ]
+                },
+                {
                     id: "sales-pipeline",
                     title: "Sales Pipeline",
                     isPreset: true,
                     isVisible: true,
-                    isDefaultGroup: true,
                     tiles: [
                         {
                             id: "leads-tile",
@@ -154,6 +180,7 @@
         data-sap-ui-language="en"
         data-sap-ui-resourceroots='{
             "beautydashboard.eybeauty1": "/ey-beauty-1/webapp/",
+            "beautyleads.dashboard": "/dashboard/webapp/",
             "beautyleads.prospects": "/prospects/webapp/",
             "beautyleads.campaigns": "/campaigns/webapp/",
             "beautyleads.leads": "/leads/webapp/",

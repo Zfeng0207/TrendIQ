@@ -1,0 +1,12 @@
+<mvc:View
+    controllerName="beautyleads.dashboard.controller.App"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    displayBlock="true">
+    <App id="app" busy="{appView>/busy}" busyIndicatorDelay="{appView>/delay}">
+        <pages>
+            <!-- Dashboard page will be loaded here by the router -->
+        </pages>
+    </App>
+</mvc:View>
+
