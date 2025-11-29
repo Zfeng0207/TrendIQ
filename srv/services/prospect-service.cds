@@ -27,6 +27,37 @@ service ProspectService @(path: '/prospect') {
             message: String;
             opportunityID: UUID;
         };
+        // Convert Prospect to Account, Contact, and Opportunity
+        action convertToAccount(
+            // Account fields
+            accountName: String,
+            accountType: String,
+            industry: String,
+            website: String,
+            address: String,
+            city: String,
+            state: String,
+            country: String,
+            postalCode: String,
+            // Contact fields
+            contactFirstName: String,
+            contactLastName: String,
+            contactTitle: String,
+            contactEmail: String,
+            contactPhone: String,
+            // Opportunity fields
+            opportunityName: String,
+            opportunityDescription: String,
+            opportunityStage: String,
+            opportunityAmount: Decimal,
+            opportunityProbability: Integer,
+            opportunityCloseDate: Date
+        ) returns {
+            message: String;
+            accountID: UUID;
+            contactID: UUID;
+            opportunityID: UUID;
+        };
     };
     
     @readonly entity ProspectsBySource as projection on crm.Prospects {
@@ -45,6 +76,10 @@ service ProspectService @(path: '/prospect') {
     @readonly entity Users as projection on crm.Users;
     @readonly entity Leads as projection on leads.Leads;
     @readonly entity Opportunities as projection on crm.Opportunities;
+    
+    // Entities needed for conversion
+    entity Accounts as projection on crm.Accounts;
+    entity Contacts as projection on crm.Contacts;
 }
 
 

@@ -1,0 +1,240 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:f="sap.ui.layout.form"
+    xmlns:l="sap.ui.layout">
+
+    <Dialog
+        id="convertProspectDialog"
+        title="Convert Prospect"
+        contentWidth="750px"
+        contentHeight="auto"
+        stretch="{device>/system/phone}"
+        class="sapUiContentPadding convertProspectDialog">
+        
+        <customHeader>
+            <Bar class="convertDialogHeader">
+                <contentLeft>
+                    <HBox alignItems="Center" class="sapUiSmallMarginBegin">
+                        <core:Icon 
+                            src="sap-icon://journey-change" 
+                            size="1.375rem" 
+                            color="#fff"
+                            class="sapUiSmallMarginEnd"/>
+                        <Title text="Convert Prospect" level="H5" class="convertDialogTitle"/>
+                    </HBox>
+                </contentLeft>
+                <contentRight>
+                    <Button 
+                        icon="sap-icon://decline" 
+                        type="Transparent" 
+                        press=".onConvertDialogCancel"
+                        tooltip="Close"
+                        class="convertCloseBtn"/>
+                </contentRight>
+            </Bar>
+        </customHeader>
+        
+        <content>
+            <VBox class="convertDialogContent">
+                
+                <!-- Prospect Summary Card -->
+                <HBox class="convertSummaryCard" alignItems="Center" justifyContent="SpaceBetween">
+                    <HBox alignItems="Center">
+                        <VBox class="convertProspectAvatar" alignItems="Center" justifyContent="Center">
+                            <core:Icon src="sap-icon://customer" size="1.5rem" color="#fff"/>
+                        </VBox>
+                        <VBox class="sapUiSmallMarginBegin">
+                            <Text id="convertProspectName" text="" class="convertProspectNameText"/>
+                            <Text id="convertProspectDetails" text="" class="convertProspectDetailsText"/>
+                        </VBox>
+                    </HBox>
+                    <VBox alignItems="End">
+                        <ObjectStatus 
+                            id="convertProspectScore" 
+                            text="Score: --" 
+                            state="Information"
+                            class="convertScoreBadge"/>
+                        <HBox class="sapUiTinyMarginTop convertCreationBadges">
+                            <ObjectStatus text="Account" state="Success" icon="sap-icon://building" inverted="true" class="convertBadge"/>
+                            <ObjectStatus text="Contact" state="Information" icon="sap-icon://person-placeholder" inverted="true" class="convertBadge"/>
+                            <ObjectStatus text="Deal" state="Warning" icon="sap-icon://opportunity" inverted="true" class="convertBadge"/>
+                        </HBox>
+                    </VBox>
+                </HBox>
+
+                <!-- Step 1: Account -->
+                <VBox class="convertSection accountSection">
+                    <HBox class="convertSectionHeader" alignItems="Center">
+                        <HBox class="convertStepBadge" alignItems="Center" justifyContent="Center">
+                            <Text text="1" class="convertStepNumber"/>
+                        </HBox>
+                        <core:Icon src="sap-icon://building" size="1.125rem" color="#059669" class="sapUiSmallMarginBegin"/>
+                        <Text text="Account Information" class="convertSectionTitle sapUiSmallMarginBegin"/>
+                    </HBox>
+                    <VBox class="convertSectionBody">
+                        <HBox class="convertFieldRow">
+                            <VBox class="convertField convertFieldLarge">
+                                <Label text="Company Name" required="true" class="convertLabel"/>
+                                <Input id="convertAccountName" placeholder="Enter company name" class="convertInput"/>
+                            </VBox>
+                            <VBox class="convertField">
+                                <Label text="Account Type" class="convertLabel"/>
+                                <Select id="convertAccountType" class="convertSelect">
+                                    <core:Item key="Salon" text="Salon"/>
+                                    <core:Item key="Spa" text="Spa"/>
+                                    <core:Item key="Retailer" text="Retailer"/>
+                                    <core:Item key="Distributor" text="Distributor"/>
+                                    <core:Item key="E-commerce" text="E-commerce"/>
+                                    <core:Item key="Influencer" text="Influencer"/>
+                                </Select>
+                            </VBox>
+                        </HBox>
+                        <HBox class="convertFieldRow">
+                            <VBox class="convertField">
+                                <Label text="Industry" class="convertLabel"/>
+                                <Input id="convertAccountIndustry" value="Beauty &amp; Wellness" class="convertInput"/>
+                            </VBox>
+                            <VBox class="convertField">
+                                <Label text="Website" class="convertLabel"/>
+                                <Input id="convertAccountWebsite" placeholder="https://example.com" type="Url" class="convertInput"/>
+                            </VBox>
+                        </HBox>
+                        <HBox class="convertFieldRow">
+                            <VBox class="convertField convertFieldLarge">
+                                <Label text="Address" class="convertLabel"/>
+                                <Input id="convertAccountAddress" placeholder="Street address" class="convertInput"/>
+                            </VBox>
+                            <VBox class="convertField convertFieldSmall">
+                                <Label text="City" class="convertLabel"/>
+                                <Input id="convertAccountCity" placeholder="City" class="convertInput"/>
+                            </VBox>
+                        </HBox>
+                        <HBox class="convertFieldRow">
+                            <VBox class="convertField">
+                                <Label text="State/Province" class="convertLabel"/>
+                                <Input id="convertAccountState" placeholder="State" class="convertInput"/>
+                            </VBox>
+                            <VBox class="convertField">
+                                <Label text="Country" class="convertLabel"/>
+                                <Input id="convertAccountCountry" value="Malaysia" class="convertInput"/>
+                            </VBox>
+                            <VBox class="convertField convertFieldSmall">
+                                <Label text="Postal Code" class="convertLabel"/>
+                                <Input id="convertAccountPostalCode" placeholder="Postal" class="convertInput"/>
+                            </VBox>
+                        </HBox>
+                    </VBox>
+                </VBox>
+
+                <!-- Step 2: Contact -->
+                <VBox class="convertSection contactSection">
+                    <HBox class="convertSectionHeader" alignItems="Center">
+                        <HBox class="convertStepBadge contactStepBadge" alignItems="Center" justifyContent="Center">
+                            <Text text="2" class="convertStepNumber"/>
+                        </HBox>
+                        <core:Icon src="sap-icon://person-placeholder" size="1.125rem" color="#2563eb" class="sapUiSmallMarginBegin"/>
+                        <Text text="Contact Person" class="convertSectionTitle sapUiSmallMarginBegin"/>
+                    </HBox>
+                    <VBox class="convertSectionBody">
+                        <HBox class="convertFieldRow">
+                            <VBox class="convertField">
+                                <Label text="First Name" class="convertLabel"/>
+                                <Input id="convertContactFirstName" placeholder="First name" class="convertInput"/>
+                            </VBox>
+                            <VBox class="convertField">
+                                <Label text="Last Name" class="convertLabel"/>
+                                <Input id="convertContactLastName" placeholder="Last name" class="convertInput"/>
+                            </VBox>
+                            <VBox class="convertField">
+                                <Label text="Job Title" class="convertLabel"/>
+                                <Input id="convertContactTitle" value="Business Owner" class="convertInput"/>
+                            </VBox>
+                        </HBox>
+                        <HBox class="convertFieldRow">
+                            <VBox class="convertField">
+                                <Label text="Email" class="convertLabel"/>
+                                <Input id="convertContactEmail" placeholder="email@example.com" type="Email" class="convertInput"/>
+                            </VBox>
+                            <VBox class="convertField">
+                                <Label text="Phone" class="convertLabel"/>
+                                <Input id="convertContactPhone" placeholder="+60 12-345 6789" type="Tel" class="convertInput"/>
+                            </VBox>
+                        </HBox>
+                    </VBox>
+                </VBox>
+
+                <!-- Step 3: Opportunity -->
+                <VBox class="convertSection opportunitySection">
+                    <HBox class="convertSectionHeader" alignItems="Center">
+                        <HBox class="convertStepBadge opportunityStepBadge" alignItems="Center" justifyContent="Center">
+                            <Text text="3" class="convertStepNumber"/>
+                        </HBox>
+                        <core:Icon src="sap-icon://opportunity" size="1.125rem" color="#d97706" class="sapUiSmallMarginBegin"/>
+                        <Text text="Opportunity Details" class="convertSectionTitle sapUiSmallMarginBegin"/>
+                    </HBox>
+                    <VBox class="convertSectionBody">
+                        <HBox class="convertFieldRow">
+                            <VBox class="convertField convertFieldFull">
+                                <Label text="Opportunity Name" required="true" class="convertLabel"/>
+                                <Input id="convertOpportunityName" placeholder="Enter opportunity name" class="convertInput"/>
+                            </VBox>
+                        </HBox>
+                        <HBox class="convertFieldRow">
+                            <VBox class="convertField convertFieldFull">
+                                <Label text="Description" class="convertLabel"/>
+                                <TextArea id="convertOpportunityDescription" placeholder="Describe the opportunity..." rows="2" width="100%" class="convertTextArea"/>
+                            </VBox>
+                        </HBox>
+                        <HBox class="convertFieldRow">
+                            <VBox class="convertField">
+                                <Label text="Stage" class="convertLabel"/>
+                                <Select id="convertOpportunityStage" selectedKey="Prospecting" class="convertSelect">
+                                    <core:Item key="Prospecting" text="Prospecting"/>
+                                    <core:Item key="Qualification" text="Qualification"/>
+                                    <core:Item key="Needs Analysis" text="Needs Analysis"/>
+                                    <core:Item key="Proposal" text="Proposal"/>
+                                    <core:Item key="Negotiation" text="Negotiation"/>
+                                </Select>
+                            </VBox>
+                            <VBox class="convertField">
+                                <Label text="Deal Amount (MYR)" class="convertLabel"/>
+                                <Input id="convertOpportunityAmount" type="Number" placeholder="0.00" class="convertInput"/>
+                            </VBox>
+                            <VBox class="convertField">
+                                <Label text="Close Date" required="true" class="convertLabel"/>
+                                <DatePicker id="convertOpportunityCloseDate" placeholder="Select date" class="convertDatePicker"/>
+                            </VBox>
+                        </HBox>
+                        <HBox class="convertFieldRow">
+                            <VBox class="convertField convertFieldFull">
+                                <Label text="Win Probability" class="convertLabel"/>
+                                <HBox alignItems="Center" class="convertSliderRow">
+                                    <Slider id="convertOpportunityProbability" min="0" max="100" value="50" width="100%" class="convertSlider"/>
+                                    <Text id="convertProbabilityText" text="50%" class="convertProbabilityValue"/>
+                                </HBox>
+                            </VBox>
+                        </HBox>
+                    </VBox>
+                </VBox>
+
+            </VBox>
+        </content>
+
+        <beginButton>
+            <Button
+                id="convertConfirmBtn"
+                text="Convert Prospect"
+                type="Emphasized"
+                icon="sap-icon://accept"
+                press=".onConvertDialogConfirm"
+                class="convertConfirmButton"/>
+        </beginButton>
+        <endButton>
+            <Button
+                text="Cancel"
+                press=".onConvertDialogCancel"
+                class="convertCancelButton"/>
+        </endButton>
+    </Dialog>
+</core:FragmentDefinition>

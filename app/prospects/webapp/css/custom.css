@@ -29,3 +29,349 @@
     transform: translateY(-2px);
 }
 
+/* =====================================================
+   CONVERT PROSPECT DIALOG - MODERN DESIGN
+   ===================================================== */
+
+/* Dialog Container */
+.convertProspectDialog {
+    border-radius: 16px !important;
+    overflow: hidden !important;
+}
+
+.convertProspectDialog .sapMDialogSection {
+    background: #f8fafc !important;
+}
+
+.convertProspectDialog > .sapMDialogScrollCont {
+    padding: 0 !important;
+}
+
+/* Dialog Header */
+.convertDialogHeader {
+    background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%) !important;
+    padding: 0.75rem 1rem !important;
+}
+
+.convertDialogTitle {
+    color: #fff !important;
+    font-weight: 600 !important;
+    font-size: 1rem !important;
+}
+
+.convertCloseBtn .sapUiIcon {
+    color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.convertCloseBtn:hover .sapUiIcon {
+    color: #fff !important;
+}
+
+/* Dialog Content */
+.convertDialogContent {
+    padding: 1.25rem !important;
+    gap: 1rem !important;
+}
+
+/* Prospect Summary Card */
+.convertSummaryCard {
+    background: linear-gradient(135deg, #1e3a5f 0%, #0f2744 100%) !important;
+    border-radius: 12px !important;
+    padding: 1rem 1.25rem !important;
+    box-shadow: 0 4px 16px rgba(30, 58, 95, 0.25) !important;
+}
+
+.convertProspectAvatar {
+    width: 48px !important;
+    height: 48px !important;
+    background: rgba(255, 255, 255, 0.15) !important;
+    border-radius: 12px !important;
+}
+
+.convertProspectNameText {
+    color: #fff !important;
+    font-size: 1.125rem !important;
+    font-weight: 600 !important;
+}
+
+.convertProspectDetailsText {
+    color: rgba(255, 255, 255, 0.7) !important;
+    font-size: 0.8125rem !important;
+    margin-top: 2px !important;
+}
+
+.convertScoreBadge {
+    background: rgba(255, 255, 255, 0.15) !important;
+    border-radius: 20px !important;
+    padding: 0.25rem 0.75rem !important;
+}
+
+.convertScoreBadge .sapMObjStatusText {
+    color: #fff !important;
+    font-weight: 600 !important;
+    font-size: 0.75rem !important;
+}
+
+.convertCreationBadges {
+    gap: 0.5rem !important;
+}
+
+.convertBadge {
+    border-radius: 6px !important;
+    padding: 0.125rem 0.5rem !important;
+}
+
+.convertBadge .sapMObjStatusText {
+    font-size: 0.6875rem !important;
+}
+
+/* Section Styling */
+.convertSection {
+    background: #fff !important;
+    border-radius: 12px !important;
+    border: 1px solid #e2e8f0 !important;
+    overflow: hidden !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
+}
+
+.convertSectionHeader {
+    padding: 0.75rem 1rem !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+    background: #f8fafc !important;
+}
+
+.convertStepBadge {
+    width: 24px !important;
+    height: 24px !important;
+    background: #059669 !important;
+    border-radius: 50% !important;
+}
+
+.contactStepBadge {
+    background: #2563eb !important;
+}
+
+.opportunityStepBadge {
+    background: #d97706 !important;
+}
+
+.convertStepNumber {
+    color: #fff !important;
+    font-size: 0.75rem !important;
+    font-weight: 700 !important;
+}
+
+.convertSectionTitle {
+    color: #1e293b !important;
+    font-weight: 600 !important;
+    font-size: 0.9375rem !important;
+}
+
+.convertSectionBody {
+    padding: 1rem !important;
+    gap: 0.75rem !important;
+}
+
+/* Field Rows */
+.convertFieldRow {
+    gap: 1rem !important;
+    width: 100% !important;
+}
+
+.convertField {
+    flex: 1 !important;
+    min-width: 0 !important;
+}
+
+.convertFieldLarge {
+    flex: 1.5 !important;
+}
+
+.convertFieldSmall {
+    flex: 0.7 !important;
+}
+
+.convertFieldFull {
+    flex: 1 0 100% !important;
+}
+
+/* Labels */
+.convertLabel {
+    color: #475569 !important;
+    font-size: 0.8125rem !important;
+    font-weight: 500 !important;
+    margin-bottom: 0.375rem !important;
+}
+
+.convertLabel .sapMLabelRequired::after {
+    color: #dc2626 !important;
+}
+
+/* Input Fields */
+.convertInput .sapMInputBaseInner,
+.convertTextArea .sapMTextAreaInner,
+.convertSelect .sapMSltLabel,
+.convertDatePicker .sapMInputBaseInner {
+    border-radius: 8px !important;
+    border: 1.5px solid #cbd5e1 !important;
+    background: #fff !important;
+    font-size: 0.875rem !important;
+    transition: all 0.15s ease !important;
+}
+
+.convertInput .sapMInputBaseInner:focus,
+.convertInput.sapMInputFocused .sapMInputBaseInner,
+.convertTextArea .sapMTextAreaInner:focus,
+.convertSelect.sapMSltPressed .sapMSltLabel,
+.convertDatePicker.sapMInputFocused .sapMInputBaseInner {
+    border-color: #3b82f6 !important;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12) !important;
+}
+
+.convertSelect {
+    border-radius: 8px !important;
+}
+
+.convertSelect .sapMSltArrow {
+    border-radius: 0 8px 8px 0 !important;
+    background: #f1f5f9 !important;
+}
+
+/* Slider */
+.convertSliderRow {
+    gap: 1rem !important;
+    width: 100% !important;
+}
+
+.convertSlider {
+    flex: 1 !important;
+}
+
+.convertSlider .sapMSliderProgress {
+    background: linear-gradient(90deg, #3b82f6 0%, #1d4ed8 100%) !important;
+    border-radius: 4px !important;
+}
+
+.convertSlider .sapMSliderHandle {
+    background: #fff !important;
+    border: 2px solid #3b82f6 !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15) !important;
+    width: 18px !important;
+    height: 18px !important;
+}
+
+.convertProbabilityValue {
+    min-width: 40px !important;
+    text-align: right !important;
+    font-weight: 600 !important;
+    color: #1e40af !important;
+    font-size: 0.9375rem !important;
+}
+
+/* Date Picker */
+.convertDatePicker .sapMInputBaseIconContainer {
+    border-radius: 0 8px 8px 0 !important;
+    background: #f1f5f9 !important;
+}
+
+/* TextArea */
+.convertTextArea {
+    border-radius: 8px !important;
+}
+
+/* Dialog Footer */
+.convertProspectDialog .sapMDialogFooter {
+    background: #fff !important;
+    border-top: 1px solid #e2e8f0 !important;
+    padding: 1rem 1.25rem !important;
+}
+
+.convertConfirmButton {
+    background: linear-gradient(135deg, #059669 0%, #047857 100%) !important;
+    border: none !important;
+    border-radius: 8px !important;
+    min-width: 140px !important;
+    height: 40px !important;
+    font-weight: 600 !important;
+    box-shadow: 0 2px 8px rgba(5, 150, 105, 0.3) !important;
+    transition: all 0.2s ease !important;
+}
+
+.convertConfirmButton:hover {
+    background: linear-gradient(135deg, #047857 0%, #065f46 100%) !important;
+    box-shadow: 0 4px 12px rgba(5, 150, 105, 0.4) !important;
+    transform: translateY(-1px) !important;
+}
+
+.convertConfirmButton .sapMBtnIcon {
+    color: #fff !important;
+}
+
+.convertCancelButton {
+    border-radius: 8px !important;
+    min-width: 100px !important;
+    height: 40px !important;
+}
+
+/* Section-specific colors */
+.accountSection .convertSectionHeader {
+    border-left: 4px solid #059669 !important;
+}
+
+.contactSection .convertSectionHeader {
+    border-left: 4px solid #2563eb !important;
+}
+
+.opportunitySection .convertSectionHeader {
+    border-left: 4px solid #d97706 !important;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .convertDialogContent {
+        padding: 0.75rem !important;
+    }
+    
+    .convertFieldRow {
+        flex-direction: column !important;
+    }
+    
+    .convertField,
+    .convertFieldLarge,
+    .convertFieldSmall {
+        flex: 1 0 100% !important;
+    }
+    
+    .convertSummaryCard {
+        flex-direction: column !important;
+        gap: 1rem !important;
+    }
+}
+
+/* Animation */
+.convertSection {
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.accountSection {
+    animation-delay: 0.1s;
+}
+
+.contactSection {
+    animation-delay: 0.2s;
+}
+
+.opportunitySection {
+    animation-delay: 0.3s;
+}

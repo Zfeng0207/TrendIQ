@@ -8,7 +8,7 @@ const fs = require('fs');
 const path = require('path');
 
 module.exports = async function() {
-    const { Prospects, Leads, Users, Opportunities } = this.entities;
+    const { Prospects, Leads, Users, Opportunities, Accounts, Contacts } = this.entities;
 
     // Handler for virtual fields: statusCriticality, phase, priorityScore, lastFollowUp, pendingItems, assignedTo
     this.on('READ', 'Prospects', async (req, next) => {
@@ -531,6 +531,192 @@ module.exports = async function() {
             opportunityID: opportunityID
         };
     });
+
+    // Action: Convert Prospect to Account, Contact, and Opportunity
+    // Creates all three entities in sequence: Account → Contact → Opportunity
+    this.on('convertToAccount', 'Prospects', async (req) => {
+        const prospectID = req.params[0].ID;
+        const prospect = await SELECT.one.from(Prospects).where({ ID: prospectID });
+
+        if (!prospect) {
+            return req.error(404, `Prospect ${prospectID} not found`);
+        }
+
+        if (prospect.status === 'Converted') {
+            return req.warn(409, 'This prospect has already been converted');
+        }
+
+        // Get input data from request body (from conversion dialog)
+        const inputData = req.data || {};
+        console.log('[Convert to Account] Received data:', JSON.stringify(inputData, null, 2));
+
+        // Generate UUIDs for all new entities
+        const accountID = cds.utils.uuid();
+        const contactID = cds.utils.uuid();
+        const opportunityID = cds.utils.uuid();
+
+        try {
+            // ============================================
+            // STEP 1: Create Account
+            // ============================================
+            const accountData = {
+                ID: accountID,
+                accountName: inputData.accountName || prospect.prospectName,
+                accountType: mapBusinessTypeToAccountType(inputData.accountType || prospect.businessType),
+                industry: inputData.industry || 'Beauty & Wellness',
+                website: inputData.website || '',
+                status: 'Active',
+                // Address fields
+                address: inputData.address || prospect.address || '',
+                city: inputData.city || prospect.city || '',
+                state: inputData.state || prospect.state || '',
+                country: inputData.country || prospect.country || 'Malaysia',
+                postalCode: inputData.postalCode || prospect.postalCode || '',
+                // Link to source prospect
+                sourceProspect_ID: prospectID,
+                // Default values
+                healthScore: prospect.prospectScore || 70,
+                riskLevel: 'Low',
+                dateCreated: new Date().toISOString().split('T')[0],
+                // Notes
+                description: `Account created from prospect: ${prospect.prospectName}`,
+                notes: prospect.about || ''
+            };
+
+            console.log('[Convert to Account] Creating Account:', accountData.accountName);
+            await INSERT.into(Accounts).entries(accountData);
+
+            // ============================================
+            // STEP 2: Create Contact (linked to Account)
+            // ============================================
+            // Parse contact name into first/last name
+            const contactFullName = inputData.contactFirstName && inputData.contactLastName
+                ? `${inputData.contactFirstName} ${inputData.contactLastName}`
+                : prospect.contactName || '';
+            
+            const nameParts = parseContactName(
+                inputData.contactFirstName,
+                inputData.contactLastName,
+                prospect.contactName
+            );
+
+            const contactData = {
+                ID: contactID,
+                firstName: nameParts.firstName,
+                lastName: nameParts.lastName,
+                fullName: contactFullName || `${nameParts.firstName} ${nameParts.lastName}`.trim(),
+                title: inputData.contactTitle || 'Business Owner',
+                email: inputData.contactEmail || prospect.contactEmail || '',
+                phone: inputData.contactPhone || prospect.contactPhone || '',
+                // Link to the new account
+                account_ID: accountID,
+                isPrimary: true,
+                // Default values
+                status: 'Active',
+                preferredChannel: 'Email',
+                language: 'English',
+                engagementScore: prospect.prospectScore || 50,
+                sentimentScore: prospect.sentimentScore || 0,
+                sentimentLabel: 'Neutral'
+            };
+
+            console.log('[Convert to Account] Creating Contact:', contactData.fullName);
+            await INSERT.into(Contacts).entries(contactData);
+
+            // ============================================
+            // STEP 3: Create Opportunity (linked to Account and Contact)
+            // ============================================
+            const opportunityData = {
+                ID: opportunityID,
+                name: inputData.opportunityName || `${prospect.prospectName} - Partnership Deal`,
+                description: inputData.opportunityDescription || `Opportunity created from prospect conversion: ${prospect.prospectName}`,
+                // Link to account and contact
+                account_ID: accountID,
+                primaryContact_ID: contactID,
+                sourceProspect_ID: prospectID,
+                // Pipeline data
+                stage: inputData.opportunityStage || 'Prospecting',
+                probability: inputData.opportunityProbability ?? prospect.prospectScore ?? 50,
+                // Financial data
+                amount: inputData.opportunityAmount ?? prospect.estimatedValue ?? 0,
+                currency: 'MYR',
+                expectedRevenue: inputData.opportunityAmount ?? prospect.estimatedValue ?? 0,
+                closeDate: inputData.opportunityCloseDate || getExpectedCloseDate(),
+                // Assignment - use prospect's assigned sales rep
+                owner_ID: prospect.autoAssignedTo_ID || null,
+                // AI predictions
+                aiWinScore: prospect.aiScore || prospect.prospectScore || 50,
+                aiRecommendation: `Based on prospect score of ${prospect.prospectScore || 50}%, this opportunity shows good potential.`
+            };
+
+            console.log('[Convert to Account] Creating Opportunity:', opportunityData.name);
+            await INSERT.into(Opportunities).entries(opportunityData);
+
+            // ============================================
+            // STEP 4: Update Prospect Status
+            // ============================================
+            await UPDATE(Prospects).set({
+                status: 'Converted',
+                convertedToOpportunity_ID: opportunityID
+            }).where({ ID: prospectID });
+
+            console.log('[Convert to Account] Conversion complete!');
+            console.log('  - Account ID:', accountID);
+            console.log('  - Contact ID:', contactID);
+            console.log('  - Opportunity ID:', opportunityID);
+
+            return {
+                message: 'Prospect converted successfully! Account, Contact, and Opportunity have been created.',
+                accountID: accountID,
+                contactID: contactID,
+                opportunityID: opportunityID
+            };
+
+        } catch (error) {
+            console.error('[Convert to Account] Error during conversion:', error);
+            return req.error(500, `Conversion failed: ${error.message}`);
+        }
+    });
+
+    // Helper function: Map business type to account type
+    function mapBusinessTypeToAccountType(businessType) {
+        const mapping = {
+            'Salon': 'Salon',
+            'Spa': 'Spa',
+            'Retailer': 'Retailer',
+            'E-commerce': 'E-commerce',
+            'Kiosk': 'Retailer',
+            'Distributor': 'Distributor'
+        };
+        return mapping[businessType] || 'Retailer';
+    }
+
+    // Helper function: Parse contact name into first and last name
+    function parseContactName(firstName, lastName, fullName) {
+        if (firstName || lastName) {
+            return {
+                firstName: firstName || '',
+                lastName: lastName || ''
+            };
+        }
+        
+        if (fullName) {
+            const parts = fullName.trim().split(/\s+/);
+            if (parts.length >= 2) {
+                return {
+                    firstName: parts[0],
+                    lastName: parts.slice(1).join(' ')
+                };
+            } else if (parts.length === 1) {
+                return {
+                    firstName: parts[0],
+                    lastName: ''
+                };
+            }
+        }
+        
+        return { firstName: 'Contact', lastName: '' };
+    }
 
     // Helper function: Get expected close date (3 months from now)
     function getExpectedCloseDate() {

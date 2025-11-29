@@ -283,6 +283,13 @@ annotate ProspectService.Prospects with @(
 
         // Actions in Identification section (Object Page)
         Identification: [
+            // convertToAccount is hidden - using custom action in manifest.json instead
+            // {
+            //     $Type: 'UI.DataFieldForAction',
+            //     Action: 'ProspectService.convertToAccount',
+            //     Label: 'Convert',
+            //     ![@UI.Importance]: #High
+            // },
             {
                 $Type: 'UI.DataFieldForAction',
                 Action: 'ProspectService.qualifyProspect',
@@ -292,12 +299,6 @@ annotate ProspectService.Prospects with @(
                 $Type: 'UI.DataFieldForAction',
                 Action: 'ProspectService.assignToSalesRep',
                 Label: 'Assign to Sales Rep'
-            },
-            {
-                $Type: 'UI.DataFieldForAction',
-                Action: 'ProspectService.createOpportunity',
-                Label: 'Create Opportunity',
-                ![@UI.Importance]: #High
             }
         ]
     },
@@ -388,6 +389,11 @@ annotate ProspectService.Prospects actions {
         ]
     };
     createOpportunity @Common.SideEffects: {
+        TargetProperties: [
+            'status'
+        ]
+    };
+    convertToAccount @Common.SideEffects: {
         TargetProperties: [
             'status'
         ]

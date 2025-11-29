@@ -11,6 +11,10 @@ service AccountService @(path: '/account') {
     @odata.draft.enabled
     entity Accounts as projection on crm.Accounts {
         *,
+        // Exclude compositions that cause issues with draft navigation
+        recommendations: redirected to AccountRecommendations,
+        riskAlerts: redirected to AccountRiskAlerts,
+        // Virtual fields for UI
         virtual null as healthCriticality : Integer,
         virtual null as statusCriticality : Integer,
         virtual null as priorityScore : Integer, // 1-5 scale for CRM operations
@@ -58,11 +62,13 @@ service AccountService @(path: '/account') {
         where status = 'Active'
         order by engagementScore desc;
 
-    // Account Recommendations & Risk Alerts
+    // Account Recommendations & Risk Alerts (readonly - managed via actions)
     @cds.redirection.target
+    @readonly
     entity AccountRecommendations as projection on crm.AccountRecommendations;
     
     @cds.redirection.target
+    @readonly
     entity AccountRiskAlerts as projection on crm.AccountRiskAlerts;
 
     // Aggregated views for account details

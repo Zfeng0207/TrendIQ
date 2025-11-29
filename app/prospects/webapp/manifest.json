@@ -94,7 +94,11 @@
       }
     },
     "resources": {
-      "css": []
+      "css": [
+        {
+          "uri": "css/custom.css"
+        }
+      ]
     },
     "routing": {
       "config": {},
@@ -168,6 +172,18 @@
                     "DataFieldForAction::ProspectService.assignToSalesRep": {
                       "press": "beautyleads.prospects.ext.actions.AssignSalesRepAction.onAssignToSalesRep"
                     },
+                    "DataFieldForAction::ProspectService.createOpportunity": {
+                      "visible": false
+                    },
+                    "DataFieldForAction::ProspectService.convertToAccount": {
+                      "visible": false
+                    },
+                    "CustomConvertProspect": {
+                      "press": "beautyleads.prospects.ext.actions.ConvertProspectAction.onConvertProspect",
+                      "text": "Convert",
+                      "visible": true,
+                      "enabled": true
+                    },
                     "CustomAIMeeting": {
                       "press": "beautyleads.prospects.ext.actions.AIMeetingActions.onAIMeetingInitiator",
                       "text": "AI Meeting Initiator",
@@ -180,6 +196,12 @@
               "content": {
                 "header": {
                   "actions": {
+                    "CustomConvertProspectHeader": {
+                      "press": "beautyleads.prospects.ext.actions.ConvertProspectAction.onConvertProspect",
+                      "text": "Convert",
+                      "visible": true,
+                      "enabled": true
+                    },
                     "CustomAIMeetingHeader": {
                       "press": "beautyleads.prospects.ext.actions.AIMeetingActions.onAIMeetingInitiator",
                       "text": "AI Meeting Initiator",
