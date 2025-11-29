@@ -35,14 +35,12 @@ annotate LeadService.Leads with @(
             {
                 $Type: 'UI.DataField',
                 Value: status,
-                Label: 'Status',
-                Criticality: statusCriticality
+                Label: 'Status'
             },
             {
                 $Type: 'UI.DataField',
                 Value: leadQuality,
-                Label: 'Quality',
-                Criticality: leadQualityCriticality
+                Label: 'Quality'
             },
             {
                 $Type: 'UI.DataFieldForAnnotation',
@@ -298,6 +296,18 @@ annotate LeadService.Leads with @(
 );
 
 // ============================================================================
+// Capabilities for Edit/Save/Delete
+// ============================================================================
+
+annotate LeadService.Leads with @(
+    Capabilities: {
+        InsertRestrictions: { Insertable: true },
+        UpdateRestrictions: { Updatable: true },
+        DeleteRestrictions: { Deletable: true }
+    }
+);
+
+// ============================================================================
 // Analytics on Leads (ApplySupported + Charts + SPV for ALP)
 // ============================================================================
 
@@ -434,30 +444,26 @@ annotate LeadService.Leads with {
     contactPhone   @title: 'Phone';
 
     aiScore        @title: 'AI Score'
-                   @Measures.Unit: '%';
+                   @Measures.Unit: '%'
+                   @Common.FieldControl: #ReadOnly;
 
-    sentimentScore @title: 'Sentiment Score';
-    sentimentLabel @title: 'Sentiment';
-    trendScore     @title: 'Trend Score';
+    sentimentScore @title: 'Sentiment Score'
+                   @Common.FieldControl: #ReadOnly;
+    sentimentLabel @title: 'Sentiment'
+                   @Common.FieldControl: #ReadOnly;
+    trendScore     @title: 'Trend Score'
+                   @Common.FieldControl: #ReadOnly;
+    recommendedAction @title: 'Recommended Action'
+                   @Common.FieldControl: #ReadOnly;
+    converted      @title: 'Converted'
+                   @Common.FieldControl: #ReadOnly;
+    convertedDate  @title: 'Converted Date'
+                   @Common.FieldControl: #ReadOnly;
 
     estimatedValue @title: 'Estimated Value (MYR)';
 
     notes          @UI.MultiLineText: true;
 }
-
-// ============================================================================
-// Virtual Fields for Criticality (calculated in service)
-// ============================================================================
-
-// Virtual fields would need to be added to the service projection
-// Commenting out for now
-// annotate LeadService.Leads with {
-//     statusCriticality: Integer @UI.Hidden;
-//     qualityCriticality: Integer @UI.Hidden;
-//     platformCriticality: Integer @UI.Hidden;
-//     aiScoreCriticality: Integer @UI.Hidden;
-// }
-
 
 // ============================================================================
 // Chart Annotations for Analytics (Aggregated Entities + Visual Filters)
@@ -521,7 +527,9 @@ annotate LeadService.Leads actions {
     );
     qualifyLead @(
         Common.SideEffects: {
-            TargetProperties: ['status', 'leadQuality', 'statusCriticality', 'leadQualityCriticality']
+            // Note: statusCriticality and leadQualityCriticality are virtual fields computed in after READ handler
+            // They should NOT be included here as TargetProperties to avoid infinite polling loops
+            TargetProperties: ['status', 'leadQuality']
         }
     );
     updateAIScore @(

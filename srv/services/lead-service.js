@@ -8,41 +8,6 @@ const cds = require('@sap/cds');
 module.exports = async function() {
     const { Leads, Accounts, Contacts } = this.entities;
 
-    // Handler for virtual fields: criticality
-    this.on('READ', 'Leads', async (req, next) => {
-        const results = await next();
-
-        // Helper to process a single lead record
-        const processLead = (lead) => {
-            if (lead) {
-                // Status Criticality
-                switch (lead.status) {
-                    case 'Qualified': lead.statusCriticality = 3; break; // Green
-                    case 'Contacted': lead.statusCriticality = 2; break; // Yellow
-                    case 'New':       lead.statusCriticality = 2; break; // Yellow
-                    case 'Lost':      lead.statusCriticality = 1; break; // Red
-                    case 'Converted': lead.statusCriticality = 3; break; // Green
-                    default:          lead.statusCriticality = 0;        // Neutral
-                }
-
-                // Lead Quality Criticality
-                switch (lead.leadQuality) {
-                    case 'Hot':    lead.leadQualityCriticality = 3; break;
-                    case 'Warm':   lead.leadQualityCriticality = 2; break;
-                    case 'Cold':   lead.leadQualityCriticality = 1; break;
-                    default:       lead.leadQualityCriticality = 0;
-                }
-            }
-        };
-
-        if (Array.isArray(results)) {
-            results.forEach(processLead);
-        } else if (results) {
-            processLead(results);
-        }
-        return results;
-    });
-
     // Action: Generate AI Summary
     this.on('generateAISummary', 'Leads', async (req) => {
         // This action is handled in the UI controller to show toast

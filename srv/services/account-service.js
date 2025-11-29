@@ -8,41 +8,8 @@ const cds = require('@sap/cds');
 module.exports = async function() {
     const { Accounts, Contacts, AccountRecommendations, AccountRiskAlerts, Opportunities, MarketingCampaigns, Activities } = this.entities;
 
-    // Handler for virtual fields: criticality, priority score, and AI summaries
-    this.on('READ', 'Accounts', async (req, next) => {
-        // Check if sorting by priorityScore is requested
-        let sortByPriority = false;
-        let sortDirection = 'asc';
-        let sortByDateCreated = false;
-        let dateCreatedSortDirection = 'desc'; // Default to descending
-        
-        // Check OData $orderby parameter
-        const orderBy = req.query?.SELECT?.orderBy;
-        if (orderBy && Array.isArray(orderBy)) {
-            for (let i = 0; i < orderBy.length; i++) {
-                const order = orderBy[i];
-                // Check if it's ordering by priorityScore
-                if (order && order.ref && Array.isArray(order.ref) && order.ref[0] === 'priorityScore') {
-                    sortByPriority = true;
-                    sortDirection = order.sort === 'desc' ? 'desc' : 'asc';
-                    // Remove the orderBy for priorityScore since it's virtual - we'll sort manually
-                    orderBy.splice(i, 1);
-                    break;
-                }
-                // Check if it's ordering by dateCreated
-                if (order && order.ref && Array.isArray(order.ref) && order.ref[0] === 'dateCreated') {
-                    sortByDateCreated = true;
-                    dateCreatedSortDirection = order.sort === 'desc' ? 'desc' : 'asc';
-                }
-            }
-        } else {
-            // Default sort: dateCreated descending if no orderBy specified
-            sortByDateCreated = true;
-            dateCreatedSortDirection = 'desc';
-        }
-
-        const results = await next();
-
+    // Handler for virtual fields: criticality, priority score, and AI summaries (using after to avoid draft conflicts)
+    this.after('READ', 'Accounts', async (results, req) => {
         const processAccount = async (account) => {
             if (account) {
                 // Health Criticality
@@ -102,47 +69,13 @@ module.exports = async function() {
             }
         };
 
-        let processedResults;
         if (Array.isArray(results)) {
-            processedResults = [];
             for (const account of results) {
                 await processAccount(account);
-                processedResults.push(account);
             }
         } else if (results) {
             await processAccount(results);
-            processedResults = results;
-        } else {
-            processedResults = results;
         }
-
-        // Sort by priorityScore if requested
-        if (sortByPriority && Array.isArray(processedResults)) {
-            processedResults.sort((a, b) => {
-                const aScore = a.priorityScore || 0;
-                const bScore = b.priorityScore || 0;
-                if (sortDirection === 'desc') {
-                    return bScore - aScore;
-                } else {
-                    return aScore - bScore;
-                }
-            });
-        }
-
-        // Sort by dateCreated if requested or as default
-        if (sortByDateCreated && Array.isArray(processedResults)) {
-            processedResults.sort((a, b) => {
-                const aDate = a.dateCreated ? new Date(a.dateCreated) : new Date(0);
-                const bDate = b.dateCreated ? new Date(b.dateCreated) : new Date(0);
-                if (dateCreatedSortDirection === 'desc') {
-                    return bDate - aDate; // Descending: newest first
-                } else {
-                    return aDate - bDate; // Ascending: oldest first
-                }
-            });
-        }
-
-        return processedResults;
     });
 
     // Action: Update Account AI Score

@@ -358,7 +358,8 @@ annotate AccountService.Accounts with {
     industry       @title: 'Industry';
     status         @title: 'Status';
     accountTier    @title: 'Tier';
-    healthScore    @title: 'Health Score';
+    healthScore    @title: 'Health Score'
+                   @Common.FieldControl: #ReadOnly;
     annualRevenue  @title: 'Annual Revenue' @Measures.ISOCurrency: 'MYR';
     creditLimit    @title: 'Credit Limit' @Measures.ISOCurrency: 'MYR';
     estimatedMonthlyGMV @title: 'Estimated Monthly GMV' @Measures.ISOCurrency: 'MYR';
@@ -369,19 +370,45 @@ annotate AccountService.Accounts with {
     nextRecommendedAction @title: 'Next Recommended Action';
     timelineStageDeadline @title: 'Timeline Stage Deadline';
     timelineStageNotes @title: 'Timeline Stage Notes';
-    recentSentimentTrend @title: 'Recent Sentiment Trend';
-    sentimentScore @title: 'Sentiment Score';
-    priorityScore @title: 'Priority Score';
-    priorityScoreCriticality @UI.Hidden: true;
-    currentStageSummary @title: 'Current Stage Summary' @UI.MultiLineText: true;
-    nextStepsSummary @title: 'Next Steps Summary' @UI.MultiLineText: true;
-    lastFollowUp @title: 'Last Follow Up';
-    pendingItems @title: 'Pending Items';
-    phase @title: 'Phase';
-    phaseCriticality @UI.Hidden: true;
+    recentSentimentTrend @title: 'Recent Sentiment Trend'
+                   @Common.FieldControl: #ReadOnly;
+    sentimentScore @title: 'Sentiment Score'
+                   @Common.FieldControl: #ReadOnly;
+    priorityScore @title: 'Priority Score'
+                   @Common.FieldControl: #ReadOnly;
+    priorityScoreCriticality @UI.Hidden: true
+                   @Common.FieldControl: #ReadOnly;
+    currentStageSummary @title: 'Current Stage Summary' @UI.MultiLineText: true
+                   @Common.FieldControl: #ReadOnly;
+    nextStepsSummary @title: 'Next Steps Summary' @UI.MultiLineText: true
+                   @Common.FieldControl: #ReadOnly;
+    lastFollowUp @title: 'Last Follow Up'
+                   @Common.FieldControl: #ReadOnly;
+    pendingItems @title: 'Pending Items'
+                   @Common.FieldControl: #ReadOnly;
+    phase @title: 'Phase'
+                   @Common.FieldControl: #ReadOnly;
+    phaseCriticality @UI.Hidden: true
+                   @Common.FieldControl: #ReadOnly;
+    healthCriticality @UI.Hidden: true
+                   @Common.FieldControl: #ReadOnly;
+    statusCriticality @UI.Hidden: true
+                   @Common.FieldControl: #ReadOnly;
     assignedTo @title: 'Assigned To';
     dateCreated @title: 'Date Created';
 }
+
+// ============================================================================
+// Capabilities for Edit/Save/Delete
+// ============================================================================
+
+annotate AccountService.Accounts with @(
+    Capabilities: {
+        InsertRestrictions: { Insertable: true },
+        UpdateRestrictions: { Updatable: true },
+        DeleteRestrictions: { Deletable: true }
+    }
+);
 
 // ============================================================================
 // Side Effects

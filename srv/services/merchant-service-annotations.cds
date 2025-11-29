@@ -382,18 +382,16 @@ annotate MerchantService.MerchantDiscoveries with {
 
 annotate MerchantService.MerchantDiscoveries actions {
     generateAbout @Common.SideEffects: {
+        // Note: statusCriticality is a virtual field computed in after READ handler - not included to avoid polling loops
         TargetProperties: [
             'about',
-            'merchantScore',
-            'statusCriticality'
+            'merchantScore'
         ]
     };
     completeOnboarding @Common.SideEffects: {
+        // Note: statusCriticality, phase, phaseCriticality are virtual fields computed in after READ handler - not included to avoid polling loops
         TargetProperties: [
-            'status',
-            'statusCriticality',
-            'phase',
-            'phaseCriticality'
+            'status'
         ]
     };
 }

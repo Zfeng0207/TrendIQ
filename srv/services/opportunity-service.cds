@@ -6,8 +6,9 @@ using { beauty.crm as crm } from '../../db/schema';
  */
 service OpportunityService @(path: '/opportunity') {
 
-    // Opportunity management with full CRUD
+    // Opportunity management with full CRUD and draft support for editing
     @cds.redirection.target
+    @odata.draft.enabled
     entity Opportunities as projection on crm.Opportunities {
         *,
         virtual null as winScoreCriticality : Integer,

@@ -8,13 +8,11 @@ const cds = require('@sap/cds');
 module.exports = async function() {
     const { Opportunities, Approvals } = this.entities;
 
-    // Handler for virtual fields: criticality
-    this.on('READ', 'Opportunities', async (req, next) => {
-        const results = await next();
-
+    // Handler for virtual fields: criticality (using after to avoid draft conflicts)
+    this.after('READ', 'Opportunities', (results) => {
         const processOpp = (opp) => {
             if (opp) {
-                // Win Score Criticality
+                // Win Score Criticality - always set a value to avoid re-polling
                 if (opp.aiWinScore >= 80) opp.winScoreCriticality = 3;      // Green
                 else if (opp.aiWinScore >= 50) opp.winScoreCriticality = 2; // Yellow
                 else opp.winScoreCriticality = 1;                           // Red
@@ -31,7 +29,6 @@ module.exports = async function() {
         } else if (results) {
             processOpp(results);
         }
-        return results;
     });
 
     // Action: Move Opportunity to Stage

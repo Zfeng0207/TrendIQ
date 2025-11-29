@@ -6,13 +6,10 @@ using { beauty.leads as leads, beauty.crm as crm } from '../../db/schema';
  */
 service LeadService @(path: '/lead') {
 
-    // Main Lead entity with full CRUD
+    // Main Lead entity with full CRUD and draft support for editing
     @cds.redirection.target
-    entity Leads as projection on leads.Leads {
-        *,
-        virtual null as statusCriticality : Integer,
-        virtual null as leadQualityCriticality : Integer
-    } actions {
+    @odata.draft.enabled
+    entity Leads as projection on leads.Leads actions {
         action convertToAccount() returns {
             message: String;
             accountID: UUID;

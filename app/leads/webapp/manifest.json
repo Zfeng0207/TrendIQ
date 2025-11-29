@@ -150,6 +150,24 @@
             "settings": {
               "editableHeaderContent": true,
               "contextPath": "/Leads",
+              "showDraftToggle": true,
+              "content": {
+                "header": {
+                  "actions": {
+                    "SaveDraft": {
+                      "press": ".extension.beautyleads.leads.ext.controller.CustomActions.onSaveDraft",
+                      "text": "Save",
+                      "visible": true,
+                      "enabled": true
+                    }
+                  }
+                }
+              },
+              "controlConfiguration": {
+                "@com.sap.vocabularies.UI.v1.Identification": {
+                  "actions": {}
+                }
+              },
               "navigation": {}
             }
           },

@@ -259,8 +259,16 @@ annotate OpportunityService.Opportunities with {
     stage          @title: 'Stage';
     amount         @title: 'Amount' @Measures.ISOCurrency: currency;
     probability    @title: 'Probability (%)';
-    aiWinScore     @title: 'AI Win Score';
-    expectedRevenue @title: 'Expected Revenue' @Measures.ISOCurrency: currency;
+    aiWinScore     @title: 'AI Win Score'
+                   @Common.FieldControl: #ReadOnly;
+    aiRecommendation @title: 'AI Recommendation'
+                   @Common.FieldControl: #ReadOnly;
+    expectedRevenue @title: 'Expected Revenue' @Measures.ISOCurrency: currency
+                   @Common.FieldControl: #ReadOnly;
+    winScoreCriticality @UI.Hidden: true
+                   @Common.FieldControl: #ReadOnly;
+    stageCriticality @UI.Hidden: true
+                   @Common.FieldControl: #ReadOnly;
     discountAmount @title: 'Discount Amount' @Measures.ISOCurrency: currency;
 }
 
@@ -471,6 +479,18 @@ annotate OpportunityService.Approvals with {
 }
 
 // ============================================================================
+// Capabilities for Edit/Save/Delete
+// ============================================================================
+
+annotate OpportunityService.Opportunities with @(
+    Capabilities: {
+        InsertRestrictions: { Insertable: true },
+        UpdateRestrictions: { Updatable: true },
+        DeleteRestrictions: { Deletable: true }
+    }
+);
+
+// ============================================================================
 // Side Effects
 // ============================================================================
 
@@ -482,17 +502,20 @@ annotate OpportunityService.Opportunities actions {
     );
     markAsWon @(
         Common.SideEffects: {
-            TargetProperties: ['stage', 'probability', 'actualCloseDate', 'statusCriticality']
+            // Note: stageCriticality is a virtual field computed in after READ handler - not included to avoid polling loops
+            TargetProperties: ['stage', 'probability', 'actualCloseDate']
         }
     );
     markAsLost @(
         Common.SideEffects: {
-            TargetProperties: ['stage', 'probability', 'actualCloseDate', 'lostReason', 'statusCriticality']
+            // Note: stageCriticality is a virtual field computed in after READ handler - not included to avoid polling loops
+            TargetProperties: ['stage', 'probability', 'actualCloseDate', 'lostReason']
         }
     );
     moveToStage @(
         Common.SideEffects: {
-            TargetProperties: ['stage', 'probability', 'statusCriticality']
+            // Note: stageCriticality is a virtual field computed in after READ handler - not included to avoid polling loops
+            TargetProperties: ['stage', 'probability']
         }
     );
 }

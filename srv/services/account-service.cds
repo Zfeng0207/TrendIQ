@@ -6,8 +6,9 @@ using { beauty.crm as crm } from '../../db/schema';
  */
 service AccountService @(path: '/account') {
 
-    // Account management with full CRUD
+    // Account management with full CRUD and draft support for editing
     @cds.redirection.target
+    @odata.draft.enabled
     entity Accounts as projection on crm.Accounts {
         *,
         virtual null as healthCriticality : Integer,
