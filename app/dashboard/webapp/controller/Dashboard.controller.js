@@ -14,9 +14,10 @@ sap.ui.define([
          * Controller initialization
          */
         onInit: function () {
-            // Initialize KPI model with default values
+            // Initialize KPI model with default values including trends
             var oKPIModel = new JSONModel({
                 lastUpdated: this.formatDateTime(new Date()),
+                selectedTimePeriod: "thisMonth",
                 leadKPIs: {
                     totalLeads: 0,
                     hotLeads: 0,
@@ -30,6 +31,7 @@ sap.ui.define([
                     totalPipelineValue: 0,
                     avgWinScore: 0,
                     wonCount: 0,
+                    wonRevenue: 0,
                     lostCount: 0
                 },
                 accountKPIs: {
@@ -55,7 +57,31 @@ sap.ui.define([
                     monitorPercent: 0,
                     atRiskPercent: 0
                 },
-                closingThisMonth: 0
+                closingThisMonth: 0,
+                // Trend indicators with simulated data (would come from historical comparison)
+                trends: {
+                    hotLeadsTrend: "+12% vs last period",
+                    hotLeadsIndicator: "Up",
+                    pipelineTrend: "+8% growth",
+                    pipelineIndicator: "Up",
+                    atRiskTrend: "-2 from last week",
+                    atRiskIndicator: "Down",
+                    winScoreTrend: "+3.5% improvement",
+                    winScoreIndicator: "Up",
+                    tasksTrend: "2 overdue",
+                    tasksIndicator: "None"
+                },
+                // Sales Funnel Data
+                funnelData: {
+                    totalLeads: 0,
+                    qualifiedLeads: 0,
+                    opportunities: 0,
+                    proposalCount: 0,
+                    wonCount: 0,
+                    leadToOppRate: 0,
+                    oppToWonRate: 0,
+                    overallRate: 0
+                }
             });
             this.getView().setModel(oKPIModel, "kpi");
 
@@ -239,8 +265,108 @@ sap.ui.define([
                 }
             });
 
+            // Load Sales Funnel Data
+            this._loadFunnelData();
+
             // Calculate closing this month
             this._loadClosingThisMonth();
+        },
+
+        /**
+         * Load and calculate sales funnel data
+         */
+        _loadFunnelData: function() {
+            var that = this;
+            var oKPIModel = this.getView().getModel("kpi");
+            var funnelData = {
+                totalLeads: 0,
+                qualifiedLeads: 0,
+                opportunities: 0,
+                proposalCount: 0,
+                wonCount: 0,
+                leadToOppRate: 0,
+                oppToWonRate: 0,
+                overallRate: 0
+            };
+
+            // Load leads by status to get qualified count
+            this._loadEntityData("/LeadsByStatus", function(data) {
+                var totalLeads = 0;
+                var qualifiedLeads = 0;
+                
+                if (data && data.length > 0) {
+                    data.forEach(function(item) {
+                        totalLeads += item.count || 0;
+                        if (item.status === "Qualified" || item.status === "Converted") {
+                            qualifiedLeads += item.count || 0;
+                        }
+                    });
+                }
+                
+                funnelData.totalLeads = totalLeads;
+                funnelData.qualifiedLeads = qualifiedLeads;
+                oKPIModel.setProperty("/funnelData/totalLeads", totalLeads);
+                oKPIModel.setProperty("/funnelData/qualifiedLeads", qualifiedLeads);
+                
+                that._calculateConversionRates(funnelData, oKPIModel);
+            });
+
+            // Load opportunities by stage to get proposal and won counts
+            this._loadEntityData("/OpportunitiesByStage", function(data) {
+                var totalOpportunities = 0;
+                var proposalCount = 0;
+                var wonCount = 0;
+                
+                if (data && data.length > 0) {
+                    data.forEach(function(item) {
+                        totalOpportunities += item.count || 0;
+                        if (item.stage === "Proposal" || item.stage === "Negotiation") {
+                            proposalCount += item.count || 0;
+                        }
+                        if (item.stage === "Closed Won") {
+                            wonCount = item.count || 0;
+                        }
+                    });
+                }
+                
+                funnelData.opportunities = totalOpportunities;
+                funnelData.proposalCount = proposalCount;
+                funnelData.wonCount = wonCount;
+                
+                oKPIModel.setProperty("/funnelData/opportunities", totalOpportunities);
+                oKPIModel.setProperty("/funnelData/proposalCount", proposalCount);
+                oKPIModel.setProperty("/funnelData/wonCount", wonCount);
+                
+                that._calculateConversionRates(funnelData, oKPIModel);
+            });
+        },
+
+        /**
+         * Calculate conversion rates for the funnel
+         */
+        _calculateConversionRates: function(funnelData, oKPIModel) {
+            var leadToOppRate = 0;
+            var oppToWonRate = 0;
+            var overallRate = 0;
+            
+            // Lead to Opportunity conversion rate
+            if (funnelData.totalLeads > 0 && funnelData.opportunities > 0) {
+                leadToOppRate = Math.round((funnelData.opportunities / funnelData.totalLeads) * 100);
+            }
+            
+            // Opportunity to Won conversion rate
+            if (funnelData.opportunities > 0 && funnelData.wonCount > 0) {
+                oppToWonRate = Math.round((funnelData.wonCount / funnelData.opportunities) * 100);
+            }
+            
+            // Overall conversion rate (Lead to Won)
+            if (funnelData.totalLeads > 0 && funnelData.wonCount > 0) {
+                overallRate = Math.round((funnelData.wonCount / funnelData.totalLeads) * 100);
+            }
+            
+            oKPIModel.setProperty("/funnelData/leadToOppRate", leadToOppRate);
+            oKPIModel.setProperty("/funnelData/oppToWonRate", oppToWonRate);
+            oKPIModel.setProperty("/funnelData/overallRate", overallRate);
         },
 
         /**
@@ -318,6 +444,67 @@ sap.ui.define([
             MessageToast.show("Refreshing dashboard...");
             this._loadDashboardData();
             this.getView().getModel("kpi").setProperty("/lastUpdated", this.formatDateTime(new Date()));
+        },
+
+        /**
+         * Handle date range picker change
+         */
+        onDateRangeChange: function (oEvent) {
+            var sSelectedKey = oEvent.getParameter("selectedItem").getKey();
+            var oKPIModel = this.getView().getModel("kpi");
+            oKPIModel.setProperty("/selectedTimePeriod", sSelectedKey);
+            
+            // Update trend messages based on selected period
+            var sTrendSuffix = "";
+            var sPeriodLabel = "";
+            switch (sSelectedKey) {
+                case "today":
+                    sTrendSuffix = "vs yesterday";
+                    sPeriodLabel = "Today";
+                    break;
+                case "yesterday":
+                    sTrendSuffix = "vs day before";
+                    sPeriodLabel = "Yesterday";
+                    break;
+                case "thisWeek":
+                    sTrendSuffix = "vs last week";
+                    sPeriodLabel = "This Week";
+                    break;
+                case "lastWeek":
+                    sTrendSuffix = "vs prior week";
+                    sPeriodLabel = "Last Week";
+                    break;
+                case "thisMonth":
+                    sTrendSuffix = "vs last month";
+                    sPeriodLabel = "This Month";
+                    break;
+                case "lastMonth":
+                    sTrendSuffix = "vs prior month";
+                    sPeriodLabel = "Last Month";
+                    break;
+                case "thisQuarter":
+                    sTrendSuffix = "vs last quarter";
+                    sPeriodLabel = "This Quarter";
+                    break;
+                case "thisYear":
+                    sTrendSuffix = "vs last year";
+                    sPeriodLabel = "This Year";
+                    break;
+                default:
+                    sTrendSuffix = "vs prior period";
+                    sPeriodLabel = sSelectedKey;
+            }
+            
+            // Update trend text (in real implementation, fetch historical data)
+            oKPIModel.setProperty("/trends/hotLeadsTrend", "+12% " + sTrendSuffix);
+            oKPIModel.setProperty("/trends/pipelineTrend", "+8% " + sTrendSuffix);
+            oKPIModel.setProperty("/trends/atRiskTrend", "-2 " + sTrendSuffix);
+            oKPIModel.setProperty("/trends/winScoreTrend", "+3.5% " + sTrendSuffix);
+            
+            MessageToast.show("Showing data for: " + sPeriodLabel);
+            
+            // Reload data with new time filter
+            this._loadDashboardData();
         },
 
         /**

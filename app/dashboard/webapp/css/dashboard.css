@@ -47,20 +47,134 @@
 }
 
 .dashboardContent {
-    padding: 0.75rem 1rem 2rem 1rem;
-    max-width: 1800px;
-    margin: 0 auto;
+    padding: 0.5rem 0.75rem 1.5rem 0.75rem;
+    max-width: none;
+    width: 100%;
+}
+
+.dashboardHeader {
+    background-color: #FFFFFF !important;
+    border-bottom: 1px solid var(--dashboard-border) !important;
 }
 
 .dashboardTitle {
-    font-size: 1.5rem !important;
+    font-size: 1.375rem !important;
     font-weight: 600 !important;
     color: var(--dashboard-text) !important;
 }
 
 .lastUpdatedText {
     color: var(--dashboard-text-secondary);
-    font-size: 0.8125rem;
+    font-size: 0.75rem;
+    white-space: nowrap;
+}
+
+/* ==========================================
+   DATE RANGE PICKER
+   ========================================== */
+.dateRangeSection {
+    gap: 0.5rem;
+}
+
+.dateRangeLabel {
+    color: var(--dashboard-text-secondary) !important;
+    font-size: 0.75rem !important;
+    font-weight: 500 !important;
+}
+
+.dateRangeSelect {
+    min-width: 130px !important;
+}
+
+.dateRangeSelect .sapMSltLabel {
+    font-size: 0.8125rem !important;
+    font-weight: 500 !important;
+}
+
+.dateRangeSelect .sapMSltArrow {
+    background-color: transparent !important;
+}
+
+/* ==========================================
+   AI INSIGHTS QUICK SUMMARY BAR
+   ========================================== */
+.aiInsightsBar {
+    background-color: #FFFFFF;
+    border-radius: 8px;
+    padding: 0.5rem 0.75rem;
+    box-shadow: var(--card-shadow);
+    gap: 0.75rem;
+    margin-bottom: 0.5rem !important;
+}
+
+.aiInsightItem {
+    flex: 1 1 260px;
+    min-width: 260px;
+    max-width: none;
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    background-color: #F8F9FA;
+    transition: all 0.2s ease;
+    gap: 0.5rem;
+}
+
+.aiInsightItem:hover {
+    background-color: #F0F2F5;
+    transform: translateX(2px);
+}
+
+.aiInsightHot {
+    border-left: 3px solid var(--dashboard-orange);
+}
+
+.aiInsightPipeline {
+    border-left: 3px solid var(--dashboard-blue);
+}
+
+.aiInsightHealth {
+    border-left: 3px solid var(--dashboard-red);
+}
+
+.aiInsightHealthy {
+    border-left: 3px solid var(--dashboard-green);
+}
+
+.aiInsightIcon {
+    font-size: 1.25rem !important;
+    color: var(--dashboard-blue) !important;
+}
+
+.aiInsightWarning {
+    color: var(--dashboard-orange) !important;
+}
+
+.aiInsightSuccess {
+    color: var(--dashboard-green) !important;
+}
+
+.aiInsightText {
+    flex: 1;
+}
+
+.aiInsightTitle {
+    font-size: 0.8125rem !important;
+    font-weight: 600 !important;
+    color: var(--dashboard-text) !important;
+}
+
+.aiInsightDesc {
+    font-size: 0.6875rem !important;
+    color: var(--dashboard-text-secondary) !important;
+    margin-top: 0.125rem !important;
+}
+
+.aiInsightAction {
+    opacity: 0.6;
+    transition: opacity 0.2s ease;
+}
+
+.aiInsightItem:hover .aiInsightAction {
+    opacity: 1;
 }
 
 /* ==========================================
@@ -68,11 +182,15 @@
    6 tiles in single row on XL screens
    ========================================== */
 .kpiTileGrid {
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
 }
 
 .kpiTileGrid .sapUiLayoutGridContent {
     padding: 0.25rem !important;
+}
+
+.kpiTileGrid .sapUiLayoutGrid {
+    margin: 0 !important;
 }
 
 .kpiTile {
@@ -150,10 +268,10 @@
 }
 
 /* ==========================================
-   SECTION 2: PIPELINE CHARTS + ACTIVITY
+   SECTION 2: SALES FUNNEL + ACTIVITY
    ========================================== */
 .pipelineActivitySection {
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
 }
 
 .chartCard {
@@ -175,14 +293,119 @@
 }
 
 /* ==========================================
+   SALES FUNNEL - Creatio Style
+   ========================================== */
+.funnelCard {
+    min-height: 380px;
+}
+
+.funnelCard .sapFCardContent {
+    padding: 0.75rem !important;
+}
+
+.salesFunnelContainer {
+    width: 100%;
+    padding: 0.25rem 0;
+}
+
+/* Base funnel stage styling */
+.funnelStage {
+    position: relative;
+    height: 46px;
+    margin-bottom: 3px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    gap: 0.5rem;
+}
+
+.funnelStage:hover {
+    transform: scale(1.02);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Funnel label and value */
+.funnelLabel {
+    color: #FFFFFF !important;
+    font-size: 0.875rem !important;
+    font-weight: 500 !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.funnelValue {
+    color: #FFFFFF !important;
+    font-size: 1.125rem !important;
+    font-weight: 700 !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* Funnel Stage Colors - Creatio inspired gradient */
+.funnelStage1 {
+    width: 100%;
+    background: linear-gradient(135deg, #4285F4 0%, #5A95F5 100%);
+    clip-path: polygon(0% 0%, 100% 0%, 96% 100%, 4% 100%);
+}
+
+.funnelStage2 {
+    width: 92%;
+    background: linear-gradient(135deg, #34A853 0%, #46B865 100%);
+    clip-path: polygon(2% 0%, 98% 0%, 94% 100%, 6% 100%);
+}
+
+.funnelStage3 {
+    width: 84%;
+    background: linear-gradient(135deg, #FBBC04 0%, #FCC934 100%);
+    clip-path: polygon(3% 0%, 97% 0%, 93% 100%, 7% 100%);
+}
+
+.funnelStage4 {
+    width: 76%;
+    background: linear-gradient(135deg, #FF9800 0%, #FFA726 100%);
+    clip-path: polygon(4% 0%, 96% 0%, 91% 100%, 9% 100%);
+}
+
+.funnelStage5 {
+    width: 68%;
+    background: linear-gradient(135deg, #EA4335 0%, #EF5350 100%);
+    clip-path: polygon(5% 0%, 95% 0%, 88% 100%, 12% 100%);
+    margin-bottom: 0;
+}
+
+/* Conversion Rate Row */
+.funnelConversionRow {
+    border-top: 1px solid var(--dashboard-border);
+    padding-top: 1rem;
+    margin-top: 1rem;
+}
+
+.conversionMetric {
+    text-align: center;
+}
+
+.conversionValue {
+    font-size: 1.25rem !important;
+    font-weight: 700 !important;
+    color: var(--dashboard-blue) !important;
+}
+
+.conversionValueHighlight {
+    color: var(--dashboard-green) !important;
+}
+
+.conversionLabel {
+    font-size: 0.6875rem !important;
+    color: var(--dashboard-text-secondary) !important;
+    margin-top: 0.125rem !important;
+}
+
+/* ==========================================
    SECTION 3: AI INSIGHTS CARDS
    ========================================== */
 .aiInsightsSection {
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
 }
 
 .aiCard {
-    min-height: 380px;
+    min-height: 360px;
 }
 
 /* Health Distribution Box */
@@ -231,6 +454,11 @@
     height: 56px !important;
 }
 
+/* Radial chart inner ring color */
+.healthGaugeItem .sapSuiteRMCInnerRing {
+    stroke: #E8E8E8 !important;
+}
+
 /* ==========================================
    SECTION 4: BOTTOM SECTION
    ========================================== */
@@ -242,12 +470,12 @@
    CARDS - Generic Dashboard Card Styling
    ========================================== */
 .dashboardCard {
-    border-radius: 12px !important;
+    border-radius: 10px !important;
     box-shadow: var(--card-shadow) !important;
     background-color: var(--dashboard-card-bg) !important;
     transition: box-shadow 0.2s ease-in-out !important;
     overflow: hidden;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.25rem;
 }
 
 .dashboardCard:hover {
@@ -287,13 +515,41 @@
 .cardFooterToolbar {
     border-top: 1px solid var(--dashboard-border);
     background-color: #FAFAFA !important;
-    height: 2.5rem !important;
-    min-height: 2.5rem !important;
+    height: 2.75rem !important;
+    min-height: 2.75rem !important;
 }
 
 .cardFooterToolbar .sapMBtn {
     font-weight: 500 !important;
     font-size: 0.75rem !important;
+}
+
+/* Enhanced View All Toolbar */
+.viewAllToolbar {
+    background: linear-gradient(180deg, #FAFAFA 0%, #F5F5F5 100%) !important;
+}
+
+.viewAllButton {
+    font-weight: 600 !important;
+    border-radius: 6px !important;
+}
+
+.viewAllButton .sapMBtnInner {
+    padding: 0 1rem !important;
+}
+
+/* All Healthy State */
+.allHealthyBox {
+    padding: 1.5rem 1rem;
+    background-color: #F0FDF4;
+    border-radius: 8px;
+    margin: 0.5rem 1rem;
+}
+
+.allHealthyText {
+    font-size: 0.875rem !important;
+    font-weight: 500 !important;
+    color: var(--dashboard-green) !important;
 }
 
 /* ==========================================
@@ -314,6 +570,11 @@
     padding: 0.5rem 1rem !important;
     border-bottom: 1px solid #F0F0F0 !important;
     min-height: auto !important;
+    transition: background-color 0.15s ease;
+}
+
+.dashboardCard .sapMObjLItem:hover {
+    background-color: #F8FAFC !important;
 }
 
 .dashboardCard .sapMObjLItem:last-child {
@@ -427,6 +688,15 @@
     .kpiTile .sapMGTHdrTxt {
         font-size: 0.8125rem !important;
     }
+    
+    .aiInsightsBar {
+        padding: 0.5rem 0.75rem;
+    }
+    
+    .aiInsightItem {
+        flex: 1 1 240px;
+        min-width: 240px;
+    }
 }
 
 @media screen and (max-width: 1024px) {
@@ -440,6 +710,18 @@
     
     .chartCard {
         min-height: 300px;
+    }
+    
+    .aiInsightsBar {
+        flex-direction: column;
+    }
+    
+    .aiInsightItem {
+        max-width: 100%;
+    }
+    
+    .dateRangeLabel {
+        display: none !important;
     }
 }
 
@@ -462,6 +744,10 @@
     
     .chartCard {
         min-height: 280px;
+    }
+    
+    .aiInsightsBar {
+        display: none !important;
     }
 }
 

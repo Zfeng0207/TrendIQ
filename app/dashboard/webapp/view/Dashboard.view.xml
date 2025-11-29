@@ -18,20 +18,39 @@
         enableScrolling="true"
         class="sapUiResponsiveContentPadding dashboardPage">
 
-        <!-- Header Toolbar -->
+        <!-- Header Toolbar with Date Range Picker -->
         <customHeader>
-            <Bar>
+            <Bar class="dashboardHeader">
                 <contentLeft>
                     <Title text="{i18n>appTitle}" class="dashboardTitle"/>
                 </contentLeft>
                 <contentRight>
+                    <!-- Date Range Picker -->
+                    <HBox alignItems="Center" class="dateRangeSection">
+                        <Label text="Period:" class="dateRangeLabel"/>
+                        <Select
+                            id="dateRangePicker"
+                            selectedKey="thisMonth"
+                            change=".onDateRangeChange"
+                            class="dateRangeSelect"
+                            width="140px">
+                            <core:Item key="today" text="Today"/>
+                            <core:Item key="yesterday" text="Yesterday"/>
+                            <core:Item key="thisWeek" text="This Week"/>
+                            <core:Item key="lastWeek" text="Last Week"/>
+                            <core:Item key="thisMonth" text="This Month"/>
+                            <core:Item key="lastMonth" text="Last Month"/>
+                            <core:Item key="thisQuarter" text="This Quarter"/>
+                            <core:Item key="thisYear" text="This Year"/>
+                        </Select>
+                    </HBox>
+                    <ToolbarSeparator/>
                     <Button
                         icon="sap-icon://refresh"
                         tooltip="{i18n>refresh}"
                         press=".onRefresh"
                         type="Transparent"/>
-                    <Text text="{i18n>lastUpdated}: " class="sapUiTinyMarginEnd"/>
-                    <Text id="lastUpdatedTime" text="{kpi>/lastUpdated}" class="lastUpdatedText"/>
+                    <Text text="{kpi>/lastUpdated}" class="lastUpdatedText"/>
                 </contentRight>
             </Bar>
         </customHeader>
@@ -42,6 +61,7 @@
                 <!-- ========================================== -->
                 <!-- SECTION 1: KPI TILES - 6 tiles in single row -->
                 <!-- Using Grid with XL2 L4 M6 S12 for proper alignment -->
+                <!-- Added trend indicators with percentages -->
                 <!-- ========================================== -->
                 <l:Grid
                     id="kpiTileGrid"
@@ -50,11 +70,11 @@
                     hSpacing="1"
                     vSpacing="1">
 
-                    <!-- Hot Leads Tile -->
+                    <!-- Hot Leads Tile with Trend -->
                     <GenericTile
                         id="tileHotLeads"
                         header="{i18n>kpiHotLeads}"
-                        subheader="{i18n>kpiHotLeadsSubtitle}"
+                        subheader="{kpi>/trends/hotLeadsTrend}"
                         class="kpiTile kpiTileOrange"
                         press=".onTilePress"
                         frameType="OneByOne">
@@ -63,16 +83,16 @@
                                 value="{kpi>/leadKPIs/hotLeads}"
                                 scale=""
                                 valueColor="Good"
-                                indicator="Up"
+                                indicator="{kpi>/trends/hotLeadsIndicator}"
                                 withMargin="false"/>
                         </TileContent>
                     </GenericTile>
 
-                    <!-- Pipeline Value Tile -->
+                    <!-- Pipeline Value Tile with Trend -->
                     <GenericTile
                         id="tilePipelineValue"
                         header="{i18n>kpiPipelineValue}"
-                        subheader="{i18n>kpiPipelineValueSubtitle}"
+                        subheader="{kpi>/trends/pipelineTrend}"
                         class="kpiTile kpiTileBlue"
                         press=".onTilePress"
                         frameType="OneByOne">
@@ -81,6 +101,7 @@
                                 value="{kpi>/opportunityKPIs/totalPipelineValue}"
                                 scale="RM"
                                 valueColor="Neutral"
+                                indicator="{kpi>/trends/pipelineIndicator}"
                                 truncateValueTo="5"
                                 withMargin="false"/>
                         </TileContent>
@@ -102,11 +123,11 @@
                         </TileContent>
                     </GenericTile>
 
-                    <!-- At Risk Accounts Tile -->
+                    <!-- At Risk Accounts Tile with Trend -->
                     <GenericTile
                         id="tileAtRisk"
                         header="{i18n>kpiAtRiskAccounts}"
-                        subheader="{i18n>kpiAtRiskAccountsSubtitle}"
+                        subheader="{kpi>/trends/atRiskTrend}"
                         class="kpiTile kpiTileRed"
                         press=".onTilePress"
                         frameType="OneByOne">
@@ -114,16 +135,16 @@
                             <NumericContent
                                 value="{kpi>/accountKPIs/atRiskCount}"
                                 valueColor="Critical"
-                                indicator="Down"
+                                indicator="{kpi>/trends/atRiskIndicator}"
                                 withMargin="false"/>
                         </TileContent>
                     </GenericTile>
 
-                    <!-- Avg AI Win Score Tile -->
+                    <!-- Avg AI Win Score Tile with Trend -->
                     <GenericTile
                         id="tileAvgWinScore"
                         header="{i18n>kpiAvgWinScore}"
-                        subheader="{i18n>kpiAvgWinScoreSubtitle}"
+                        subheader="{kpi>/trends/winScoreTrend}"
                         class="kpiTile kpiTilePurple"
                         press=".onTilePress"
                         frameType="OneByOne">
@@ -132,15 +153,16 @@
                                 value="{kpi>/opportunityKPIs/avgWinScore}"
                                 scale="%"
                                 valueColor="Neutral"
+                                indicator="{kpi>/trends/winScoreIndicator}"
                                 withMargin="false"/>
                         </TileContent>
                     </GenericTile>
 
-                    <!-- Open Tasks Tile -->
+                    <!-- Open Tasks Tile with Trend -->
                     <GenericTile
                         id="tileOpenTasks"
                         header="{i18n>kpiOpenTasks}"
-                        subheader="{i18n>kpiOpenTasksSubtitle}"
+                        subheader="{kpi>/trends/tasksTrend}"
                         class="kpiTile kpiTileTeal"
                         press=".onTilePress"
                         frameType="OneByOne">
@@ -148,6 +170,7 @@
                             <NumericContent
                                 value="{kpi>/activityKPIs/plannedActivities}"
                                 valueColor="Neutral"
+                                indicator="{kpi>/trends/tasksIndicator}"
                                 withMargin="false"/>
                         </TileContent>
                     </GenericTile>
@@ -155,79 +178,124 @@
                 </l:Grid>
 
                 <!-- ========================================== -->
-                <!-- SECTION 2: PIPELINE CHARTS + ACTIVITY TIMELINE -->
-                <!-- Left: Pipeline Charts (8 cols), Right: Activity (4 cols) -->
+                <!-- AI INSIGHTS QUICK SUMMARY BAR -->
+                <!-- Action-oriented recommendations -->
+                <!-- ========================================== -->
+                <HBox 
+                    id="aiInsightsBar" 
+                    class="aiInsightsBar sapUiSmallMarginBottom"
+                    justifyContent="SpaceBetween"
+                    alignItems="Center"
+                    wrap="Wrap">
+                    
+                    <!-- AI Insight 1: Hot Leads -->
+                    <HBox class="aiInsightItem aiInsightHot" alignItems="Center">
+                        <core:Icon src="sap-icon://lightbulb" class="aiInsightIcon"/>
+                        <VBox class="aiInsightText">
+                            <Text text="Focus: {kpi>/leadKPIs/hotLeads} hot leads ready" class="aiInsightTitle"/>
+                            <Text text="High AI scores - prioritize outreach" class="aiInsightDesc"/>
+                        </VBox>
+                        <Button icon="sap-icon://slim-arrow-right" type="Transparent" press=".onViewAllLeads" class="aiInsightAction"/>
+                    </HBox>
+
+                    <!-- AI Insight 2: Pipeline Opportunities -->
+                    <HBox class="aiInsightItem aiInsightPipeline" alignItems="Center">
+                        <core:Icon src="sap-icon://sales-quote" class="aiInsightIcon"/>
+                        <VBox class="aiInsightText">
+                            <Text text="{kpi>/opportunityKPIs/wonCount} deals won this period" class="aiInsightTitle"/>
+                            <Text text="RM {kpi>/opportunityKPIs/wonRevenue} closed revenue" class="aiInsightDesc"/>
+                        </VBox>
+                        <Button icon="sap-icon://slim-arrow-right" type="Transparent" press=".onViewAllOpportunities" class="aiInsightAction"/>
+                    </HBox>
+
+                    <!-- AI Insight 3: Account Health -->
+                    <HBox class="aiInsightItem aiInsightHealth" alignItems="Center" visible="{= ${kpi>/accountKPIs/atRiskCount} > 0}">
+                        <core:Icon src="sap-icon://warning2" class="aiInsightIcon aiInsightWarning"/>
+                        <VBox class="aiInsightText">
+                            <Text text="Alert: {kpi>/accountKPIs/atRiskCount} accounts at risk" class="aiInsightTitle"/>
+                            <Text text="Schedule check-ins to prevent churn" class="aiInsightDesc"/>
+                        </VBox>
+                        <Button icon="sap-icon://slim-arrow-right" type="Transparent" press=".onViewAllAccounts" class="aiInsightAction"/>
+                    </HBox>
+
+                    <!-- AI Insight 3 Alternative: All Healthy -->
+                    <HBox class="aiInsightItem aiInsightHealthy" alignItems="Center" visible="{= ${kpi>/accountKPIs/atRiskCount} === 0}">
+                        <core:Icon src="sap-icon://sys-enter-2" class="aiInsightIcon aiInsightSuccess"/>
+                        <VBox class="aiInsightText">
+                            <Text text="Great! All accounts healthy" class="aiInsightTitle"/>
+                            <Text text="{kpi>/healthDistribution/healthy} accounts in good standing" class="aiInsightDesc"/>
+                        </VBox>
+                    </HBox>
+
+                </HBox>
+
+                <!-- ========================================== -->
+                <!-- SECTION 2: SALES FUNNEL + ACTIVITY TIMELINE -->
+                <!-- Left: Sales Funnel (6 cols), Right: Activity (6 cols) -->
                 <!-- ========================================== -->
                 <l:Grid
                     id="pipelineActivitySection"
                     class="pipelineActivitySection"
-                    defaultSpan="XL4 L6 M12 S12"
+                    defaultSpan="XL6 L6 M12 S12"
                     hSpacing="1"
                     vSpacing="1">
 
-                    <!-- Lead Pipeline Chart -->
-                    <f:Card class="dashboardCard chartCard">
+                    <!-- Sales Funnel - Creatio Style -->
+                    <f:Card class="dashboardCard funnelCard">
                         <f:header>
                             <f:cards.Header
-                                title="{i18n>leadPipelineTitle}"
-                                subtitle="{i18n>leadPipelineSubtitle}"
-                                iconSrc="sap-icon://lead"/>
+                                title="{i18n>salesFunnelTitle}"
+                                subtitle="{i18n>salesFunnelSubtitle}"
+                                iconSrc="sap-icon://sales-order"/>
                         </f:header>
                         <f:content>
-                            <viz:VizFrame
-                                id="leadPipelineChart"
-                                vizType="bar"
-                                height="280px"
-                                width="100%"
-                                uiConfig="{applicationSet:'fiori'}">
-                                <viz:dataset>
-                                    <vizData:FlattenedDataset data="{/LeadsByStatus}">
-                                        <vizData:dimensions>
-                                            <vizData:DimensionDefinition name="Status" value="{status}"/>
-                                        </vizData:dimensions>
-                                        <vizData:measures>
-                                            <vizData:MeasureDefinition name="Leads" value="{count}"/>
-                                        </vizData:measures>
-                                    </vizData:FlattenedDataset>
-                                </viz:dataset>
-                                <viz:feeds>
-                                    <vizFeeds:FeedItem uid="valueAxis" type="Measure" values="Leads"/>
-                                    <vizFeeds:FeedItem uid="categoryAxis" type="Dimension" values="Status"/>
-                                </viz:feeds>
-                            </viz:VizFrame>
-                        </f:content>
-                    </f:Card>
-
-                    <!-- Opportunity Pipeline Chart -->
-                    <f:Card class="dashboardCard chartCard">
-                        <f:header>
-                            <f:cards.Header
-                                title="{i18n>opportunityPipelineTitle}"
-                                subtitle="{i18n>opportunityPipelineSubtitle}"
-                                iconSrc="sap-icon://opportunity"/>
-                        </f:header>
-                        <f:content>
-                            <viz:VizFrame
-                                id="opportunityPipelineChart"
-                                vizType="bar"
-                                height="280px"
-                                width="100%"
-                                uiConfig="{applicationSet:'fiori'}">
-                                <viz:dataset>
-                                    <vizData:FlattenedDataset data="{/OpportunitiesByStage}">
-                                        <vizData:dimensions>
-                                            <vizData:DimensionDefinition name="Stage" value="{stage}"/>
-                                        </vizData:dimensions>
-                                        <vizData:measures>
-                                            <vizData:MeasureDefinition name="Value (RM)" value="{totalValue}"/>
-                                        </vizData:measures>
-                                    </vizData:FlattenedDataset>
-                                </viz:dataset>
-                                <viz:feeds>
-                                    <vizFeeds:FeedItem uid="valueAxis" type="Measure" values="Value (RM)"/>
-                                    <vizFeeds:FeedItem uid="categoryAxis" type="Dimension" values="Stage"/>
-                                </viz:feeds>
-                            </viz:VizFrame>
+                            <VBox class="salesFunnelContainer" alignItems="Center">
+                                <!-- Funnel Stage 1: Total Leads -->
+                                <HBox class="funnelStage funnelStage1" alignItems="Center" justifyContent="Center">
+                                    <Text text="Leads" class="funnelLabel"/>
+                                    <Text text="{kpi>/leadKPIs/totalLeads}" class="funnelValue"/>
+                                </HBox>
+                                
+                                <!-- Funnel Stage 2: Qualified Leads -->
+                                <HBox class="funnelStage funnelStage2" alignItems="Center" justifyContent="Center">
+                                    <Text text="Qualified" class="funnelLabel"/>
+                                    <Text text="{kpi>/funnelData/qualifiedLeads}" class="funnelValue"/>
+                                </HBox>
+                                
+                                <!-- Funnel Stage 3: Opportunities -->
+                                <HBox class="funnelStage funnelStage3" alignItems="Center" justifyContent="Center">
+                                    <Text text="Opportunities" class="funnelLabel"/>
+                                    <Text text="{kpi>/opportunityKPIs/totalOpportunities}" class="funnelValue"/>
+                                </HBox>
+                                
+                                <!-- Funnel Stage 4: Proposals -->
+                                <HBox class="funnelStage funnelStage4" alignItems="Center" justifyContent="Center">
+                                    <Text text="Proposals" class="funnelLabel"/>
+                                    <Text text="{kpi>/funnelData/proposalCount}" class="funnelValue"/>
+                                </HBox>
+                                
+                                <!-- Funnel Stage 5: Won Deals -->
+                                <HBox class="funnelStage funnelStage5" alignItems="Center" justifyContent="Center">
+                                    <Text text="Won Deals" class="funnelLabel"/>
+                                    <Text text="{kpi>/opportunityKPIs/wonCount}" class="funnelValue"/>
+                                </HBox>
+                                
+                                <!-- Conversion Rate Summary -->
+                                <HBox class="funnelConversionRow sapUiSmallMarginTop" justifyContent="SpaceAround" width="100%">
+                                    <VBox alignItems="Center" class="conversionMetric">
+                                        <Text text="{kpi>/funnelData/leadToOppRate}%" class="conversionValue"/>
+                                        <Text text="Lead → Opp" class="conversionLabel"/>
+                                    </VBox>
+                                    <VBox alignItems="Center" class="conversionMetric">
+                                        <Text text="{kpi>/funnelData/oppToWonRate}%" class="conversionValue"/>
+                                        <Text text="Opp → Won" class="conversionLabel"/>
+                                    </VBox>
+                                    <VBox alignItems="Center" class="conversionMetric">
+                                        <Text text="{kpi>/funnelData/overallRate}%" class="conversionValue conversionValueHighlight"/>
+                                        <Text text="Overall" class="conversionLabel"/>
+                                    </VBox>
+                                </HBox>
+                            </VBox>
                         </f:content>
                     </f:Card>
 
@@ -296,16 +364,21 @@
                                         <firstStatus>
                                             <ObjectStatus
                                                 text="{leadQuality}"
-                                                state="{= ${leadQuality} === 'Hot' ? 'Success' : ${leadQuality} === 'Warm' ? 'Warning' : 'None'}"/>
+                                                state="{= ${leadQuality} === 'Hot' ? 'Success' : ${leadQuality} === 'Warm' ? 'Warning' : 'None'}"
+                                                inverted="true"/>
                                         </firstStatus>
                                         <attributes>
                                             <ObjectAttribute text="{brandToPitch}"/>
                                         </attributes>
                                     </ObjectListItem>
                                 </List>
-                                <OverflowToolbar class="cardFooterToolbar">
+                                <OverflowToolbar class="cardFooterToolbar viewAllToolbar">
                                     <ToolbarSpacer/>
-                                    <Button text="{i18n>viewAll}" type="Transparent" press=".onViewAllLeads"/>
+                                    <Button 
+                                        text="{i18n>viewAllLeads}" 
+                                        type="Emphasized" 
+                                        press=".onViewAllLeads"
+                                        class="viewAllButton"/>
                                 </OverflowToolbar>
                             </VBox>
                         </f:content>
@@ -350,24 +423,39 @@
                                     </VBox>
                                 </HBox>
 
-                                <!-- At Risk Accounts List -->
-                                <List
-                                    id="atRiskAccountsList"
-                                    items="{path: '/AtRiskAccounts', length: 3}"
-                                    headerText="Needs Attention"
-                                    mode="None"
-                                    showSeparators="Inner">
-                                    <StandardListItem
-                                        title="{accountName}"
-                                        description="{accountType}"
-                                        info="Health: {healthScore}"
-                                        infoState="{= ${healthScore} >= 50 ? 'Warning' : 'Error'}"
-                                        type="Active"
-                                        press=".onAccountPress"/>
-                                </List>
-                                <OverflowToolbar class="cardFooterToolbar">
+                                <!-- At Risk Accounts List with conditional display -->
+                                <VBox id="atRiskSection" visible="{= ${kpi>/healthDistribution/atRisk} > 0}">
+                                    <List
+                                        id="atRiskAccountsList"
+                                        items="{path: '/AtRiskAccounts', length: 3}"
+                                        headerText="{i18n>needsAttention}"
+                                        mode="None"
+                                        showSeparators="Inner">
+                                        <StandardListItem
+                                            title="{accountName}"
+                                            description="{accountType}"
+                                            info="Health: {healthScore}"
+                                            infoState="{= ${healthScore} >= 50 ? 'Warning' : 'Error'}"
+                                            type="Active"
+                                            press=".onAccountPress"/>
+                                    </List>
+                                </VBox>
+                                <!-- All Healthy message when no at-risk accounts -->
+                                <VBox 
+                                    visible="{= ${kpi>/healthDistribution/atRisk} === 0}"
+                                    alignItems="Center"
+                                    justifyContent="Center"
+                                    class="allHealthyBox">
+                                    <core:Icon src="sap-icon://accept" size="2rem" color="#107E3E" class="sapUiSmallMarginBottom"/>
+                                    <Text text="{i18n>noAccountsAtRisk}" class="allHealthyText"/>
+                                </VBox>
+                                <OverflowToolbar class="cardFooterToolbar viewAllToolbar">
                                     <ToolbarSpacer/>
-                                    <Button text="{i18n>viewAll}" type="Transparent" press=".onViewAllAccounts"/>
+                                    <Button 
+                                        text="{i18n>viewAllAccounts}" 
+                                        type="Emphasized" 
+                                        press=".onViewAllAccounts"
+                                        class="viewAllButton"/>
                                 </OverflowToolbar>
                             </VBox>
                         </f:content>
@@ -407,9 +495,13 @@
                                         </attributes>
                                     </ObjectListItem>
                                 </List>
-                                <OverflowToolbar class="cardFooterToolbar">
+                                <OverflowToolbar class="cardFooterToolbar viewAllToolbar">
                                     <ToolbarSpacer/>
-                                    <Button text="{i18n>viewAll}" type="Transparent" press=".onViewAllOpportunities"/>
+                                    <Button 
+                                        text="{i18n>viewAllOpportunities}" 
+                                        type="Emphasized" 
+                                        press=".onViewAllOpportunities"
+                                        class="viewAllButton"/>
                                 </OverflowToolbar>
                             </VBox>
                         </f:content>
