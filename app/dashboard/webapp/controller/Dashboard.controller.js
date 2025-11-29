@@ -64,9 +64,104 @@ sap.ui.define([
                 onAfterRendering: function() {
                     if (!this._bDataLoaded) {
                         this._bDataLoaded = true;
-                        setTimeout(this._loadDashboardData.bind(this), 300);
+                        setTimeout(function() {
+                            this._loadDashboardData();
+                            this._setupCharts();
+                        }.bind(this), 300);
                     }
                 }.bind(this)
+            });
+        },
+
+        /**
+         * Setup VizFrame charts with proper configuration
+         */
+        _setupCharts: function() {
+            this._setupLeadPipelineChart();
+            this._setupOpportunityPipelineChart();
+        },
+
+        /**
+         * Configure Lead Pipeline Chart
+         */
+        _setupLeadPipelineChart: function() {
+            var oVizFrame = this.byId("leadPipelineChart");
+            if (!oVizFrame) {
+                return;
+            }
+
+            oVizFrame.setVizProperties({
+                plotArea: {
+                    dataLabel: {
+                        visible: true,
+                        formatString: "#"
+                    },
+                    colorPalette: ["#0854A0", "#107E3E", "#E76500", "#BB0000", "#6C3483"],
+                    drawingEffect: "glossy"
+                },
+                legend: {
+                    visible: false
+                },
+                title: {
+                    visible: false
+                },
+                categoryAxis: {
+                    title: {
+                        visible: false
+                    }
+                },
+                valueAxis: {
+                    title: {
+                        visible: false
+                    }
+                },
+                interaction: {
+                    selectability: {
+                        mode: "single"
+                    }
+                }
+            });
+        },
+
+        /**
+         * Configure Opportunity Pipeline Chart
+         */
+        _setupOpportunityPipelineChart: function() {
+            var oVizFrame = this.byId("opportunityPipelineChart");
+            if (!oVizFrame) {
+                return;
+            }
+
+            oVizFrame.setVizProperties({
+                plotArea: {
+                    dataLabel: {
+                        visible: true,
+                        formatString: "#,##0"
+                    },
+                    colorPalette: ["#107E3E", "#0854A0", "#E76500", "#0097A7", "#6C3483", "#BB0000"],
+                    drawingEffect: "glossy"
+                },
+                legend: {
+                    visible: false
+                },
+                title: {
+                    visible: false
+                },
+                categoryAxis: {
+                    title: {
+                        visible: false
+                    }
+                },
+                valueAxis: {
+                    title: {
+                        visible: false
+                    }
+                },
+                interaction: {
+                    selectability: {
+                        mode: "single"
+                    }
+                }
             });
         },
 

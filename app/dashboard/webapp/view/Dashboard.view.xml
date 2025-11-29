@@ -5,6 +5,10 @@
     xmlns:core="sap.ui.core"
     xmlns:l="sap.ui.layout"
     xmlns:f="sap.f"
+    xmlns:viz="sap.viz.ui5.controls"
+    xmlns:vizData="sap.viz.ui5.data"
+    xmlns:vizFeeds="sap.viz.ui5.controls.common.feeds"
+    xmlns:mc="sap.suite.ui.microchart"
     height="100%">
 
     <Page
@@ -36,14 +40,15 @@
             <VBox class="dashboardContent">
 
                 <!-- ========================================== -->
-                <!-- SECTION 1: TOP KPI BAR (Creatio-style) -->
+                <!-- SECTION 1: KPI TILES - 6 tiles in single row -->
+                <!-- Using Grid with XL2 L4 M6 S12 for proper alignment -->
                 <!-- ========================================== -->
-                <HBox
-                    id="kpiTileBar"
-                    class="kpiTileBar"
-                    wrap="Wrap"
-                    justifyContent="Start"
-                    alignItems="Stretch">
+                <l:Grid
+                    id="kpiTileGrid"
+                    class="kpiTileGrid"
+                    defaultSpan="XL2 L4 M6 S12"
+                    hSpacing="1"
+                    vSpacing="1">
 
                     <!-- Hot Leads Tile -->
                     <GenericTile
@@ -52,7 +57,7 @@
                         subheader="{i18n>kpiHotLeadsSubtitle}"
                         class="kpiTile kpiTileOrange"
                         press=".onTilePress"
-                        frameType="TwoByOne">
+                        frameType="OneByOne">
                         <TileContent>
                             <NumericContent
                                 value="{kpi>/leadKPIs/hotLeads}"
@@ -70,7 +75,7 @@
                         subheader="{i18n>kpiPipelineValueSubtitle}"
                         class="kpiTile kpiTileBlue"
                         press=".onTilePress"
-                        frameType="TwoByOne">
+                        frameType="OneByOne">
                         <TileContent>
                             <NumericContent
                                 value="{kpi>/opportunityKPIs/totalPipelineValue}"
@@ -88,7 +93,7 @@
                         subheader="{i18n>kpiClosingThisMonthSubtitle}"
                         class="kpiTile kpiTileGreen"
                         press=".onTilePress"
-                        frameType="TwoByOne">
+                        frameType="OneByOne">
                         <TileContent>
                             <NumericContent
                                 value="{kpi>/closingThisMonth}"
@@ -104,7 +109,7 @@
                         subheader="{i18n>kpiAtRiskAccountsSubtitle}"
                         class="kpiTile kpiTileRed"
                         press=".onTilePress"
-                        frameType="TwoByOne">
+                        frameType="OneByOne">
                         <TileContent>
                             <NumericContent
                                 value="{kpi>/accountKPIs/atRiskCount}"
@@ -121,7 +126,7 @@
                         subheader="{i18n>kpiAvgWinScoreSubtitle}"
                         class="kpiTile kpiTilePurple"
                         press=".onTilePress"
-                        frameType="TwoByOne">
+                        frameType="OneByOne">
                         <TileContent>
                             <NumericContent
                                 value="{kpi>/opportunityKPIs/avgWinScore}"
@@ -138,7 +143,7 @@
                         subheader="{i18n>kpiOpenTasksSubtitle}"
                         class="kpiTile kpiTileTeal"
                         press=".onTilePress"
-                        frameType="TwoByOne">
+                        frameType="OneByOne">
                         <TileContent>
                             <NumericContent
                                 value="{kpi>/activityKPIs/plannedActivities}"
@@ -147,20 +152,21 @@
                         </TileContent>
                     </GenericTile>
 
-                </HBox>
+                </l:Grid>
 
                 <!-- ========================================== -->
-                <!-- SECTION 2: PIPELINE FUNNELS -->
+                <!-- SECTION 2: PIPELINE CHARTS + ACTIVITY TIMELINE -->
+                <!-- Left: Pipeline Charts (8 cols), Right: Activity (4 cols) -->
                 <!-- ========================================== -->
                 <l:Grid
-                    id="funnelSection"
-                    class="funnelSection"
-                    defaultSpan="XL6 L6 M12 S12"
+                    id="pipelineActivitySection"
+                    class="pipelineActivitySection"
+                    defaultSpan="XL4 L6 M12 S12"
                     hSpacing="1"
                     vSpacing="1">
 
-                    <!-- Lead Pipeline Funnel -->
-                    <f:Card class="dashboardCard">
+                    <!-- Lead Pipeline Chart -->
+                    <f:Card class="dashboardCard chartCard">
                         <f:header>
                             <f:cards.Header
                                 title="{i18n>leadPipelineTitle}"
@@ -168,33 +174,32 @@
                                 iconSrc="sap-icon://lead"/>
                         </f:header>
                         <f:content>
-                            <VBox class="sapUiSmallMargin">
-                                <List
-                                    id="leadPipelineList"
-                                    items="{/LeadsByStatus}"
-                                    mode="None"
-                                    showSeparators="None">
-                                    <CustomListItem>
-                                        <HBox alignItems="Center" class="pipelineRow">
-                                            <VBox width="120px">
-                                                <Text text="{status}" class="pipelineLabel"/>
-                                            </VBox>
-                                            <ProgressIndicator
-                                                percentValue="{= ${count} / 20 * 100}"
-                                                displayValue="{count} leads"
-                                                showValue="true"
-                                                state="{= ${status} === 'Converted' ? 'Success' : ${status} === 'Lost' ? 'Error' : 'Information'}"
-                                                width="100%"
-                                                class="pipelineProgress"/>
-                                        </HBox>
-                                    </CustomListItem>
-                                </List>
-                            </VBox>
+                            <viz:VizFrame
+                                id="leadPipelineChart"
+                                vizType="bar"
+                                height="280px"
+                                width="100%"
+                                uiConfig="{applicationSet:'fiori'}">
+                                <viz:dataset>
+                                    <vizData:FlattenedDataset data="{/LeadsByStatus}">
+                                        <vizData:dimensions>
+                                            <vizData:DimensionDefinition name="Status" value="{status}"/>
+                                        </vizData:dimensions>
+                                        <vizData:measures>
+                                            <vizData:MeasureDefinition name="Leads" value="{count}"/>
+                                        </vizData:measures>
+                                    </vizData:FlattenedDataset>
+                                </viz:dataset>
+                                <viz:feeds>
+                                    <vizFeeds:FeedItem uid="valueAxis" type="Measure" values="Leads"/>
+                                    <vizFeeds:FeedItem uid="categoryAxis" type="Dimension" values="Status"/>
+                                </viz:feeds>
+                            </viz:VizFrame>
                         </f:content>
                     </f:Card>
 
-                    <!-- Opportunity Pipeline Funnel -->
-                    <f:Card class="dashboardCard">
+                    <!-- Opportunity Pipeline Chart -->
+                    <f:Card class="dashboardCard chartCard">
                         <f:header>
                             <f:cards.Header
                                 title="{i18n>opportunityPipelineTitle}"
@@ -202,35 +207,61 @@
                                 iconSrc="sap-icon://opportunity"/>
                         </f:header>
                         <f:content>
-                            <VBox class="sapUiSmallMargin">
-                                <List
-                                    id="opportunityPipelineList"
-                                    items="{/OpportunitiesByStage}"
-                                    mode="None"
-                                    showSeparators="None">
-                                    <CustomListItem>
-                                        <HBox alignItems="Center" class="pipelineRow">
-                                            <VBox width="140px">
-                                                <Text text="{stage}" class="pipelineLabel"/>
-                                            </VBox>
-                                            <ProgressIndicator
-                                                percentValue="{= ${count} / 10 * 100}"
-                                                displayValue="{count} · RM {totalValue}"
-                                                showValue="true"
-                                                state="{= ${stage} === 'Closed Won' ? 'Success' : ${stage} === 'Closed Lost' ? 'Error' : 'Information'}"
-                                                width="100%"
-                                                class="pipelineProgress"/>
-                                        </HBox>
-                                    </CustomListItem>
-                                </List>
-                            </VBox>
+                            <viz:VizFrame
+                                id="opportunityPipelineChart"
+                                vizType="bar"
+                                height="280px"
+                                width="100%"
+                                uiConfig="{applicationSet:'fiori'}">
+                                <viz:dataset>
+                                    <vizData:FlattenedDataset data="{/OpportunitiesByStage}">
+                                        <vizData:dimensions>
+                                            <vizData:DimensionDefinition name="Stage" value="{stage}"/>
+                                        </vizData:dimensions>
+                                        <vizData:measures>
+                                            <vizData:MeasureDefinition name="Value (RM)" value="{totalValue}"/>
+                                        </vizData:measures>
+                                    </vizData:FlattenedDataset>
+                                </viz:dataset>
+                                <viz:feeds>
+                                    <vizFeeds:FeedItem uid="valueAxis" type="Measure" values="Value (RM)"/>
+                                    <vizFeeds:FeedItem uid="categoryAxis" type="Dimension" values="Stage"/>
+                                </viz:feeds>
+                            </viz:VizFrame>
+                        </f:content>
+                    </f:Card>
+
+                    <!-- Recent Activities Timeline -->
+                    <f:Card class="dashboardCard activityCard">
+                        <f:header>
+                            <f:cards.Header
+                                title="{i18n>recentActivitiesTitle}"
+                                subtitle="{i18n>recentActivitiesSubtitle}"
+                                iconSrc="sap-icon://activity-items"/>
+                        </f:header>
+                        <f:content>
+                            <List
+                                id="recentActivitiesList"
+                                items="{path: '/RecentActivities', length: 6}"
+                                mode="None"
+                                showSeparators="Inner">
+                                <FeedListItem
+                                    sender="{assignedToName}"
+                                    icon="{= ${activityType} === 'Call' ? 'sap-icon://call' : ${activityType} === 'Email' ? 'sap-icon://email' : ${activityType} === 'Meeting' ? 'sap-icon://meeting-room' : 'sap-icon://task'}"
+                                    text="{subject}"
+                                    info="{activityType}"
+                                    timestamp="{path: 'startDateTime', formatter: '.formatDateTime'}"
+                                    senderPress=".onActivitySenderPress"
+                                    iconPress=".onActivityPress">
+                                </FeedListItem>
+                            </List>
                         </f:content>
                     </f:Card>
 
                 </l:Grid>
 
                 <!-- ========================================== -->
-                <!-- SECTION 3: AI INSIGHTS CARDS -->
+                <!-- SECTION 3: AI INSIGHTS CARDS (3 columns) -->
                 <!-- ========================================== -->
                 <l:Grid
                     id="aiInsightsSection"
@@ -258,7 +289,7 @@
                                     <ObjectListItem
                                         title="{outletName}"
                                         number="{aiScore}"
-                                        numberUnit="AI Score"
+                                        numberUnit="AI"
                                         numberState="{= ${aiScore} >= 80 ? 'Success' : ${aiScore} >= 60 ? 'Warning' : 'Error'}"
                                         type="Active"
                                         press=".onLeadPress">
@@ -267,14 +298,8 @@
                                                 text="{leadQuality}"
                                                 state="{= ${leadQuality} === 'Hot' ? 'Success' : ${leadQuality} === 'Warm' ? 'Warning' : 'None'}"/>
                                         </firstStatus>
-                                        <secondStatus>
-                                            <ObjectStatus
-                                                text="{status}"
-                                                inverted="true"/>
-                                        </secondStatus>
                                         <attributes>
                                             <ObjectAttribute text="{brandToPitch}"/>
-                                            <ObjectAttribute text="RM {estimatedValue}"/>
                                         </attributes>
                                     </ObjectListItem>
                                 </List>
@@ -297,46 +322,31 @@
                         </f:header>
                         <f:content>
                             <VBox class="healthDistributionBox">
-                                <!-- Health Distribution with Progress Indicators -->
-                                <HBox justifyContent="SpaceAround" class="healthGauges sapUiSmallMarginTop">
-                                    <VBox alignItems="Center" class="healthGaugeItem" width="30%">
-                                        <ObjectNumber
-                                            number="{kpi>/healthDistribution/healthy}"
-                                            unit="Healthy"
-                                            state="Success"
-                                            class="gaugeNumber"/>
-                                        <ProgressIndicator
-                                            percentValue="{kpi>/healthDistribution/healthyPercent}"
-                                            state="Success"
-                                            showValue="false"
-                                            class="healthProgress"/>
-                                        <Text text="{kpi>/healthDistribution/healthyPercent}%" class="percentText"/>
+                                <!-- Health Distribution with Donut-style indicators -->
+                                <HBox justifyContent="SpaceAround" class="healthGauges sapUiSmallMarginTop sapUiSmallMarginBottom">
+                                    <VBox alignItems="Center" class="healthGaugeItem">
+                                        <mc:RadialMicroChart
+                                            size="M"
+                                            percentage="{kpi>/healthDistribution/healthyPercent}"
+                                            valueColor="Good"/>
+                                        <Text text="{kpi>/healthDistribution/healthy}" class="gaugeValue"/>
+                                        <Label text="Healthy" class="gaugeLabel healthyLabel"/>
                                     </VBox>
-                                    <VBox alignItems="Center" class="healthGaugeItem" width="30%">
-                                        <ObjectNumber
-                                            number="{kpi>/healthDistribution/monitor}"
-                                            unit="Monitor"
-                                            state="Warning"
-                                            class="gaugeNumber"/>
-                                        <ProgressIndicator
-                                            percentValue="{kpi>/healthDistribution/monitorPercent}"
-                                            state="Warning"
-                                            showValue="false"
-                                            class="healthProgress"/>
-                                        <Text text="{kpi>/healthDistribution/monitorPercent}%" class="percentText"/>
+                                    <VBox alignItems="Center" class="healthGaugeItem">
+                                        <mc:RadialMicroChart
+                                            size="M"
+                                            percentage="{kpi>/healthDistribution/monitorPercent}"
+                                            valueColor="Critical"/>
+                                        <Text text="{kpi>/healthDistribution/monitor}" class="gaugeValue"/>
+                                        <Label text="Monitor" class="gaugeLabel monitorLabel"/>
                                     </VBox>
-                                    <VBox alignItems="Center" class="healthGaugeItem" width="30%">
-                                        <ObjectNumber
-                                            number="{kpi>/healthDistribution/atRisk}"
-                                            unit="At Risk"
-                                            state="Error"
-                                            class="gaugeNumber"/>
-                                        <ProgressIndicator
-                                            percentValue="{kpi>/healthDistribution/atRiskPercent}"
-                                            state="Error"
-                                            showValue="false"
-                                            class="healthProgress"/>
-                                        <Text text="{kpi>/healthDistribution/atRiskPercent}%" class="percentText"/>
+                                    <VBox alignItems="Center" class="healthGaugeItem">
+                                        <mc:RadialMicroChart
+                                            size="M"
+                                            percentage="{kpi>/healthDistribution/atRiskPercent}"
+                                            valueColor="Error"/>
+                                        <Text text="{kpi>/healthDistribution/atRisk}" class="gaugeValue"/>
+                                        <Label text="At Risk" class="gaugeLabel atRiskLabel"/>
                                     </VBox>
                                 </HBox>
 
@@ -344,13 +354,12 @@
                                 <List
                                     id="atRiskAccountsList"
                                     items="{path: '/AtRiskAccounts', length: 3}"
-                                    headerText="Accounts Needing Attention"
+                                    headerText="Needs Attention"
                                     mode="None"
-                                    showSeparators="Inner"
-                                    class="sapUiSmallMarginTop">
+                                    showSeparators="Inner">
                                     <StandardListItem
                                         title="{accountName}"
-                                        description="{accountType} · {accountTier}"
+                                        description="{accountType}"
                                         info="Health: {healthScore}"
                                         infoState="{= ${healthScore} >= 50 ? 'Warning' : 'Error'}"
                                         type="Active"
@@ -383,7 +392,7 @@
                                     <ObjectListItem
                                         title="{name}"
                                         number="{aiWinScore}"
-                                        numberUnit="Win Score"
+                                        numberUnit="%"
                                         numberState="{= ${aiWinScore} >= 80 ? 'Success' : ${aiWinScore} >= 60 ? 'Warning' : 'Error'}"
                                         type="Active"
                                         press=".onOpportunityPress">
@@ -394,7 +403,6 @@
                                                 state="{= ${stage} === 'Proposal' || ${stage} === 'Negotiation' ? 'Success' : 'Information'}"/>
                                         </firstStatus>
                                         <attributes>
-                                            <ObjectAttribute text="{accountName}"/>
                                             <ObjectAttribute text="RM {expectedRevenue}"/>
                                         </attributes>
                                     </ObjectListItem>
@@ -410,41 +418,14 @@
                 </l:Grid>
 
                 <!-- ========================================== -->
-                <!-- SECTION 4: ACTIVITIES & TASKS -->
+                <!-- SECTION 4: TASKS, PRODUCTS & CAMPAIGNS (3 columns) -->
                 <!-- ========================================== -->
                 <l:Grid
-                    id="activitySection"
-                    class="activitySection"
-                    defaultSpan="XL6 L6 M12 S12"
+                    id="bottomSection"
+                    class="bottomSection"
+                    defaultSpan="XL4 L4 M6 S12"
                     hSpacing="1"
                     vSpacing="1">
-
-                    <!-- Recent Activities Timeline -->
-                    <f:Card class="dashboardCard">
-                        <f:header>
-                            <f:cards.Header
-                                title="{i18n>recentActivitiesTitle}"
-                                subtitle="{i18n>recentActivitiesSubtitle}"
-                                iconSrc="sap-icon://activity-items"/>
-                        </f:header>
-                        <f:content>
-                            <List
-                                id="recentActivitiesList"
-                                items="{path: '/RecentActivities', length: 8}"
-                                mode="None"
-                                showSeparators="Inner">
-                                <FeedListItem
-                                    sender="{assignedToName}"
-                                    icon="{= ${activityType} === 'Call' ? 'sap-icon://call' : ${activityType} === 'Email' ? 'sap-icon://email' : ${activityType} === 'Meeting' ? 'sap-icon://meeting-room' : 'sap-icon://task'}"
-                                    text="{subject}"
-                                    info="{activityType}"
-                                    timestamp="{path: 'startDateTime', formatter: '.formatDateTime'}"
-                                    senderPress=".onActivitySenderPress"
-                                    iconPress=".onActivityPress">
-                                </FeedListItem>
-                            </List>
-                        </f:content>
-                    </f:Card>
 
                     <!-- Upcoming Tasks -->
                     <f:Card class="dashboardCard">
@@ -457,7 +438,7 @@
                         <f:content>
                             <List
                                 id="upcomingTasksList"
-                                items="{path: '/UpcomingTasks', length: 8}"
+                                items="{path: '/UpcomingTasks', length: 5}"
                                 mode="None"
                                 showSeparators="Inner">
                                 <ObjectListItem
@@ -467,11 +448,6 @@
                                     numberState="{= ${priority} === 'High' ? 'Error' : 'None'}"
                                     type="Active"
                                     press=".onTaskPress">
-                                    <markers>
-                                        <ObjectMarker
-                                            type="{= ${priority} === 'High' ? 'Flagged' : 'Favorite'}"
-                                            visible="{= ${priority} === 'High'}"/>
-                                    </markers>
                                     <firstStatus>
                                         <ObjectStatus
                                             text="{priority}"
@@ -479,24 +455,11 @@
                                     </firstStatus>
                                     <attributes>
                                         <ObjectAttribute text="{accountName}"/>
-                                        <ObjectAttribute text="{activityType}"/>
                                     </attributes>
                                 </ObjectListItem>
                             </List>
                         </f:content>
                     </f:Card>
-
-                </l:Grid>
-
-                <!-- ========================================== -->
-                <!-- SECTION 5: PRODUCTS & CAMPAIGNS -->
-                <!-- ========================================== -->
-                <l:Grid
-                    id="productCampaignSection"
-                    class="productCampaignSection"
-                    defaultSpan="XL6 L6 M12 S12"
-                    hSpacing="1"
-                    vSpacing="1">
 
                     <!-- Trending Products -->
                     <f:Card class="dashboardCard">
@@ -524,15 +487,8 @@
                                             text="{brand}"
                                             inverted="false"/>
                                     </firstStatus>
-                                    <secondStatus>
-                                        <ObjectStatus
-                                            text="{category}"
-                                            inverted="true"
-                                            state="Information"/>
-                                    </secondStatus>
                                     <attributes>
                                         <ObjectAttribute text="RM {listPrice}"/>
-                                        <ObjectAttribute text="{trendingKeywords}" visible="{= !!${trendingKeywords}}"/>
                                     </attributes>
                                 </ObjectListItem>
                             </List>
@@ -566,14 +522,8 @@
                                             state="{= ${status} === 'Active' ? 'Success' : 'Warning'}"
                                             inverted="true"/>
                                     </firstStatus>
-                                    <secondStatus>
-                                        <ObjectStatus
-                                            text="{campaignType}"
-                                            inverted="false"/>
-                                    </secondStatus>
                                     <attributes>
-                                        <ObjectAttribute text="{targetAudience}"/>
-                                        <ObjectAttribute text="{triggerKeyword}" visible="{= !!${triggerKeyword}}"/>
+                                        <ObjectAttribute text="{campaignType}"/>
                                     </attributes>
                                 </ObjectListItem>
                             </List>
@@ -586,4 +536,3 @@
         </content>
     </Page>
 </mvc:View>
-
