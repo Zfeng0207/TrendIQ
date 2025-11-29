@@ -10,9 +10,9 @@ service LeadService @(path: '/lead') {
     @cds.redirection.target
     @odata.draft.enabled
     entity Leads as projection on leads.Leads actions {
-        action convertToAccount() returns {
+        action convertToProspect() returns {
             message: String;
-            accountID: UUID;
+            prospectID: UUID;
         };
         action qualifyLead();
         action updateAIScore() returns Leads;

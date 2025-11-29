@@ -44,7 +44,7 @@ entity Leads : managed, cuid, aspects.Address, aspects.AIInsights {
     // Conversion tracking
     converted     : Boolean default false @title: 'Converted';
     convertedDate : DateTime @title: 'Conversion Date';
-    convertedTo   : Association to crm.Accounts @title: 'Converted to Account';
+    prospect      : Association to crm.Prospects @title: 'Converted to Prospect';
 
     // Notes and engagement
     notes           : LargeString @title: 'Notes';
@@ -55,8 +55,7 @@ entity Leads : managed, cuid, aspects.Address, aspects.AIInsights {
     trendingTopics    : String(500) @title: 'Trending Topics';
     recommendedAction : String(1000) @title: 'AI Recommendation';
 
-    // Merchant discovery tracking
+    // Discovery tracking
     discoverySource   : String(100) @title: 'Discovery Source';
     autoDiscovered    : Boolean default false @title: 'Auto Discovered';
-    merchantDiscovery : Association to crm.MerchantDiscovery @title: 'Merchant Discovery';
 }

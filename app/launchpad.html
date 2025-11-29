@@ -30,17 +30,29 @@
                 }
             },
             applications: {
-                "dashboard-display": {
-                    title: "CRM Dashboard",
-                    description: "Overview dashboard with key metrics and insights",
+                "leads-manage": {
+                    title: "Leads",
+                    description: "Capture and qualify potential customers",
                     applicationType: "URL",
                     url: "/beautyleads.leads/index.html"
                 },
-                "merchants-manage": {
-                    title: "Channel Partner Onboarding",
-                    description: "AI-powered channel partner discovery and onboarding",
+                "prospects-manage": {
+                    title: "Prospects",
+                    description: "Manage qualified prospects in the sales pipeline",
                     applicationType: "URL",
-                    url: "/beautyleads.merchants/index.html"
+                    url: "/beautyleads.prospects/index.html"
+                },
+                "opportunities-manage": {
+                    title: "Opportunities",
+                    description: "Track sales pipeline and deals",
+                    applicationType: "URL",
+                    url: "/beautyleads.opportunities/index.html"
+                },
+                "accounts-manage": {
+                    title: "Accounts",
+                    description: "Manage customer companies and retailers",
+                    applicationType: "URL",
+                    url: "/beautyleads.accounts/index.html"
                 },
                 "campaigns-manage": {
                     title: "Marketing Campaigns",
@@ -51,49 +63,65 @@
             },
             groups: [
                 {
-                    id: "dashboard",
-                    title: "Dashboard",
+                    id: "sales-pipeline",
+                    title: "Sales Pipeline",
                     isPreset: true,
                     isVisible: true,
                     isDefaultGroup: true,
                     tiles: [
                         {
-                            id: "dashboard-tile",
+                            id: "leads-tile",
                             tileType: "sap.ushell.ui.tile.StaticTile",
                             properties: {
-                                title: "CRM Dashboard",
-                                subtitle: "Overview & Analytics",
+                                title: "Leads",
+                                subtitle: "Capture & Qualify",
                                 infoState: "Neutral",
-                                info: "",
-                                icon: "sap-icon://line-chart",
-                                targetURL: "#dashboard-display"
+                                info: "Step 1",
+                                icon: "sap-icon://lead",
+                                targetURL: "#leads-manage"
                             }
-                        }
-                    ]
-                },
-                {
-                    id: "b2b-growth",
-                    title: "B2B Growth",
-                    isPreset: true,
-                    isVisible: true,
-                    tiles: [
+                        },
                         {
-                            id: "merchants-tile",
+                            id: "prospects-tile",
                             tileType: "sap.ushell.ui.tile.StaticTile",
                             properties: {
-                                title: "Channel Partner Onboarding",
-                                subtitle: "AI-Powered Discovery & Onboarding",
+                                title: "Prospects",
+                                subtitle: "Qualified Pipeline",
                                 infoState: "Neutral",
-                                info: "",
-                                icon: "sap-icon://business-objects-experience",
-                                targetURL: "#merchants-manage"
+                                info: "Step 2",
+                                icon: "sap-icon://person-placeholder",
+                                targetURL: "#prospects-manage"
+                            }
+                        },
+                        {
+                            id: "opportunities-tile",
+                            tileType: "sap.ushell.ui.tile.StaticTile",
+                            properties: {
+                                title: "Opportunities",
+                                subtitle: "Deals & Proposals",
+                                infoState: "Neutral",
+                                info: "Step 3",
+                                icon: "sap-icon://opportunity",
+                                targetURL: "#opportunities-manage"
+                            }
+                        },
+                        {
+                            id: "accounts-tile",
+                            tileType: "sap.ushell.ui.tile.StaticTile",
+                            properties: {
+                                title: "Accounts",
+                                subtitle: "Customer Management",
+                                infoState: "Neutral",
+                                info: "Step 4",
+                                icon: "sap-icon://customer-financial-fact-sheet",
+                                targetURL: "#accounts-manage"
                             }
                         }
                     ]
                 },
                 {
-                    id: "marketing-activation",
-                    title: "Marketing Activation",
+                    id: "marketing",
+                    title: "Marketing",
                     isPreset: true,
                     isVisible: true,
                     tiles: [
@@ -102,7 +130,7 @@
                             tileType: "sap.ushell.ui.tile.StaticTile",
                             properties: {
                                 title: "Marketing Campaigns",
-                                subtitle: "Trend-Driven Campaign Automation",
+                                subtitle: "Trend-Driven Automation",
                                 infoState: "Neutral",
                                 info: "",
                                 icon: "sap-icon://marketing-campaign",
@@ -126,7 +154,7 @@
         data-sap-ui-language="en"
         data-sap-ui-resourceroots='{
             "beautydashboard.eybeauty1": "/ey-beauty-1/webapp/",
-            "beautyleads.merchants": "/merchants/webapp/",
+            "beautyleads.prospects": "/prospects/webapp/",
             "beautyleads.campaigns": "/campaigns/webapp/",
             "beautyleads.leads": "/leads/webapp/",
             "beautyleads.accounts": "/accounts/webapp/",

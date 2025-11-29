@@ -1,7 +1,7 @@
 {
   "_version": "1.59.0",
   "sap.app": {
-    "id": "beautyleads.merchants",
+    "id": "beautyleads.prospects",
     "type": "application",
     "i18n": "i18n/i18n.properties",
     "applicationVersion": {
@@ -17,7 +17,7 @@
     },
     "dataSources": {
       "mainService": {
-        "uri": "/merchant/",
+        "uri": "/prospect/",
         "type": "OData",
         "settings": {
           "annotations": [],
@@ -33,10 +33,10 @@
             "parameters": {},
             "additionalParameters": "allowed"
           },
-          "semanticObject": "ChannelPartners",
+          "semanticObject": "Prospects",
           "action": "manage",
           "title": "{{appTitle}}",
-          "icon": "sap-icon://business-objects-experience"
+          "icon": "sap-icon://person-placeholder"
         }
       }
     }
@@ -44,7 +44,7 @@
   "sap.ui": {
     "technology": "UI5",
     "icons": {
-      "icon": "sap-icon://business-objects-experience",
+      "icon": "sap-icon://person-placeholder",
       "favIcon": "",
       "phone": "",
       "phone@2": "",
@@ -76,7 +76,7 @@
       "i18n": {
         "type": "sap.ui.model.resource.ResourceModel",
         "settings": {
-          "bundleName": "beautyleads.merchants.i18n.i18n"
+          "bundleName": "beautyleads.prospects.i18n.i18n"
         }
       },
       "": {
@@ -101,28 +101,28 @@
       "routes": [
         {
           "pattern": ":?query:",
-          "name": "MerchantDiscoveriesList",
-          "target": "MerchantDiscoveriesList"
+          "name": "ProspectsList",
+          "target": "ProspectsList"
         },
         {
-          "pattern": "MerchantDiscoveries({key}):?query:",
-          "name": "MerchantDiscoveriesObjectPage",
-          "target": "MerchantDiscoveriesObjectPage"
+          "pattern": "Prospects({key}):?query:",
+          "name": "ProspectsObjectPage",
+          "target": "ProspectsObjectPage"
         }
       ],
       "targets": {
-        "MerchantDiscoveriesList": {
+        "ProspectsList": {
           "type": "Component",
-          "id": "MerchantDiscoveriesList",
+          "id": "ProspectsList",
           "name": "sap.fe.templates.ListReport",
           "options": {
             "settings": {
-              "contextPath": "/MerchantDiscoveries",
+              "contextPath": "/Prospects",
               "variantManagement": "None",
               "navigation": {
-                "MerchantDiscoveries": {
+                "Prospects": {
                   "detail": {
-                    "route": "MerchantDiscoveriesObjectPage"
+                    "route": "ProspectsObjectPage"
                   }
                 }
               },
@@ -145,43 +145,43 @@
             "extensions": {
               "sap.ui.controllerExtensions": {
                 "sap.fe.templates.ListReport.ListReportController": {
-                  "controllerName": "beautyleads.merchants.ext.controller.ListReportExt"
+                  "controllerName": "beautyleads.prospects.ext.controller.ListReportExt"
                 }
               }
             }
           }
         },
-        "MerchantDiscoveriesObjectPage": {
+        "ProspectsObjectPage": {
           "type": "Component",
-          "id": "MerchantDiscoveriesObjectPage",
+          "id": "ProspectsObjectPage",
           "name": "sap.fe.templates.ObjectPage",
           "options": {
             "settings": {
               "editableHeaderContent": true,
-              "contextPath": "/MerchantDiscoveries",
+              "contextPath": "/Prospects",
               "navigation": {
-                "convertedToLead": {
+                "convertedFromLead": {
                   "detail": {
                     "route": "LeadsObjectPage",
-                    "navigationProperty": "convertedToLead"
+                    "navigationProperty": "convertedFromLead"
                   }
                 }
               },
               "controlConfiguration": {
                 "@com.sap.vocabularies.UI.v1.Identification": {
                   "actions": {
-                    "DataFieldForAction::MerchantService.initiateAIMeeting": {
+                    "DataFieldForAction::ProspectService.initiateAIMeeting": {
                       "visible": false
                     },
                     "CustomAIMeeting": {
-                      "press": "beautyleads.merchants.ext.actions.AIMeetingActions.onAIMeetingInitiator",
+                      "press": "beautyleads.prospects.ext.actions.AIMeetingActions.onAIMeetingInitiator",
                       "text": "AI Meeting Initiator",
                       "visible": true,
                       "enabled": true,
                       "type": "Emphasized",
                       "position": {
                         "placement": "After",
-                        "anchor": "DataFieldForAction::MerchantService.assignToSalesRep"
+                        "anchor": "DataFieldForAction::ProspectService.assignToSalesRep"
                       }
                     }
                   }
@@ -191,7 +191,7 @@
                 "header": {
                   "actions": {
                     "CustomAIMeetingHeader": {
-                      "press": "beautyleads.merchants.ext.actions.AIMeetingActions.onAIMeetingInitiator",
+                      "press": "beautyleads.prospects.ext.actions.AIMeetingActions.onAIMeetingInitiator",
                       "text": "AI Meeting Initiator",
                       "visible": true,
                       "enabled": true,
@@ -206,7 +206,7 @@
             "extensions": {
               "sap.ui.controllerExtensions": {
                 "sap.fe.templates.ObjectPage.ObjectPageController": {
-                  "controllerName": "beautyleads.merchants.ext.controller.ObjectPageExt"
+                  "controllerName": "beautyleads.prospects.ext.controller.ObjectPageExt"
                 }
               }
             }

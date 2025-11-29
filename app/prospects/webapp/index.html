@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Prospects</title>
+    <link rel="stylesheet" type="text/css" href="css/custom.css">
+    <style>
+        html, body, body > div, #container, #container-uiarea {
+            height: 100%;
+        }
+        /* Simple Navigation Bar */
+        .beauty-nav-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 48px;
+            background-color: #0070f2;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .beauty-nav-title {
+            color: white;
+            font-size: 20px;
+            font-weight: 600;
+            margin-right: 24px;
+        }
+        .beauty-nav-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        .beauty-nav-button {
+            background-color: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 8px 16px;
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .beauty-nav-button:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .beauty-nav-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            margin-top: 4px;
+            background-color: white;
+            min-width: 200px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            border-radius: 4px;
+            overflow: hidden;
+            z-index: 10001;
+        }
+        .beauty-nav-menu.show {
+            display: block;
+        }
+        .beauty-nav-item {
+            display: block;
+            padding: 12px 16px;
+            color: #32363a;
+            text-decoration: none;
+            font-size: 14px;
+            border-bottom: 1px solid #e5e5e5;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .beauty-nav-item:last-child {
+            border-bottom: none;
+        }
+        .beauty-nav-item:hover {
+            background-color: #f5f5f5;
+        }
+        .beauty-nav-item.active {
+            background-color: #e5f0ff;
+            color: #0070f2;
+            font-weight: 600;
+        }
+        body {
+            padding-top: 48px !important;
+        }
+    </style>
+    <script
+        id="sap-ui-bootstrap"
+        src="https://sapui5.hana.ondemand.com/1.120.0/resources/sap-ui-core.js"
+        data-sap-ui-theme="sap_horizon"
+        data-sap-ui-resourceroots='{
+            "beautyleads.prospects": "./"
+        }'
+        data-sap-ui-oninit="module:sap/ui/core/ComponentSupport"
+        data-sap-ui-compatVersion="edge"
+        data-sap-ui-async="true"
+        data-sap-ui-frameOptions="trusted"
+        data-sap-ui-xx-waitForTheme="true"
+    ></script>
+</head>
+<body class="sapUiBody sapUiSizeCompact" id="content">
+    <div class="beauty-nav-bar">
+        <div class="beauty-nav-title">Smart Commerce CRM</div>
+        <div class="beauty-nav-dropdown">
+            <button class="beauty-nav-button" id="navMenuButton">
+                <span>Prospects</span>
+                <span style="font-size: 10px;">▼</span>
+            </button>
+            <div class="beauty-nav-menu" id="navMenu">
+                <a href="/beautyleads.leads/index.html" class="beauty-nav-item">Leads</a>
+                <a href="/beautyleads.prospects/index.html" class="beauty-nav-item active">Prospects</a>
+                <a href="/beautyleads.opportunities/index.html" class="beauty-nav-item">Opportunities</a>
+                <a href="/beautyleads.accounts/index.html" class="beauty-nav-item">Accounts</a>
+                <a href="/beautyleads.campaigns/index.html" class="beauty-nav-item">Marketing Campaigns</a>
+            </div>
+        </div>
+    </div>
+    <div
+        data-sap-ui-component
+        data-name="beautyleads.prospects"
+        data-id="container"
+        data-settings='{"id" : "beautyleads.prospects"}'
+        data-handle-validation="true"
+    ></div>
+    <script>
+        (function() {
+            var menuButton = document.getElementById('navMenuButton');
+            var menu = document.getElementById('navMenu');
+            if (menuButton && menu) {
+                menuButton.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    menu.classList.toggle('show');
+                });
+                document.addEventListener('click', function(e) {
+                    if (!menu.contains(e.target) && !menuButton.contains(e.target)) {
+                        menu.classList.remove('show');
+                    }
+                });
+            }
+        })();
+    </script>
+</body>
+</html>
+

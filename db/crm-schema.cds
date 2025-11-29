@@ -112,8 +112,8 @@ entity Accounts : managed, cuid, aspects.Address, aspects.SocialMedia, aspects.C
     // Relationships (associations - references)
     activities : Association to many Activities on activities.relatedAccount = $self;
 
-    // Source tracking - link to originating MerchantDiscovery
-    sourceMerchantDiscovery : Association to MerchantDiscovery @title: 'Source Merchant Discovery';
+    // Source tracking - link to originating Prospect
+    sourceProspect : Association to Prospects @title: 'Source Prospect';
 
     // Notes
     description : LargeString @title: 'Description';
@@ -219,8 +219,11 @@ entity Opportunities : managed, cuid, aspects.Financial {
     name        : String(200) not null @title: 'Opportunity Name' @mandatory;
     description : LargeString @title: 'Description';
 
-    // Account relationship (mandatory)
-    account        : Association to Accounts not null @title: 'Account' @mandatory;
+    // Source tracking - link to originating Prospect
+    sourceProspect : Association to Prospects @title: 'Source Prospect';
+    
+    // Account relationship (optional - created when opportunity progresses)
+    account        : Association to Accounts @title: 'Account';
     primaryContact : Association to Contacts @title: 'Primary Contact';
 
     // Pipeline stage
@@ -360,24 +363,24 @@ entity Approvals : managed, cuid {
 }
 
 /**
- * MerchantDiscovery - AI-discovered channel partner opportunities from web scraping
+ * Prospects - Qualified leads in the sales pipeline (converted from Leads)
  */
-entity MerchantDiscovery : managed, cuid, aspects.Address {
-    merchantName      : String(200) not null @title: 'Channel Partner Name' @mandatory;
+entity Prospects : managed, cuid, aspects.Address {
+    prospectName      : String(200) not null @title: 'Prospect Name' @mandatory;
     about             : LargeString @title: 'About';
     discoverySource   : String(50) @title: 'Discovery Source'
-                      @assert.enum: ['Online Web', 'Partnership', 'Offline', 'Other'];
+                      @assert.enum: ['Online Web', 'Partnership', 'Offline', 'Lead Conversion', 'Other'];
     discoveryDate     : DateTime @title: 'Discovery Date';
     location          : String(500) @title: 'Location';
     businessType      : String(50) @title: 'Business Type'
                       @assert.enum: ['Salon', 'Spa', 'Retailer', 'E-commerce', 'Kiosk', 'Distributor'];
     contactInfo       : LargeString @title: 'Contact Information';
     socialMediaLinks  : LargeString @title: 'Social Media Links';
-    merchantScore     : Integer @title: 'Channel Partner Score' @assert.range: [0, 100];
+    prospectScore     : Integer @title: 'Prospect Score' @assert.range: [0, 100];
     autoAssignedTo    : Association to Users @title: 'Auto Assigned To';
     discoveryMetadata : LargeString @title: 'Discovery Metadata'; // JSON string for raw scraped data
-    status            : String(20) @title: 'Status' default 'Discovered'
-                      @assert.enum: ['Discovered', 'Contacted', 'Qualified', 'Onboarding', 'In Review', 'Completed'];
+    status            : String(20) @title: 'Status' default 'New'
+                      @assert.enum: ['New', 'Contacted', 'Qualified', 'Negotiating', 'In Review', 'Converted'];
     
     // Parsed contact information fields (populated from contactInfo JSON)
     contactName       : String(200) @title: 'Contact Name';
@@ -393,8 +396,8 @@ entity MerchantDiscovery : managed, cuid, aspects.Address {
     sentimentScore    : Integer @title: 'Sentiment Score';
     
     // Relationships
-    convertedToLead   : Association to leads.Leads @title: 'Converted to Lead';
-    convertedToAccount : Association to Accounts @title: 'Converted to Account';
+    convertedFromLead : Association to leads.Leads @title: 'Converted From Lead';
+    convertedToOpportunity : Association to Opportunities @title: 'Converted to Opportunity';
 }
 
 /**

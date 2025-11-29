@@ -1,6 +1,6 @@
 specVersion: "3.1"
 metadata:
-  name: beautyleads.merchants
+  name: beautyleads.prospects
 type: application
 server:
   customMiddleware:
@@ -14,7 +14,7 @@ server:
             - /test-resources
           url: https://sapui5.hana.ondemand.com
         backend:
-          - path: /merchant
+          - path: /prospect
             url: http://localhost:4004
     - name: fiori-tools-appreload
       afterMiddleware: compression

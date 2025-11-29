@@ -2,12 +2,12 @@ using { beauty.crm as crm } from '../../db/crm-schema';
 using { beauty.leads as leads } from '../../db/schema';
 
 /**
- * Channel Partner Discovery Service
- * Handles AI-discovered channel partner opportunities and onboarding
+ * Prospect Service
+ * Handles qualified prospects converted from leads
  */
-service MerchantService @(path: '/merchant') {
+service ProspectService @(path: '/prospect') {
     @cds.redirection.target
-    entity MerchantDiscoveries as projection on crm.MerchantDiscovery {
+    entity Prospects as projection on crm.Prospects {
         *,
         virtual null as statusCriticality : Integer,
         virtual null as phase : String(50),
@@ -18,31 +18,33 @@ service MerchantService @(path: '/merchant') {
         virtual null as pendingItems : String(200),
         virtual null as assignedTo : String(200)
     } actions {
-        action qualifyMerchant();
+        action qualifyProspect();
         action assignToSalesRep(salesRepID: String);
-        action bulkImport(discoveries: String); // JSON array
-        action generateAbout() returns MerchantDiscoveries; // AI-generated channel partner about information
+        action bulkImport(prospects: String); // JSON array
+        action generateAbout() returns Prospects; // AI-generated prospect about information
         action initiateAIMeeting() returns String; // AI Meeting Initiator - returns meeting script
-        action completeOnboarding() returns {
+        action createOpportunity() returns {
             message: String;
-            accountID: UUID;
+            opportunityID: UUID;
         };
     };
     
-    @readonly entity MerchantDiscoveriesBySource as projection on crm.MerchantDiscovery {
+    @readonly entity ProspectsBySource as projection on crm.Prospects {
         key discoverySource,
         count(ID) as count : Integer,
-        avg(merchantScore) as avgScore : Integer
+        avg(prospectScore) as avgScore : Integer
     } group by discoverySource;
     
-    @readonly entity HighScoreMerchants as projection on crm.MerchantDiscovery
-        where merchantScore >= 70 and status = 'Discovered';
+    @readonly entity HighScoreProspects as projection on crm.Prospects
+        where prospectScore >= 70 and status = 'New';
     
-    @readonly entity PendingAssignment as projection on crm.MerchantDiscovery
-        where autoAssignedTo is null and status = 'Discovered';
+    @readonly entity PendingAssignment as projection on crm.Prospects
+        where autoAssignedTo is null and status = 'New';
     
     // Related entities
     @readonly entity Users as projection on crm.Users;
     @readonly entity Leads as projection on leads.Leads;
+    @readonly entity Opportunities as projection on crm.Opportunities;
 }
+
 

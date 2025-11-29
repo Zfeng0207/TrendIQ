@@ -265,8 +265,8 @@ annotate LeadService.Leads with @(
         Identification: [
             {
                 $Type: 'UI.DataFieldForAction',
-                Action: 'LeadService.convertToAccount',
-                Label: 'Convert to Account',
+                Action: 'LeadService.convertToProspect',
+                Label: 'Convert to Prospect',
                 ![@UI.Importance]: #High
             },
             {
@@ -520,9 +520,9 @@ annotate LeadService.LeadsBySource with @(
 // ============================================================================
 
 annotate LeadService.Leads actions {
-    convertToAccount @(
+    convertToProspect @(
         Common.SideEffects: {
-            TargetProperties: ['converted', 'convertedDate', 'status', 'convertedTo_ID']
+            TargetProperties: ['converted', 'convertedDate', 'status', 'prospect_ID']
         }
     );
     qualifyLead @(

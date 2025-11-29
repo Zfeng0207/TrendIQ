@@ -1,0 +1,640 @@
+/**
+ * Prospect Service Handler
+ * Implements business logic for prospect management and conversion to opportunities
+ */
+
+const cds = require('@sap/cds');
+const fs = require('fs');
+const path = require('path');
+
+module.exports = async function() {
+    const { Prospects, Leads, Users, Opportunities } = this.entities;
+
+    // Handler for virtual fields: statusCriticality, phase, priorityScore, lastFollowUp, pendingItems, assignedTo
+    this.on('READ', 'Prospects', async (req, next) => {
+        const results = await next();
+        
+        // Helper to process a single prospect record
+        const processProspect = (prospect) => {
+            if (prospect) {
+                // Status criticality (for backward compatibility)
+                prospect.statusCriticality = getStatusCriticality(prospect.status);
+                
+                // Phase (maps status to numbered phases, varied based on prospect data)
+                prospect.phase = mapStatusToPhase(prospect.status, prospect);
+                prospect.phaseCriticality = getPhaseCriticality(prospect.phase);
+                
+                // Priority Score (1-5 scale based on prospectScore)
+                const priorityScore100 = prospect.prospectScore || 0;
+                prospect.priorityScore = convertToPriorityScore1to5(priorityScore100);
+                prospect.priorityScoreCriticality = getPriorityScoreCriticality(prospect.priorityScore);
+                
+                // Last Follow Up
+                prospect.lastFollowUp = generateLastFollowUp(prospect);
+                
+                // Pending Items
+                prospect.pendingItems = generatePendingItemsWithIcons(prospect);
+                
+                // Assigned To
+                if (prospect.autoAssignedTo && typeof prospect.autoAssignedTo === 'object' && prospect.autoAssignedTo.fullName) {
+                    prospect.assignedTo = prospect.autoAssignedTo.fullName;
+                } else if (prospect.autoAssignedTo_ID) {
+                    prospect.assignedTo = generateAssignedToDemo(prospect);
+                } else {
+                    prospect.assignedTo = generateAssignedToDemo(prospect);
+                }
+                
+                // Parse contactInfo JSON for display if fields not already populated
+                if (prospect.contactInfo && !prospect.contactName) {
+                    try {
+                        const contactData = JSON.parse(prospect.contactInfo);
+                        prospect.contactName = contactData.name || null;
+                        prospect.contactEmail = contactData.email || null;
+                        prospect.contactPhone = contactData.phone || null;
+                    } catch (e) {
+                        // If not valid JSON, set to null
+                        prospect.contactName = null;
+                        prospect.contactEmail = null;
+                        prospect.contactPhone = null;
+                    }
+                }
+                
+                // Parse discoveryMetadata JSON for display if fields not already populated
+                if (prospect.discoveryMetadata && !prospect.leadQuality) {
+                    try {
+                        const metadata = JSON.parse(prospect.discoveryMetadata);
+                        prospect.convertedFromLeadID = metadata.convertedFromLeadID || null;
+                        prospect.leadQuality = metadata.leadQuality || null;
+                        prospect.brandToPitch = metadata.brandToPitch || null;
+                        prospect.estimatedValue = metadata.estimatedValue || null;
+                        prospect.aiScore = metadata.aiScore || null;
+                        prospect.sentimentScore = metadata.sentimentScore || null;
+                    } catch (e) {
+                        // If not valid JSON, set to null
+                        prospect.convertedFromLeadID = null;
+                        prospect.leadQuality = null;
+                        prospect.brandToPitch = null;
+                        prospect.estimatedValue = null;
+                        prospect.aiScore = null;
+                        prospect.sentimentScore = null;
+                    }
+                }
+                
+                // Set placeholder for empty about field (handle null, undefined, empty string)
+                if (!prospect.about || (typeof prospect.about === 'string' && prospect.about.trim() === '')) {
+                    prospect.about = '-';
+                }
+            }
+        };
+        
+        if (Array.isArray(results)) {
+            results.forEach(processProspect);
+        } else if (results) {
+            processProspect(results);
+        }
+        return results;
+    });
+
+    // Helper function: Get criticality value for status (legacy)
+    function getStatusCriticality(status) {
+        const criticalityMap = {
+            'Converted': 3,    // Positive (Green)
+            'In Review': 3,    // Positive (Green)
+            'Negotiating': 2,  // Warning (Yellow)
+            'Qualified': 3,    // Positive (Green)
+            'Contacted': 2,    // Warning (Yellow)
+            'New': 2           // Warning (Yellow)
+        };
+        return criticalityMap[status] || 2;
+    }
+    
+    // Helper function: Map status to numbered phase (varied based on prospect data)
+    function mapStatusToPhase(status, prospect) {
+        // If status explicitly maps to a phase, use that
+        const statusToPhase = {
+            'Converted': 'Phase 3',
+            'In Review': 'Phase 3',
+            'Negotiating': 'Phase 2',
+            'Qualified': 'Phase 2',
+            'Contacted': 'Phase 1',
+            'New': 'Phase 1'
+        };
+        
+        // If status has explicit mapping, use it
+        if (status && statusToPhase[status]) {
+            return statusToPhase[status];
+        }
+        
+        // Otherwise, vary based on prospectScore or ID for demo purposes
+        // Higher scores tend to be in later phases
+        if (prospect && prospect.prospectScore !== undefined) {
+            if (prospect.prospectScore >= 85) {
+                return 'Phase 3';
+            } else if (prospect.prospectScore >= 70) {
+                return 'Phase 2';
+            } else {
+                return 'Phase 1';
+            }
+        }
+        
+        // Fallback: use prospect ID hash for consistent variation
+        if (prospect && prospect.ID) {
+            const hash = prospect.ID.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+            const phaseNum = (hash % 3) + 1;
+            return `Phase ${phaseNum}`;
+        }
+        
+        return 'Phase 1';
+    }
+    
+    // Helper function: Get criticality value for phase
+    function getPhaseCriticality(phase) {
+        const criticalityMap = {
+            'Phase 1': 2,   // Warning (Yellow)
+            'Phase 2': 2,   // Warning (Yellow)
+            'Phase 3': 3    // Positive (Green)
+        };
+        return criticalityMap[phase] || 2;
+    }
+    
+    // Helper: Convert Priority Score from 0-100 to 1-5 scale
+    function convertToPriorityScore1to5(score100) {
+        if (score100 >= 80) return 5; // High Priority
+        if (score100 >= 60) return 4; // Medium-High
+        if (score100 >= 40) return 3; // Medium
+        if (score100 >= 20) return 2; // Low-Medium
+        return 1; // Low Priority
+    }
+    
+    // Helper: Get Priority Score Criticality for color coding
+    // 5 = Red (1), 4 = Orange (2), 3 = Yellow (2), 2 = Light Green (3), 1 = Dark Green (3)
+    function getPriorityScoreCriticality(priorityScore) {
+        switch (priorityScore) {
+            case 5: return 1; // Red (Critical/Negative)
+            case 4: return 2; // Orange (Warning)
+            case 3: return 2; // Yellow (Warning)
+            case 2: return 3; // Light Green (Positive)
+            case 1: return 3; // Dark Green (Positive)
+            default: return 0; // Neutral
+        }
+    }
+    
+    // Helper: Generate Last Follow Up text
+    function generateLastFollowUp(prospect) {
+        // Generate demo values based on prospect ID for consistency
+        const demoValues = [
+            '4 hours ago',
+            '2 days ago',
+            '1 week ago',
+            '3 days ago',
+            '6 hours ago',
+            '5 days ago',
+            '2 weeks ago',
+            '1 day ago',
+            '8 hours ago',
+            '4 days ago'
+        ];
+        
+        // Use prospect ID hash to get consistent demo value
+        if (prospect.ID) {
+            const hash = prospect.ID.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+            return demoValues[hash % demoValues.length];
+        }
+        
+        return '2 days ago'; // Default
+    }
+    
+    // Helper: Generate Pending Items text with icons
+    function generatePendingItemsWithIcons(prospect) {
+        // Generate demo values with icons based on prospect ID for consistency
+        const demoValues = [
+            '📄 2 Documents',
+            '✉️ 1 Email',
+            '📞 1 Call',
+            '🛒 1 Order',
+            '📄 1 Document, ✉️ 1 Email',
+            '📞 2 Calls',
+            '📄 1 Document, 🛒 1 Order',
+            '✉️ 2 Emails',
+            '📞 1 Call, ✉️ 1 Email',
+            '📄 2 Documents, ✉️ 1 Email',
+            '🛒 2 Orders',
+            '📞 1 Call, 📄 1 Document',
+            'No pending items',
+            '✉️ 1 Email, 🛒 1 Order'
+        ];
+        
+        // Use prospect ID hash to get consistent demo value
+        if (prospect.ID) {
+            const hash = prospect.ID.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+            return demoValues[hash % demoValues.length];
+        }
+        
+        return '📄 2 Documents'; // Default
+    }
+    
+    // Helper: Generate AssignedTo demo value
+    function generateAssignedToDemo(prospect) {
+        const demoNames = [
+            'Sarah Tan',
+            'Kevin Tan',
+            'Lisa Wong',
+            'David Lee',
+            'Amy Chen',
+            'Michael Lim',
+            'Jennifer Ng',
+            'James Ho',
+            'Rachel Yap',
+            'Tommy Ong'
+        ];
+        
+        if (prospect.ID) {
+            const hash = prospect.ID.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+            return demoNames[hash % demoNames.length];
+        }
+        
+        return 'Sarah Tan'; // Default
+    }
+
+    // Action: Qualify Prospect
+    this.on('qualifyProspect', 'Prospects', async (req) => {
+        const prospectID = req.params[0].ID;
+        const prospect = await SELECT.one.from(Prospects).where({ ID: prospectID });
+
+        if (!prospect) {
+            return req.error(404, `Prospect ${prospectID} not found`);
+        }
+
+        if (prospect.status === 'Qualified') {
+            return req.warn(409, 'Prospect is already qualified');
+        }
+
+        // Calculate prospect score using mock AI algorithm
+        const prospectScore = calculateProspectScore(prospect);
+
+        // Update prospect status and score
+        await UPDATE(Prospects).set({
+            status: 'Qualified',
+            prospectScore: prospectScore
+        }).where({ ID: prospectID });
+
+        return req.reply({ 
+            message: 'Prospect qualified successfully', 
+            prospectScore: prospectScore 
+        });
+    });
+
+    // Action: Assign to Sales Rep
+    this.on('assignToSalesRep', 'Prospects', async (req) => {
+        const prospectID = req.params[0].ID;
+        const { salesRepID } = req.data;
+        
+        const prospect = await SELECT.one.from(Prospects).where({ ID: prospectID });
+        if (!prospect) {
+            return req.error(404, `Prospect ${prospectID} not found`);
+        }
+
+        // Verify sales rep exists
+        const salesRep = await SELECT.one.from(Users).where({ ID: salesRepID });
+        if (!salesRep) {
+            return req.error(404, `Sales rep ${salesRepID} not found`);
+        }
+
+        await UPDATE(Prospects).set({
+            autoAssignedTo_ID: salesRepID
+        }).where({ ID: prospectID });
+
+        return req.reply({ 
+            message: 'Prospect assigned to sales rep successfully',
+            salesRepName: salesRep.fullName 
+        });
+    });
+
+    // Action: Initiate AI Meeting
+    // Note: This action is intercepted in the UI controller, but we keep it for compatibility
+    this.on('initiateAIMeeting', 'Prospects', async (req) => {
+        // This should be intercepted by the UI, but if it reaches here, return success
+        // The UI controller will handle showing the toast
+        return req.reply({ 
+            success: true,
+            message: 'AI Meeting Initiator - handled in UI'
+        });
+    });
+
+    // Action: Create Opportunity from Prospect
+    this.on('createOpportunity', 'Prospects', async (req) => {
+        const prospectID = req.params[0].ID;
+        const prospect = await SELECT.one.from(Prospects).where({ ID: prospectID });
+
+        if (!prospect) {
+            return req.error(404, `Prospect ${prospectID} not found`);
+        }
+
+        if (prospect.convertedToOpportunity_ID) {
+            return req.warn(409, 'This prospect has already been converted to an opportunity');
+        }
+
+        // Create new opportunity from prospect data
+        const opportunityData = {
+            name: `${prospect.prospectName} - Opportunity`,
+            description: `Opportunity created from prospect: ${prospect.prospectName}`,
+            sourceProspect_ID: prospectID,
+            stage: 'Prospecting',
+            probability: prospect.prospectScore || 50,
+            amount: prospect.estimatedValue || 0,
+            currency: 'MYR',
+            expectedRevenue: prospect.estimatedValue || 0,
+            closeDate: getExpectedCloseDate()
+        };
+
+        const result = await INSERT.into(Opportunities).entries(opportunityData);
+        const opportunityID = result.req.data.ID;
+
+        // Update prospect status and link to opportunity
+        await UPDATE(Prospects).set({
+            status: 'Converted',
+            convertedToOpportunity_ID: opportunityID
+        }).where({ ID: prospectID });
+
+        console.log('Opportunity created. Prospect ID:', prospectID);
+        console.log('Opportunity ID:', opportunityID);
+
+        return { 
+            message: 'Opportunity created successfully', 
+            opportunityID: opportunityID
+        };
+    });
+
+    // Helper function: Get expected close date (3 months from now)
+    function getExpectedCloseDate() {
+        const date = new Date();
+        date.setMonth(date.getMonth() + 3);
+        return date.toISOString().split('T')[0];
+    }
+
+    // Action: Generate About (Mock from CSV)
+    this.on('generateAbout', 'Prospects', async (req) => {
+        const prospectID = req.params[0].ID;
+        const prospect = await SELECT.one.from(Prospects)
+            .columns('*', 'autoAssignedTo.fullName')
+            .where({ ID: prospectID });
+
+        if (!prospect) {
+            return req.error(404, `Prospect ${prospectID} not found`);
+        }
+
+        // Simulate AI processing with 3-second delay
+        await new Promise(resolve => setTimeout(resolve, 3000));
+
+        // Generate about text
+        const aboutText = generateAboutText(prospect);
+
+        // Update prospect with generated about text
+        await UPDATE(Prospects).set({
+            about: aboutText
+        }).where({ ID: prospectID });
+
+        // Fetch the updated prospect to return in response
+        const updatedProspect = await SELECT.one.from(Prospects)
+            .columns('*')
+            .where({ ID: prospectID });
+
+        return updatedProspect;
+    });
+
+    // Action: Bulk Import
+    this.on('bulkImport', 'Prospects', async (req) => {
+        const { prospects } = req.data;
+        
+        if (!prospects) {
+            return req.error(400, 'prospects parameter is required');
+        }
+
+        let prospectsArray;
+        try {
+            prospectsArray = JSON.parse(prospects);
+        } catch (e) {
+            return req.error(400, 'Invalid JSON format for prospects');
+        }
+
+        if (!Array.isArray(prospectsArray)) {
+            return req.error(400, 'prospects must be an array');
+        }
+
+        const created = [];
+        for (const prospectData of prospectsArray) {
+            const prospectScore = calculateProspectScoreFromData(prospectData);
+            const autoAssignedTo = await autoAssignProspect(prospectData);
+
+            // Parse contact info if it's a JSON string
+            let contactName = null, contactEmail = null, contactPhone = null;
+            if (prospectData.contactInfo) {
+                try {
+                    const contactDataParsed = typeof prospectData.contactInfo === 'string' 
+                        ? JSON.parse(prospectData.contactInfo) 
+                        : prospectData.contactInfo;
+                    contactName = contactDataParsed.name || null;
+                    contactEmail = contactDataParsed.email || null;
+                    contactPhone = contactDataParsed.phone || null;
+                } catch (e) {
+                    // If not JSON, leave as null
+                }
+            }
+            
+            const newProspect = await INSERT.into(Prospects).entries({
+                prospectName: prospectData.prospectName,
+                discoverySource: prospectData.discoverySource || 'Other',
+                discoveryDate: new Date().toISOString(),
+                location: prospectData.location || '',
+                businessType: prospectData.businessType || 'Retailer',
+                contactInfo: typeof prospectData.contactInfo === 'string' ? prospectData.contactInfo : JSON.stringify(prospectData.contactInfo || {}),
+                socialMediaLinks: prospectData.socialMediaLinks || '',
+                prospectScore: prospectScore,
+                autoAssignedTo_ID: autoAssignedTo,
+                discoveryMetadata: JSON.stringify(prospectData),
+                status: 'New',
+                address: prospectData.address || '',
+                city: prospectData.city || '',
+                state: prospectData.state || '',
+                country: prospectData.country || 'Malaysia',
+                postalCode: prospectData.postalCode || '',
+                // Populate parsed fields
+                contactName: contactName,
+                contactEmail: contactEmail,
+                contactPhone: contactPhone
+            });
+
+            created.push(newProspect.ID);
+        }
+
+        return req.reply({ 
+            message: `Successfully imported ${created.length} prospects`,
+            count: created.length,
+            prospectIDs: created
+        });
+    });
+
+    // Helper function: Calculate prospect score using mock AI algorithm
+    function calculateProspectScore(prospect) {
+        let score = 50; // Base score
+
+        // Business type scoring
+        const businessTypeScores = {
+            'Distributor': 25,
+            'Retailer': 20,
+            'E-commerce': 18,
+            'Salon': 15,
+            'Spa': 15,
+            'Kiosk': 10
+        };
+        score += businessTypeScores[prospect.businessType] || 10;
+
+        // Discovery source scoring
+        const sourceScores = {
+            'Lead Conversion': 20,
+            'Online Web': 12,
+            'Partnership': 15,
+            'Offline': 10,
+            'Other': 5
+        };
+        score += sourceScores[prospect.discoverySource] || 5;
+
+        // Social media presence bonus
+        if (prospect.socialMediaLinks && prospect.socialMediaLinks.length > 20) {
+            score += 5;
+        }
+
+        // Location bonus (if in major cities)
+        const majorCities = ['Kuala Lumpur', 'Petaling Jaya', 'Johor Bahru', 'Penang'];
+        if (majorCities.some(city => prospect.city && prospect.city.includes(city))) {
+            score += 5;
+        }
+
+        return Math.min(100, Math.max(0, score));
+    }
+
+    // Helper function: Calculate score from raw data
+    function calculateProspectScoreFromData(data) {
+        const prospect = {
+            businessType: data.businessType,
+            discoverySource: data.discoverySource,
+            socialMediaLinks: data.socialMediaLinks || '',
+            city: data.city || ''
+        };
+        return calculateProspectScore(prospect);
+    }
+
+    // Helper function: Auto-assign prospect based on territory/region
+    async function autoAssignProspect(prospectData) {
+        // Simple auto-assignment: find sales rep by region/city
+        const city = prospectData.city || '';
+        let region = 'Central'; // Default
+
+        if (city.includes('Johor') || city.includes('Melaka')) {
+            region = 'South';
+        } else if (city.includes('Penang') || city.includes('Ipoh')) {
+            region = 'North';
+        }
+
+        const salesRep = await SELECT.one.from(Users)
+            .where({ region: region, role: 'Sales Rep', status: 'Active' })
+            .orderBy('quota', 'desc');
+
+        return salesRep ? salesRep.ID : null;
+    }
+
+    // Helper function: Generate About text (Mock AI)
+    function generateAboutText(prospect) {
+        const notes = [];
+        
+        // Business Overview
+        if (prospect.businessType) {
+            notes.push(`• Business Type: ${prospect.businessType}`);
+        }
+        
+        // Location Information
+        if (prospect.location) {
+            notes.push(`• Location: ${prospect.location}`);
+        }
+        if (prospect.city) {
+            notes.push(`• City: ${prospect.city}`);
+        }
+        if (prospect.country) {
+            notes.push(`• Country: ${prospect.country}`);
+        }
+        
+        // Business Score & Potential
+        if (prospect.prospectScore) {
+            let scoreNote = `• Prospect Score: ${prospect.prospectScore}/100`;
+            if (prospect.prospectScore >= 80) {
+                scoreNote += ' (High Potential - Priority Prospect)';
+            } else if (prospect.prospectScore >= 65) {
+                scoreNote += ' (Good Potential - Follow Up Recommended)';
+            } else if (prospect.prospectScore >= 50) {
+                scoreNote += ' (Moderate Potential - Monitor Progress)';
+            } else {
+                scoreNote += ' (Low Potential - Standard Follow Up)';
+            }
+            notes.push(scoreNote);
+        }
+        
+        // Discovery Source
+        if (prospect.discoverySource) {
+            notes.push(`• Discovery Source: ${prospect.discoverySource}`);
+        }
+        
+        // Contact Information
+        if (prospect.contactInfo) {
+            notes.push(`• Contact: ${prospect.contactInfo}`);
+        }
+        
+        // Social Media Presence
+        if (prospect.socialMediaLinks) {
+            notes.push(`• Social Media: ${prospect.socialMediaLinks}`);
+        }
+        
+        // Status & Next Steps
+        if (prospect.status) {
+            let statusNote = `• Current Status: ${prospect.status}`;
+            if (prospect.status === 'New') {
+                statusNote += ' - Awaiting qualification and assignment';
+            } else if (prospect.status === 'Contacted') {
+                statusNote += ' - Initial contact made, follow-up required';
+            } else if (prospect.status === 'Qualified') {
+                statusNote += ' - Ready for opportunity creation';
+            } else if (prospect.status === 'Negotiating') {
+                statusNote += ' - Currently in negotiation phase';
+            } else if (prospect.status === 'In Review') {
+                statusNote += ' - Under review for final approval';
+            } else if (prospect.status === 'Converted') {
+                statusNote += ' - Successfully converted to opportunity';
+            }
+            notes.push(statusNote);
+        }
+        
+        // Assignment Information
+        if (prospect.autoAssignedTo && prospect.autoAssignedTo.fullName) {
+            notes.push(`• Assigned To: ${prospect.autoAssignedTo.fullName}`);
+        }
+        
+        // Business Insights
+        if (prospect.businessType === 'Salon' || prospect.businessType === 'Spa') {
+            notes.push(`• Business Focus: Professional beauty services and treatments`);
+        } else if (prospect.businessType === 'Retailer') {
+            notes.push(`• Business Focus: Beauty product retail and distribution`);
+        } else if (prospect.businessType === 'E-commerce') {
+            notes.push(`• Business Focus: Online beauty product sales`);
+        }
+        
+        // Recommendation
+        if (prospect.prospectScore >= 70) {
+            notes.push(`• Recommendation: High-value prospect - prioritize engagement and opportunity creation`);
+        } else if (prospect.prospectScore >= 50) {
+            notes.push(`• Recommendation: Moderate value - standard outreach and relationship building`);
+        }
+        
+        return notes.join('\n') || `• ${prospect.prospectName} is a beauty and wellness business with potential for partnership opportunities.`;
+    }
+}
+
+

@@ -1,21 +1,21 @@
 /**
- * UI Annotations for Channel Partner Discovery Service
+ * UI Annotations for Prospect Service
  * Defines List Report and Object Page layouts
  */
-using MerchantService from './merchant-service';
+using ProspectService from './prospect-service';
 
 // ============================================================================
-// Channel Partner Discovery List Report Annotations
+// Prospect List Report Annotations
 // ============================================================================
 
-annotate MerchantService.MerchantDiscoveries with @(
+annotate ProspectService.Prospects with @(
     UI: {
         // Selection Fields (Filter Bar)
         SelectionFields: [
             status,
             discoverySource,
             businessType,
-            merchantScore,
+            prospectScore,
             autoAssignedTo_ID,
             phase,
             priorityScore,
@@ -26,8 +26,8 @@ annotate MerchantService.MerchantDiscoveries with @(
         LineItem: [
             {
                 $Type: 'UI.DataField',
-                Value: merchantName,
-                Label: 'Channel Partner Name',
+                Value: prospectName,
+                Label: 'Prospect Name',
                 ![@UI.Importance]: #High
             },
             {
@@ -38,8 +38,8 @@ annotate MerchantService.MerchantDiscoveries with @(
             },
             {
                 $Type: 'UI.DataFieldForAnnotation',
-                Target: '@UI.DataPoint#MerchantScore',
-                Label: 'Channel Partner Score',
+                Target: '@UI.DataPoint#ProspectScore',
+                Label: 'Prospect Score',
                 ![@UI.Importance]: #High
             },
             {
@@ -89,29 +89,29 @@ annotate MerchantService.MerchantDiscoveries with @(
         ],
 
         // Data Points for Micro Charts
-        DataPoint#MerchantScore: {
-            Value: merchantScore,
-            Title: 'Channel Partner Score',
+        DataPoint#ProspectScore: {
+            Value: prospectScore,
+            Title: 'Prospect Score',
             TargetValue: 100,
             Visualization: #Progress
         },
 
         // Header Info (Object Page Header)
         HeaderInfo: {
-            TypeName: 'Channel Partner Discovery',
-            TypeNamePlural: 'Channel Partner Discoveries',
-            Title: {Value: merchantName},
+            TypeName: 'Prospect',
+            TypeNamePlural: 'Prospects',
+            Title: {Value: prospectName},
             Description: {Value: businessType},
-            ImageUrl: 'sap-icon://business-objects-experience',
-            TypeImageUrl: 'sap-icon://business-objects-experience'
+            ImageUrl: 'sap-icon://person-placeholder',
+            TypeImageUrl: 'sap-icon://person-placeholder'
         },
 
         // Header Facets (KPIs in Header)
         HeaderFacets: [
             {
                 $Type: 'UI.ReferenceFacet',
-                Target: '@UI.DataPoint#MerchantScore',
-                Label: 'Channel Partner Score'
+                Target: '@UI.DataPoint#ProspectScore',
+                Label: 'Prospect Score'
             },
             {
                 $Type: 'UI.ReferenceFacet',
@@ -124,8 +124,8 @@ annotate MerchantService.MerchantDiscoveries with @(
         Facets: [
             {
                 $Type: 'UI.CollectionFacet',
-                Label: 'Discovery Information',
-                ID: 'DiscoveryInfo',
+                Label: 'Prospect Information',
+                ID: 'ProspectInfo',
                 Facets: [
                     {
                         $Type: 'UI.ReferenceFacet',
@@ -175,12 +175,12 @@ annotate MerchantService.MerchantDiscoveries with @(
 
         FieldGroup#BasicInfo: {
             Data: [
-                {Value: merchantName},
+                {Value: prospectName},
                 {Value: businessType},
                 {
                     $Type: 'UI.DataField',
                     Value: status,
-                    Label: 'Phases'
+                    Label: 'Status'
                 },
                 {Value: discoveryDate}
             ]
@@ -190,7 +190,7 @@ annotate MerchantService.MerchantDiscoveries with @(
             Data: [
                 {Value: discoverySource},
                 {Value: location},
-                {Value: merchantScore}
+                {Value: prospectScore}
             ]
         },
 
@@ -285,18 +285,18 @@ annotate MerchantService.MerchantDiscoveries with @(
         Identification: [
             {
                 $Type: 'UI.DataFieldForAction',
-                Action: 'MerchantService.qualifyMerchant',
-                Label: 'Qualify Channel Partner'
+                Action: 'ProspectService.qualifyProspect',
+                Label: 'Qualify Prospect'
             },
             {
                 $Type: 'UI.DataFieldForAction',
-                Action: 'MerchantService.assignToSalesRep',
+                Action: 'ProspectService.assignToSalesRep',
                 Label: 'Assign to Sales Rep'
             },
             {
                 $Type: 'UI.DataFieldForAction',
-                Action: 'MerchantService.completeOnboarding',
-                Label: 'Complete Onboarding',
+                Action: 'ProspectService.createOpportunity',
+                Label: 'Create Opportunity',
                 ![@UI.Importance]: #High
             }
         ]
@@ -310,7 +310,7 @@ annotate MerchantService.MerchantDiscoveries with @(
 // Criticality Annotations for Status Colors
 // ============================================================================
 
-annotate MerchantService.MerchantDiscoveries with {
+annotate ProspectService.Prospects with {
     statusCriticality @UI.Hidden: true;
     phase @title: 'Phase';
     phaseCriticality @UI.Hidden: true;
@@ -325,8 +325,8 @@ annotate MerchantService.MerchantDiscoveries with {
 // Field-level Annotations
 // ============================================================================
 
-annotate MerchantService.MerchantDiscoveries with {
-    merchantName      @title: 'Channel Partner Name'
+annotate ProspectService.Prospects with {
+    prospectName      @title: 'Prospect Name'
                       @Common.FieldControl: #Mandatory
                       @UI.TextStyle: #Bold;
 
@@ -353,7 +353,7 @@ annotate MerchantService.MerchantDiscoveries with {
                           ValueListWithFixedValues: true
                       };
 
-    merchantScore     @title: 'Channel Partner Score'
+    prospectScore     @title: 'Prospect Score'
                       @Measures.Unit: '%';
 
     location          @title: 'Location';
@@ -380,19 +380,18 @@ annotate MerchantService.MerchantDiscoveries with {
 // Side Effects
 // ============================================================================
 
-annotate MerchantService.MerchantDiscoveries actions {
+annotate ProspectService.Prospects actions {
     generateAbout @Common.SideEffects: {
-        // Note: statusCriticality is a virtual field computed in after READ handler - not included to avoid polling loops
         TargetProperties: [
             'about',
-            'merchantScore'
+            'prospectScore'
         ]
     };
-    completeOnboarding @Common.SideEffects: {
-        // Note: statusCriticality, phase, phaseCriticality are virtual fields computed in after READ handler - not included to avoid polling loops
+    createOpportunity @Common.SideEffects: {
         TargetProperties: [
             'status'
         ]
     };
 }
+
 

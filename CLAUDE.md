@@ -9,7 +9,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **Tech Stack:**
 - Backend: SAP CAP v9 with CDS (Core Data Services)
 - Frontend: SAPUI5 v1.120 (Fiori Elements)
-- Database: SQLite (dev, in-memory), HANA (production)
+- Database: SQLite file-based (dev: `db.sqlite`), HANA (production)
 - Runtime: Node.js with Express
 - OData: V4 protocol
 
@@ -34,7 +34,7 @@ srv/
     ├── activity-service.cds & .js
     ├── product-service.cds & .js
     ├── workflow-service.cds & .js
-    ├── merchant-service.cds & .js
+    ├── prospect-service.cds & .js
     ├── marketing-service.cds & .js
     └── *-annotations.cds files (UI annotations for each service)
 
@@ -43,8 +43,8 @@ app/
 ├── leads/              # Lead Management (beautyleads.leads)
 ├── accounts/           # Account Management (beautyleads.accounts)
 ├── opportunities/      # Opportunity Management (beautyleads.opportunities)
-├── merchants/          # Merchant Discovery
-├── campaigns/          # Marketing Campaigns
+├── merchants/          # Merchant/Prospect Discovery (beautyleads.merchants)
+├── campaigns/          # Marketing Campaigns (beautyleads.campaigns)
 └── appconfig/          # Fiori Launchpad configuration
 ```
 
@@ -58,8 +58,11 @@ app/
 - `Products` - Product catalog (with trend scoring)
 - `Users` - System users (sales reps, managers)
 - `Approvals` - Discount and deal approval workflows
-- `MerchantDiscovery` - AI-discovered merchants from web scraping
+- `Prospects` - Qualified leads in sales pipeline (converted from Leads, can become Accounts/Opportunities)
 - `MarketingCampaigns` - Trend-driven marketing automation
+- `AccountRecommendations` - AI-generated recommendations for account growth
+- `AccountRiskAlerts` - AI-detected risk alerts for accounts
+- `CampaignCreators` - Influencers/creators assigned to marketing campaigns
 
 **Lead Entity** (namespace: `beauty.leads`):
 - `Leads` - Lead tracking with AI scoring and conversion to accounts
@@ -78,7 +81,7 @@ Each service follows this pattern:
 - `/activity/` - ActivityService
 - `/product/` - ProductService
 - `/workflow/` - WorkflowService
-- `/merchant/` - MerchantService
+- `/prospect/` - ProspectService
 - `/marketing/` - MarketingService
 
 ## Development Commands
@@ -89,11 +92,11 @@ npm run watch
 # Opens at http://localhost:4004/
 
 # Start with specific UI5 app open
-npm run watch-launchpad      # Overview dashboard
+npm run watch-launchpad      # Overview dashboard (index.html)
 npm run watch-leads          # Lead management app
 npm run watch-accounts       # Account management app
 npm run watch-opportunities  # Opportunity management app
-npm run watch-merchants      # Merchant discovery app
+npm run watch-merchants      # Merchant/Prospect discovery app
 npm run watch-campaigns      # Marketing campaigns app
 ```
 
@@ -191,11 +194,12 @@ this.on('convertToAccount', 'Leads', async (req) => {
 
 ### Database & Data Seeding
 
-- **Development**: In-memory SQLite (configured in `package.json` cds.requires)
+- **Development**: File-based SQLite (`db.sqlite` in project root, configured in `package.json` cds.requires)
 - **Production**: HANA database
 - CSV files in `db/data/` auto-seed on `cds watch`
-- File naming: `<namespace>-<EntityName>.csv` (e.g., `beauty.crm-Accounts.csv`)
+- File naming: `<namespace>-<EntityName>.csv` (e.g., `beauty.crm-Accounts.csv`, `beauty.crm-Prospects.csv`)
 - CAP auto-creates/updates schema on startup
+- Database file (`db.sqlite`) persists between server restarts
 
 ### Workspace Structure
 
@@ -212,9 +216,19 @@ This is an npm workspace monorepo:
 **Path**: `/lead/`
 **Key Features**:
 - Lead CRUD operations
-- `convertToAccount()` action - Creates Account + Contact from qualified lead
+- `convertToProspect()` action - Converts qualified lead to Prospect entity
 - `updateAIScore()` action - Recalculates AI scoring
 - Analytical views: `LeadsByStatus`, `LeadsBySource`, `HotLeads`
+
+### Prospect Service
+
+**Path**: `/prospect/`
+**Key Features**:
+- Prospect management (qualified leads ready for sales engagement)
+- Links to originating Lead via `convertedFromLead` association
+- Can be converted to Account or Opportunity entities
+- Tracks discovery source, contact info, and auto-assignment to sales reps
+- Status progression: New → Contacted → Qualified → Negotiating → In Review → Converted
 
 ### Account Service
 
@@ -224,6 +238,9 @@ This is an npm workspace monorepo:
 - Health scoring and risk assessment
 - Associated opportunities and activities
 - Account hierarchy (parent/child accounts)
+- AI-powered recommendations and risk alerts
+- Partner priority timeline tracking
+- Links to source Prospect via `sourceProspect` association
 
 ### Opportunity Service
 
@@ -233,6 +250,7 @@ This is an npm workspace monorepo:
 - Win probability calculation
 - Approval workflow integration
 - Multi-product opportunities via OpportunityProducts junction table
+- Links to source Prospect via `sourceProspect` association
 
 ## Common Issues & Troubleshooting
 

@@ -114,9 +114,9 @@
             </button>
             <div class="beauty-nav-menu" id="navMenu">
                 <a href="/beautyleads.leads/index.html" class="beauty-nav-item active">Leads</a>
-                <a href="/beautyleads.merchants/index.html" class="beauty-nav-item">Channel Partner Onboarding</a>
-                <a href="/beautyleads.accounts/index.html" class="beauty-nav-item">Accounts</a>
+                <a href="/beautyleads.prospects/index.html" class="beauty-nav-item">Prospects</a>
                 <a href="/beautyleads.opportunities/index.html" class="beauty-nav-item">Opportunities</a>
+                <a href="/beautyleads.accounts/index.html" class="beauty-nav-item">Accounts</a>
                 <a href="/beautyleads.campaigns/index.html" class="beauty-nav-item">Marketing Campaigns</a>
             </div>
         </div>
@@ -210,7 +210,7 @@
             }
         })();
 
-        // Monitor OData requests for convertToAccount action
+        // Monitor OData requests for convertToProspect action
         (function() {
             console.log("=== Lead Conversion Monitor Active ===");
             
@@ -219,7 +219,6 @@
             var originalXHRSend = XMLHttpRequest.prototype.send;
             
             XMLHttpRequest.prototype.open = function(method, url) {
-                console.log("XHR request:", method, url);
                 this._url = url; // Store URL for later use
                 return originalXHROpen.apply(this, arguments);
             };
@@ -228,55 +227,46 @@
                 var xhr = this;
                 var url = this._url;
                 
-                // Check if this is a batch request with convertToAccount
-                if (url && url.indexOf('$batch') >= 0 && body && body.indexOf && body.indexOf('convertToAccount') >= 0) {
-                    console.log("=== CONVERT TO ACCOUNT BATCH REQUEST DETECTED ===");
-                    console.log("Batch body:", body);
+                // Check if this is a batch request with convertToProspect
+                if (url && url.indexOf('$batch') >= 0 && body && body.indexOf && body.indexOf('convertToProspect') >= 0) {
+                    console.log("=== CONVERT TO PROSPECT BATCH REQUEST DETECTED ===");
                     
                     this.addEventListener('load', function() {
                         console.log("=== BATCH RESPONSE RECEIVED ===");
-                        console.log("Response text:", this.responseText);
                         
                         try {
-                            // Parse batch response
                             var responseText = this.responseText;
                             
-                            // Look for merchantDiscoveryID in the batch response (for navigation to onboarding)
-                            var merchantIDMatch = responseText.match(/"merchantDiscoveryID"\s*:\s*"([^"]+)"/);
+                            // Look for prospectID in the batch response
+                            var prospectIDMatch = responseText.match(/"prospectID"\s*:\s*"([^"]+)"/);
                             
-                            if (merchantIDMatch && merchantIDMatch[1]) {
-                                var merchantDiscoveryID = merchantIDMatch[1];
-                                console.log("=== MERCHANT DISCOVERY ID FOUND IN BATCH ===", merchantDiscoveryID);
+                            if (prospectIDMatch && prospectIDMatch[1]) {
+                                var prospectID = prospectIDMatch[1];
+                                console.log("=== PROSPECT ID FOUND IN BATCH ===", prospectID);
                                 
                                 setTimeout(function() {
-                                    var onboardingUrl = "/beautyleads.merchants/index.html#/MerchantDiscoveries(" + merchantDiscoveryID + ")";
-                                    console.log("=== NAVIGATING TO CHANNEL PARTNER ONBOARDING ===", onboardingUrl);
-                                    window.location.href = onboardingUrl;
+                                    var prospectUrl = "/beautyleads.prospects/index.html#/Prospects(" + prospectID + ")";
+                                    console.log("=== NAVIGATING TO PROSPECT ===", prospectUrl);
+                                    window.location.href = prospectUrl;
                                 }, 2000);
-                            } else {
-                                console.warn("No merchantDiscoveryID found in batch response");
                             }
                         } catch(e) {
                             console.error("Error parsing batch response:", e);
                         }
                     });
-                } else if (url && url.indexOf('convertToAccount') >= 0) {
-                    console.log("=== CONVERT TO ACCOUNT DIRECT REQUEST DETECTED ===");
+                } else if (url && url.indexOf('convertToProspect') >= 0) {
+                    console.log("=== CONVERT TO PROSPECT DIRECT REQUEST DETECTED ===");
                     
                     this.addEventListener('load', function() {
-                        console.log("XHR response:", this.responseText);
                         try {
                             var data = JSON.parse(this.responseText);
-                            console.log("Parsed data:", data);
+                            var prospectID = data.prospectID || (data.value && data.value.prospectID);
                             
-                            var merchantDiscoveryID = data.merchantDiscoveryID || (data.value && data.value.merchantDiscoveryID);
-                            
-                            if (merchantDiscoveryID) {
-                                console.log("Merchant Discovery ID found:", merchantDiscoveryID);
+                            if (prospectID) {
+                                console.log("Prospect ID found:", prospectID);
                                 setTimeout(function() {
-                                    var onboardingUrl = "/beautyleads.merchants/index.html#/MerchantDiscoveries(" + merchantDiscoveryID + ")";
-                                    console.log("Navigating to:", onboardingUrl);
-                                    window.location.href = onboardingUrl;
+                                    var prospectUrl = "/beautyleads.prospects/index.html#/Prospects(" + prospectID + ")";
+                                    window.location.href = prospectUrl;
                                 }, 2000);
                             }
                         } catch(e) {
@@ -291,54 +281,20 @@
             // Intercept fetch API
             var originalFetch = window.fetch;
             window.fetch = function(url, options) {
-                console.log("Fetch request:", url);
-                
                 return originalFetch.apply(this, arguments).then(function(response) {
-                    // Check if this is a convertToAccount action
-                    if (url && typeof url === 'string' && url.indexOf('convertToAccount') >= 0) {
-                        console.log("=== CONVERT TO ACCOUNT ACTION DETECTED ===");
+                    // Check if this is a convertToProspect action
+                    if (url && typeof url === 'string' && url.indexOf('convertToProspect') >= 0) {
+                        console.log("=== CONVERT TO PROSPECT ACTION DETECTED ===");
                         
-                        // Clone the response to read it
                         var clonedResponse = response.clone();
                         clonedResponse.json().then(function(data) {
-                            console.log("Action response data:", data);
+                            var prospectID = data.prospectID || (data.value && data.value.prospectID);
                             
-                            var merchantDiscoveryID = data.merchantDiscoveryID || (data.value && data.value.merchantDiscoveryID);
-                            
-                            if (merchantDiscoveryID) {
-                                console.log("Merchant Discovery ID found:", merchantDiscoveryID);
-                                console.log("Navigating to onboarding...");
-                                
+                            if (prospectID) {
+                                console.log("Prospect ID found:", prospectID);
                                 setTimeout(function() {
-                                    var onboardingUrl = "/beautyleads.merchants/index.html#/MerchantDiscoveries(" + merchantDiscoveryID + ")";
-                                    console.log("Navigation URL:", onboardingUrl);
-                                    window.location.href = onboardingUrl;
-                                }, 2000);
-                            } else {
-                                console.log("No merchantDiscoveryID in response, trying to get from context");
-                                
-                                // Try to get from UI5 model
-                                setTimeout(function() {
-                                    try {
-                                        sap.ui.require(["sap/ui/core/Core"], function(Core) {
-                                            var oView = Core.byId("beautyleads.leads::LeadsObjectPage");
-                                            if (oView) {
-                                                var oContext = oView.getBindingContext();
-                                                if (oContext) {
-                                                    var sMerchantDiscoveryID = oContext.getProperty("merchantDiscovery_ID");
-                                                    console.log("merchantDiscovery_ID from context:", sMerchantDiscoveryID);
-                                                    
-                                    if (sMerchantDiscoveryID) {
-                                        var onboardingUrl = "/beautyleads.merchants/index.html#/MerchantDiscoveries(" + sMerchantDiscoveryID + ")";
-                                        console.log("Navigation URL:", onboardingUrl);
-                                        window.location.href = onboardingUrl;
-                                    }
-                                                }
-                                            }
-                                        });
-                                    } catch(e) {
-                                        console.error("Error getting context:", e);
-                                    }
+                                    var prospectUrl = "/beautyleads.prospects/index.html#/Prospects(" + prospectID + ")";
+                                    window.location.href = prospectUrl;
                                 }, 2000);
                             }
                         }).catch(function(err) {
@@ -350,52 +306,16 @@
                 });
             };
             
-            console.log("Fetch and XHR interceptors installed");
+            console.log("Fetch and XHR interceptors installed for convertToProspect");
             
-            // Log when button is clicked - check status IMMEDIATELY to avoid race condition
+            // Log when Convert button is clicked
             document.addEventListener('click', function(e) {
                 var target = e.target;
                 var text = target.innerText || target.textContent;
                 if (text && text.indexOf('Convert') >= 0) {
-                    console.log("=== BUTTON CLICKED ===", text);
-                    console.log("Button element:", target);
-                    
-                    // Check lead status IMMEDIATELY (not after timeout to avoid race condition)
-                    try {
-                        sap.ui.require(["sap/ui/core/Core"], function(Core) {
-                            var allViews = Core.byId("beautyleads.leads::LeadsObjectPage");
-                            if (allViews) {
-                                var context = allViews.getBindingContext();
-                                if (context) {
-                                    var leadData = context.getObject();
-                                    console.log("Lead data BEFORE action:", leadData);
-                                    console.log("Lead status:", leadData.status);
-                                    console.log("Lead already converted:", leadData.converted);
-                                    console.log("Lead ID:", leadData.ID);
-                                    
-                                    if (leadData.status !== 'Qualified') {
-                                        console.warn("⚠️ Lead must be Qualified before conversion. Current status:", leadData.status);
-                                    }
-                                    if (leadData.converted) {
-                                        console.warn("⚠️ Lead already converted!");
-                                    }
-                                }
-                            }
-                        });
-                    } catch(err) {
-                        console.error("Error checking lead status:", err);
-                    }
+                    console.log("=== CONVERT BUTTON CLICKED ===", text);
                 }
             }, true);
-            
-            // Catch all errors
-            window.addEventListener('error', function(e) {
-                console.error("=== GLOBAL ERROR ===", e.message, e.error);
-            });
-            
-            window.addEventListener('unhandledrejection', function(e) {
-                console.error("=== UNHANDLED PROMISE REJECTION ===", e.reason);
-            });
         })();
     </script>
 </body>

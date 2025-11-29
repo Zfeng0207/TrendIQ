@@ -6,22 +6,46 @@
 const cds = require('@sap/cds');
 
 module.exports = async function() {
-    const { Leads, Accounts, Contacts } = this.entities;
+    const { Leads } = this.entities;
 
-    // Action: Generate AI Summary
-    this.on('generateAISummary', 'Leads', async (req) => {
-        // This action is handled in the UI controller to show toast
-        // Return success - the actual toast will be shown in the UI controller
+    // Helper function to get lead data from either active or draft entity
+    async function getLeadData(leadID, isActiveEntity) {
+        if (isActiveEntity === false) {
+            // Read from draft table
+            const draftLead = await SELECT.one.from('LeadService.Leads.drafts').where({ ID: leadID });
+            return draftLead;
+        } else {
+            // Read from active table
+            return await SELECT.one.from(Leads).where({ ID: leadID });
+        }
+    }
+
+    // Helper function to update lead in either active or draft entity
+    async function updateLeadData(leadID, isActiveEntity, data) {
+        if (isActiveEntity === false) {
+            // Update draft table
+            await UPDATE('LeadService.Leads.drafts').set(data).where({ ID: leadID });
+        } else {
+            // Update active table
+            await UPDATE(Leads).set(data).where({ ID: leadID });
+        }
+    }
+
+    // Action: Generate AI Summary (works on both active and draft)
+    this.on('generateAISummary', async (req) => {
         return req.reply({ 
             success: true,
             message: 'AI Summary generated'
         });
     });
 
-    // Action: Convert Lead to Account
-    this.on('convertToAccount', 'Leads', async (req) => {
+    // Action: Convert Lead to Prospect (works on both active and draft)
+    this.on('convertToProspect', async (req) => {
         const leadID = req.params[0].ID;
-        const lead = await SELECT.one.from(Leads).where({ ID: leadID });
+        const isActiveEntity = req.params[0].IsActiveEntity;
+        
+        // Get lead data from appropriate source
+        const lead = await getLeadData(leadID, isActiveEntity);
 
         if (!lead) {
             return req.error(404, `Lead ${leadID} not found`);
@@ -35,34 +59,16 @@ module.exports = async function() {
             return req.warn(409, 'Lead should be qualified before conversion');
         }
 
-        // Generate new IDs
-        const newAccountID = cds.utils.uuid();
-        const merchantDiscoveryID = cds.utils.uuid();
+        // Generate new ID for Prospect
+        const prospectID = cds.utils.uuid();
 
-        // Create new account from lead
-        await INSERT.into(Accounts).entries({
-            ID: newAccountID,
-            accountName: lead.outletName,
-            accountType: 'Salon', // Default to Salon as it is a valid enum value
-            status: 'Active',
-            address: lead.address,
-            city: lead.city,
-            state: lead.state,
-            country: lead.country,
-            postalCode: lead.postalCode,
-            website: lead.source === 'Web' ? lead.sourceDetail : null,
-            phone: lead.contactPhone,
-            accountOwner_ID: lead.owner_ID,
-            sourceMerchantDiscovery_ID: merchantDiscoveryID
-        });
-
-        // Create MerchantDiscovery record for Channel Partner Onboarding
-        const { MerchantDiscovery } = cds.entities('beauty.crm');
-        await INSERT.into(MerchantDiscovery).entries({
-            ID: merchantDiscoveryID,
-            merchantName: lead.outletName,
+        // Create Prospect record from Lead data
+        const { Prospects } = cds.entities('beauty.crm');
+        await INSERT.into(Prospects).entries({
+            ID: prospectID,
+            prospectName: lead.outletName,
             about: lead.notes || '',
-            discoverySource: lead.source === 'Web' ? 'Online Web' : 'Other',
+            discoverySource: 'Lead Conversion',
             discoveryDate: new Date().toISOString(),
             location: [lead.address, lead.city, lead.state, lead.country].filter(Boolean).join(', '),
             businessType: 'Salon', // Default to Salon
@@ -72,7 +78,7 @@ module.exports = async function() {
                 phone: lead.contactPhone
             }),
             socialMediaLinks: lead.source === 'Instagram' ? lead.sourceDetail : '',
-            merchantScore: lead.aiScore || 0,
+            prospectScore: lead.aiScore || 0,
             autoAssignedTo_ID: lead.owner_ID,
             discoveryMetadata: JSON.stringify({
                 convertedFromLeadID: leadID,
@@ -82,9 +88,8 @@ module.exports = async function() {
                 aiScore: lead.aiScore,
                 sentimentScore: lead.sentimentScore
             }),
-            status: 'Onboarding', // Set to Onboarding for channel partner flow
-            convertedToLead_ID: leadID,
-            convertedToAccount_ID: newAccountID,
+            status: 'New',
+            convertedFromLead_ID: leadID,
             address: lead.address,
             city: lead.city,
             state: lead.state,
@@ -102,45 +107,39 @@ module.exports = async function() {
             sentimentScore: lead.sentimentScore
         });
 
-        // Create contact from lead if contact information exists
-        if (lead.contactName || lead.contactEmail) {
-            const nameParts = (lead.contactName || '').split(' ');
-            await INSERT.into(Contacts).entries({
-                account_ID: newAccountID,
-                firstName: nameParts[0] || '',
-                lastName: nameParts.slice(1).join(' ') || '',
-                fullName: lead.contactName,
-                email: lead.contactEmail,
-                phone: lead.contactPhone,
-                isPrimary: true,
-                status: 'Active',
-                owner_ID: lead.owner_ID
-            });
-        }
-
-        // Update lead as converted
-        await UPDATE(Leads).set({
+        // Update lead as converted (in both draft and active if needed)
+        const updateData = {
             converted: true,
             convertedDate: new Date().toISOString(),
-            convertedTo_ID: newAccountID,
-            merchantDiscovery_ID: merchantDiscoveryID,
+            prospect_ID: prospectID,
             status: 'Converted'
-        }).where({ ID: leadID });
+        };
+        
+        await updateLeadData(leadID, isActiveEntity, updateData);
+        
+        // Also update active entity if working on draft
+        if (isActiveEntity === false) {
+            try {
+                await UPDATE(Leads).set(updateData).where({ ID: leadID });
+            } catch (e) {
+                // Active entity might not exist yet, ignore
+            }
+        }
 
-        console.log('Lead converted successfully. Account ID:', newAccountID);
-        console.log('Merchant Discovery ID:', merchantDiscoveryID);
-        // Return the merchant discovery ID for redirect to onboarding page
+        console.log('Lead converted to Prospect successfully. Prospect ID:', prospectID);
         return { 
-            message: 'Lead converted successfully', 
-            accountID: newAccountID,
-            merchantDiscoveryID: merchantDiscoveryID 
+            message: 'Lead converted to Prospect successfully', 
+            prospectID: prospectID 
         };
     });
 
-    // Action: Qualify Lead
-    this.on('qualifyLead', 'Leads', async (req) => {
+    // Action: Qualify Lead (works on both active and draft)
+    this.on('qualifyLead', async (req) => {
         const leadID = req.params[0].ID;
-        const lead = await SELECT.one.from(Leads).where({ ID: leadID });
+        const isActiveEntity = req.params[0].IsActiveEntity;
+        
+        // Get lead data from appropriate source
+        const lead = await getLeadData(leadID, isActiveEntity);
 
         if (!lead) {
             return req.error(404, `Lead ${leadID} not found`);
@@ -154,18 +153,32 @@ module.exports = async function() {
             return req.error(400, 'Cannot qualify a converted lead');
         }
 
-        await UPDATE(Leads).set({
+        const updateData = {
             status: 'Qualified',
             leadQuality: 'Hot'
-        }).where({ ID: leadID });
+        };
+        
+        await updateLeadData(leadID, isActiveEntity, updateData);
+        
+        // Also update active entity if working on draft
+        if (isActiveEntity === false) {
+            try {
+                await UPDATE(Leads).set(updateData).where({ ID: leadID });
+            } catch (e) {
+                // Active entity might not exist yet, ignore
+            }
+        }
 
         return req.reply({ message: 'Lead qualified successfully' });
     });
 
-    // Action: Update AI Score
-    this.on('updateAIScore', 'Leads', async (req) => {
+    // Action: Update AI Score (works on both active and draft)
+    this.on('updateAIScore', async (req) => {
         const leadID = req.params[0].ID;
-        const lead = await SELECT.one.from(Leads).where({ ID: leadID });
+        const isActiveEntity = req.params[0].IsActiveEntity;
+        
+        // Get lead data from appropriate source
+        const lead = await getLeadData(leadID, isActiveEntity);
 
         if (!lead) {
             return req.error(404, `Lead ${leadID} not found`);
@@ -178,16 +191,18 @@ module.exports = async function() {
         const aiScore = calculateLeadScore(lead);
         const sentiment = calculateSentiment(lead);
 
-        await UPDATE(Leads).set({
+        const updateData = {
             aiScore: aiScore.score,
             sentimentScore: sentiment.score,
             sentimentLabel: sentiment.label,
             trendScore: calculateTrendScore(lead),
             recommendedAction: getRecommendedAction(lead, aiScore.score)
-        }).where({ ID: leadID });
+        };
+        
+        await updateLeadData(leadID, isActiveEntity, updateData);
         
         // Return the updated entity for FE Side Effects
-        const updatedLead = await SELECT.one.from(Leads).where({ ID: leadID });
+        const updatedLead = await getLeadData(leadID, isActiveEntity);
         return updatedLead;
     });
 

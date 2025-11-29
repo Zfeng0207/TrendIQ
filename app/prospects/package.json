@@ -1,7 +1,7 @@
 {
-  "name": "merchants",
+  "name": "prospects",
   "version": "1.0.0",
-  "description": "Channel Partner Onboarding Application",
+  "description": "Prospects Management Application",
   "keywords": [
     "ui5",
     "fiori",
@@ -9,13 +9,13 @@
   ],
   "main": "webapp/index.html",
   "scripts": {
-    "start": "fiori run --open \"test/flpSandbox.html?sap-ui-xx-viewCache=false#beautyleadsmerchants-manage\"",
-    "start-local": "fiori run --config ./ui5-local.yaml --open \"test/flpSandbox.html?sap-ui-xx-viewCache=false#beautyleadsmerchants-manage\"",
+    "start": "fiori run --open \"test/flpSandbox.html?sap-ui-xx-viewCache=false#beautyleadsprospects-manage\"",
+    "start-local": "fiori run --config ./ui5-local.yaml --open \"test/flpSandbox.html?sap-ui-xx-viewCache=false#beautyleadsprospects-manage\"",
     "build": "ui5 build --config=ui5.yaml --clean-dest --dest dist",
     "deploy": "fiori verify",
     "deploy-config": "fiori add deploy-config",
     "start-noflp": "fiori run --open \"index.html?sap-ui-xx-viewCache=false\"",
-    "start-mock": "fiori run --open \"test/flpSandbox.html?sap-ui-xx-viewCache=false#beautyleadsmerchants-manage\" --config ./ui5-mock.yaml"
+    "start-mock": "fiori run --open \"test/flpSandbox.html?sap-ui-xx-viewCache=false#beautyleadsprospects-manage\" --config ./ui5-mock.yaml"
   },
   "sapuxLayer": "CUSTOMER_BASE",
   "devDependencies": {
