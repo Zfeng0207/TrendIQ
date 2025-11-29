@@ -1,0 +1,27 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core">
+    <SelectDialog
+        id="assignSalesRepDialog"
+        title="Assign to Sales Rep"
+        noDataText="No sales representatives found"
+        search=".onSalesRepDialogSearch"
+        confirm=".onSalesRepDialogConfirm"
+        cancel=".onSalesRepDialogCancel"
+        items="{
+            path: '/Users',
+            filters: [
+                { path: 'role', operator: 'EQ', value1: 'Sales Rep' },
+                { path: 'status', operator: 'EQ', value1: 'Active' }
+            ],
+            sorter: { path: 'fullName', descending: false }
+        }">
+        <StandardListItem
+            title="{fullName}"
+            description="{territory} - {region}"
+            info="{email}"
+            icon="sap-icon://employee"
+            type="Active"/>
+    </SelectDialog>
+</core:FragmentDefinition>
+

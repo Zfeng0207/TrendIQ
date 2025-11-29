@@ -311,15 +311,160 @@ module.exports = async function() {
     });
 
     // Action: Initiate AI Meeting
-    // Note: This action is intercepted in the UI controller, but we keep it for compatibility
+    // Generates an AI-powered meeting script for the prospect
     this.on('initiateAIMeeting', 'Prospects', async (req) => {
-        // This should be intercepted by the UI, but if it reaches here, return success
-        // The UI controller will handle showing the toast
-        return req.reply({ 
-            success: true,
-            message: 'AI Meeting Initiator - handled in UI'
-        });
+        const prospectID = req.params[0].ID;
+        const prospect = await SELECT.one.from(Prospects)
+            .columns('*', 'autoAssignedTo.fullName')
+            .where({ ID: prospectID });
+
+        if (!prospect) {
+            return req.error(404, `Prospect ${prospectID} not found`);
+        }
+
+        // Simulate AI processing with 2-second delay
+        await new Promise(resolve => setTimeout(resolve, 2000));
+
+        // Generate meeting script based on prospect data
+        const meetingScript = generateMeetingScript(prospect);
+        
+        return meetingScript;
     });
+
+    // Helper function: Generate AI Meeting Script
+    function generateMeetingScript(prospect) {
+        const prospectName = prospect.prospectName || 'the prospect';
+        const businessType = prospect.businessType || 'business';
+        const discoverySource = prospect.discoverySource || 'referral';
+        const location = prospect.city || prospect.location || 'the area';
+        const score = prospect.prospectScore || 50;
+        
+        // Parse contact info if available
+        let contactName = '';
+        let contactEmail = '';
+        if (prospect.contactInfo) {
+            try {
+                const contactData = JSON.parse(prospect.contactInfo);
+                contactName = contactData.name || '';
+                contactEmail = contactData.email || '';
+            } catch (e) {
+                // Ignore parsing errors
+            }
+        }
+        
+        // Generate meeting script sections
+        const sections = [];
+        
+        // Opening
+        sections.push("📋 AI MEETING SCRIPT FOR: " + prospectName.toUpperCase());
+        sections.push("━".repeat(50));
+        sections.push("");
+        
+        // Pre-Meeting Preparation
+        sections.push("🎯 PRE-MEETING PREPARATION");
+        sections.push("─".repeat(30));
+        sections.push("• Research " + prospectName + "'s current product lineup");
+        sections.push("• Review their social media presence and recent posts");
+        sections.push("• Prepare product samples relevant to " + businessType + " operations");
+        sections.push("• Check competitor products they may be carrying");
+        sections.push("");
+        
+        // Meeting Agenda
+        sections.push("📅 SUGGESTED MEETING AGENDA (45 mins)");
+        sections.push("─".repeat(30));
+        sections.push("1. Introduction & Rapport Building (5 mins)");
+        sections.push("2. Understanding Their Business Needs (10 mins)");
+        sections.push("3. Product Presentation (15 mins)");
+        sections.push("4. Addressing Concerns & Questions (10 mins)");
+        sections.push("5. Next Steps & Close (5 mins)");
+        sections.push("");
+        
+        // Opening Script
+        sections.push("💬 OPENING SCRIPT");
+        sections.push("─".repeat(30));
+        if (contactName) {
+            sections.push("\"Good [morning/afternoon], " + contactName + "! Thank you for taking the time to meet with me today.");
+        } else {
+            sections.push("\"Good [morning/afternoon]! Thank you for taking the time to meet with me today.");
+        }
+        sections.push("I understand " + prospectName + " is a " + businessType + " in " + location + ".");
+        
+        if (discoverySource === 'Lead Conversion') {
+            sections.push("I've been looking forward to this meeting since we first connected through our lead program.\"");
+        } else if (discoverySource === 'Partnership') {
+            sections.push("Our mutual partner spoke highly of your business, and I'm excited to explore how we can work together.\"");
+        } else {
+            sections.push("I've heard great things about your business and I'm excited to explore how we can work together.\"");
+        }
+        sections.push("");
+        
+        // Key Talking Points
+        sections.push("🔑 KEY TALKING POINTS");
+        sections.push("─".repeat(30));
+        
+        if (businessType === 'Salon' || businessType === 'Spa') {
+            sections.push("• Discuss professional-grade products for treatments");
+            sections.push("• Highlight training and certification programs available");
+            sections.push("• Present exclusive salon/spa pricing tiers");
+            sections.push("• Mention marketing support for service promotions");
+        } else if (businessType === 'Retailer' || businessType === 'E-commerce') {
+            sections.push("• Present retail margin opportunities");
+            sections.push("• Discuss shelf presence and POP display options");
+            sections.push("• Highlight consumer marketing campaigns");
+            sections.push("• Explain dropship or consignment options if applicable");
+        } else if (businessType === 'Distributor') {
+            sections.push("• Present territory exclusivity options");
+            sections.push("• Discuss volume-based pricing tiers");
+            sections.push("• Explain logistics and fulfillment support");
+            sections.push("• Highlight B2B marketing materials available");
+        } else {
+            sections.push("• Present product portfolio overview");
+            sections.push("• Discuss partnership benefits and pricing");
+            sections.push("• Highlight support and marketing materials");
+            sections.push("• Explain ordering and fulfillment process");
+        }
+        sections.push("");
+        
+        // Questions to Ask
+        sections.push("❓ DISCOVERY QUESTIONS TO ASK");
+        sections.push("─".repeat(30));
+        sections.push("• \"What beauty brands are you currently carrying?\"");
+        sections.push("• \"What challenges are you facing with your current suppliers?\"");
+        sections.push("• \"What are your customers asking for that you can't provide?\"");
+        sections.push("• \"What's your typical order volume and frequency?\"");
+        sections.push("• \"How do you prefer to receive marketing support?\"");
+        sections.push("");
+        
+        // Closing Script
+        sections.push("✅ CLOSING SCRIPT");
+        sections.push("─".repeat(30));
+        sections.push("\"Based on what we've discussed today, I believe our partnership could really benefit " + prospectName + ".");
+        
+        if (score >= 70) {
+            sections.push("Given your business profile, I'd like to offer you our Premium Partner package.");
+            sections.push("Can we schedule a follow-up meeting to finalize the partnership details?\"");
+        } else if (score >= 50) {
+            sections.push("I think our Standard Partnership program would be a great fit to start.");
+            sections.push("Would you like me to prepare a proposal for your review?\"");
+        } else {
+            sections.push("Let me put together some information and samples for you to review.");
+            sections.push("Can I follow up with you next week to discuss further?\"");
+        }
+        sections.push("");
+        
+        // Follow-up Actions
+        sections.push("📌 POST-MEETING FOLLOW-UP");
+        sections.push("─".repeat(30));
+        sections.push("• Send thank you email within 24 hours");
+        sections.push("• Prepare and send proposal/quote within 3 business days");
+        sections.push("• Schedule follow-up call for next week");
+        sections.push("• Update CRM with meeting notes and next steps");
+        if (contactEmail) {
+            sections.push("• Primary contact for follow-up: " + contactEmail);
+        }
+        
+        return sections.join('\n');
+    }
 
     // Action: Create Opportunity from Prospect
     this.on('createOpportunity', 'Prospects', async (req) => {
@@ -334,21 +479,43 @@ module.exports = async function() {
             return req.warn(409, 'This prospect has already been converted to an opportunity');
         }
 
-        // Create new opportunity from prospect data
+        // Get input data from request body (from custom dialog)
+        let inputData = req.data || {};
+        console.log('[Create Opportunity] Received data:', JSON.stringify(inputData));
+
+        // Generate UUID for the new opportunity
+        const opportunityID = cds.utils.uuid();
+
+        // Create new opportunity from dialog data + prospect data
         const opportunityData = {
-            name: `${prospect.prospectName} - Opportunity`,
-            description: `Opportunity created from prospect: ${prospect.prospectName}`,
+            ID: opportunityID,
+            // Use dialog data if provided, otherwise generate from prospect
+            name: inputData.name || `${prospect.prospectName} - Opportunity`,
+            description: inputData.description || `Opportunity created from prospect: ${prospect.prospectName}`,
             sourceProspect_ID: prospectID,
-            stage: 'Prospecting',
-            probability: prospect.prospectScore || 50,
-            amount: prospect.estimatedValue || 0,
+            // Pipeline data
+            stage: inputData.stage || 'Prospecting',
+            probability: inputData.probability ?? prospect.prospectScore ?? 50,
+            // Financial data
+            amount: inputData.amount ?? prospect.estimatedValue ?? 0,
             currency: 'MYR',
-            expectedRevenue: prospect.estimatedValue || 0,
-            closeDate: getExpectedCloseDate()
+            expectedRevenue: inputData.expectedRevenue ?? prospect.estimatedValue ?? 0,
+            closeDate: inputData.closeDate || getExpectedCloseDate(),
+            // Assignment
+            owner_ID: inputData.owner_ID || prospect.autoAssignedTo_ID || null,
+            // Strategy & Competition
+            competitors: inputData.competitors || null,
+            winStrategy: inputData.winStrategy || null,
+            // Notes
+            notes: inputData.notes || null,
+            // AI Fields (can be calculated later)
+            aiWinScore: prospect.aiScore || null,
+            aiRecommendation: null
         };
 
-        const result = await INSERT.into(Opportunities).entries(opportunityData);
-        const opportunityID = result.req.data.ID;
+        console.log('[Create Opportunity] Creating with data:', JSON.stringify(opportunityData, null, 2));
+
+        await INSERT.into(Opportunities).entries(opportunityData);
 
         // Update prospect status and link to opportunity
         await UPDATE(Prospects).set({
@@ -356,8 +523,8 @@ module.exports = async function() {
             convertedToOpportunity_ID: opportunityID
         }).where({ ID: prospectID });
 
-        console.log('Opportunity created. Prospect ID:', prospectID);
-        console.log('Opportunity ID:', opportunityID);
+        console.log('[Create Opportunity] Success! Prospect ID:', prospectID);
+        console.log('[Create Opportunity] Opportunity ID:', opportunityID);
 
         return { 
             message: 'Opportunity created successfully', 

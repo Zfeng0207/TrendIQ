@@ -159,30 +159,20 @@
             "settings": {
               "editableHeaderContent": true,
               "contextPath": "/Prospects",
-              "navigation": {
-                "convertedFromLead": {
-                  "detail": {
-                    "route": "LeadsObjectPage",
-                    "navigationProperty": "convertedFromLead"
-                  }
-                }
-              },
               "controlConfiguration": {
                 "@com.sap.vocabularies.UI.v1.Identification": {
                   "actions": {
                     "DataFieldForAction::ProspectService.initiateAIMeeting": {
                       "visible": false
                     },
+                    "DataFieldForAction::ProspectService.assignToSalesRep": {
+                      "press": "beautyleads.prospects.ext.actions.AssignSalesRepAction.onAssignToSalesRep"
+                    },
                     "CustomAIMeeting": {
                       "press": "beautyleads.prospects.ext.actions.AIMeetingActions.onAIMeetingInitiator",
                       "text": "AI Meeting Initiator",
                       "visible": true,
-                      "enabled": true,
-                      "type": "Emphasized",
-                      "position": {
-                        "placement": "After",
-                        "anchor": "DataFieldForAction::ProspectService.assignToSalesRep"
-                      }
+                      "enabled": true
                     }
                   }
                 }

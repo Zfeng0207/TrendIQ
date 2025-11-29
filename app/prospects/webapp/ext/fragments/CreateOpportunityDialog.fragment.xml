@@ -1,0 +1,168 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:f="sap.ui.layout.form"
+    xmlns:l="sap.ui.layout">
+
+    <Dialog
+        id="createOpportunityDialog"
+        title="Create Opportunity"
+        contentWidth="700px"
+        contentHeight="auto"
+        stretch="{device>/system/phone}"
+        class="sapUiContentPadding">
+        
+        <content>
+            <VBox class="sapUiSmallMargin">
+                <!-- Header Info Panel -->
+                <Panel
+                    headerText="Creating opportunity from prospect"
+                    class="sapUiNoContentPadding">
+                    <HBox class="sapUiSmallMargin" alignItems="Center">
+                        <core:Icon src="sap-icon://opportunity" size="2rem" color="#0854a0" class="sapUiSmallMarginEnd"/>
+                        <VBox>
+                            <Text id="prospectNameText" text="" class="sapUiTinyMarginBottom"/>
+                            <Text id="prospectLocationText" text="" class="sapMTextGrey"/>
+                        </VBox>
+                    </HBox>
+                </Panel>
+
+                <!-- Basic Information -->
+                <Panel headerText="Basic Information" expandable="true" expanded="true">
+                    <f:SimpleForm
+                        editable="true"
+                        layout="ResponsiveGridLayout"
+                        labelSpanXL="4"
+                        labelSpanL="4"
+                        labelSpanM="4"
+                        labelSpanS="12"
+                        emptySpanXL="0"
+                        emptySpanL="0"
+                        emptySpanM="0"
+                        emptySpanS="0"
+                        columnsXL="1"
+                        columnsL="1"
+                        columnsM="1">
+                        
+                        <Label text="Opportunity Name" required="true"/>
+                        <Input id="opportunityName" placeholder="Enter opportunity name" maxLength="200" required="true"/>
+                        
+                        <Label text="Description"/>
+                        <TextArea id="opportunityDescription" placeholder="Describe the opportunity..." rows="3" width="100%"/>
+                    </f:SimpleForm>
+                </Panel>
+
+                <!-- Pipeline & Probability -->
+                <Panel headerText="Pipeline Status" expandable="true" expanded="true">
+                    <f:SimpleForm
+                        editable="true"
+                        layout="ResponsiveGridLayout"
+                        labelSpanXL="4"
+                        labelSpanL="4"
+                        labelSpanM="4"
+                        labelSpanS="12"
+                        columnsXL="2"
+                        columnsL="2"
+                        columnsM="1">
+                        
+                        <Label text="Stage"/>
+                        <Select id="opportunityStage" selectedKey="Prospecting">
+                            <core:Item key="Prospecting" text="Prospecting"/>
+                            <core:Item key="Qualification" text="Qualification"/>
+                            <core:Item key="Needs Analysis" text="Needs Analysis"/>
+                            <core:Item key="Proposal" text="Proposal"/>
+                            <core:Item key="Negotiation" text="Negotiation"/>
+                        </Select>
+                        
+                        <Label text="Win Probability (%)"/>
+                        <Slider id="opportunityProbability" min="0" max="100" value="50" enableTickmarks="true" class="sapUiSmallMarginTop">
+                            <customTooltips>
+                                <SliderTooltip/>
+                            </customTooltips>
+                        </Slider>
+                    </f:SimpleForm>
+                </Panel>
+
+                <!-- Financial Details -->
+                <Panel headerText="Financial Details" expandable="true" expanded="true">
+                    <f:SimpleForm
+                        editable="true"
+                        layout="ResponsiveGridLayout"
+                        labelSpanXL="4"
+                        labelSpanL="4"
+                        labelSpanM="4"
+                        labelSpanS="12"
+                        columnsXL="2"
+                        columnsL="2"
+                        columnsM="1">
+                        
+                        <Label text="Deal Amount (MYR)"/>
+                        <Input id="opportunityAmount" type="Number" placeholder="0.00"/>
+                        
+                        <Label text="Expected Revenue (MYR)"/>
+                        <Input id="opportunityExpectedRevenue" type="Number" placeholder="0.00"/>
+                        
+                        <Label text="Expected Close Date" required="true"/>
+                        <DatePicker id="opportunityCloseDate" placeholder="Select date"/>
+                    </f:SimpleForm>
+                </Panel>
+
+                <!-- Assignment & Strategy -->
+                <Panel headerText="Assignment &amp; Strategy" expandable="true" expanded="true">
+                    <f:SimpleForm
+                        editable="true"
+                        layout="ResponsiveGridLayout"
+                        labelSpanXL="4"
+                        labelSpanL="4"
+                        labelSpanM="4"
+                        labelSpanS="12"
+                        columnsXL="1"
+                        columnsL="1"
+                        columnsM="1">
+                        
+                        <Label text="Opportunity Owner"/>
+                        <ComboBox id="opportunityOwner" placeholder="Select owner" showSecondaryValues="true">
+                            <core:ListItem key="" text="-- Select Owner --"/>
+                        </ComboBox>
+                        
+                        <Label text="Competitors"/>
+                        <Input id="opportunityCompetitors" placeholder="List key competitors (comma separated)"/>
+                        
+                        <Label text="Win Strategy"/>
+                        <TextArea id="opportunityWinStrategy" placeholder="Describe your strategy to win this deal..." rows="3" width="100%"/>
+                    </f:SimpleForm>
+                </Panel>
+
+                <!-- Notes -->
+                <Panel headerText="Additional Notes" expandable="true" expanded="false">
+                    <f:SimpleForm
+                        editable="true"
+                        layout="ResponsiveGridLayout"
+                        labelSpanXL="4"
+                        labelSpanL="4"
+                        labelSpanM="4"
+                        labelSpanS="12">
+                        
+                        <Label text="Notes"/>
+                        <TextArea id="opportunityNotes" placeholder="Any additional notes..." rows="4" width="100%"/>
+                    </f:SimpleForm>
+                </Panel>
+            </VBox>
+        </content>
+
+        <beginButton>
+            <Button
+                id="createOpportunityBtn"
+                text="Create Opportunity"
+                type="Emphasized"
+                icon="sap-icon://add"
+                press=".onCreateOpportunityConfirm"/>
+        </beginButton>
+        <endButton>
+            <Button
+                text="Cancel"
+                press=".onCreateOpportunityCancel"/>
+        </endButton>
+    </Dialog>
+</core:FragmentDefinition>
+

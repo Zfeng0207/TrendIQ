@@ -7,22 +7,16 @@
         currentApp: '', // Will be set per app
         apps: [
             {
-                id: 'merchants',
-                title: 'Channel Partner Onboarding',
-                url: '/beautyleads.merchants/index.html',
-                icon: 'business-objects-experience'
-            },
-            {
-                id: 'campaigns',
-                title: 'Marketing Campaigns',
-                url: '/beautyleads.campaigns/index.html',
-                icon: 'marketing-campaign'
-            },
-            {
                 id: 'leads',
                 title: 'Leads',
                 url: '/beautyleads.leads/index.html',
                 icon: 'lead'
+            },
+            {
+                id: 'prospects',
+                title: 'Prospects',
+                url: '/beautyleads.prospects/index.html',
+                icon: 'person-placeholder'
             },
             {
                 id: 'accounts',
@@ -35,6 +29,12 @@
                 title: 'Opportunities',
                 url: '/beautyleads.opportunities/index.html',
                 icon: 'sales-quote'
+            },
+            {
+                id: 'campaigns',
+                title: 'Marketing Campaigns',
+                url: '/beautyleads.campaigns/index.html',
+                icon: 'marketing-campaign'
             }
         ]
     };
@@ -42,11 +42,11 @@
     // Determine current app from URL
     function getCurrentApp() {
         var path = window.location.pathname;
-        if (path.includes('merchants')) return 'merchants';
-        if (path.includes('campaigns')) return 'campaigns';
         if (path.includes('leads')) return 'leads';
+        if (path.includes('prospects')) return 'prospects';
         if (path.includes('accounts')) return 'accounts';
         if (path.includes('opportunities')) return 'opportunities';
+        if (path.includes('campaigns')) return 'campaigns';
         return '';
     }
     
