@@ -94,3 +94,140 @@
     display: block !important;
 }
 
+/* ============================================================================
+   Leads Detail Page - Enhanced Styling
+   ============================================================================ */
+
+/* Adjust main content to account for AI sidebar */
+.sapUxAPObjectPageWrapper {
+    margin-right: 380px;
+    transition: margin-right 0.3s ease;
+}
+
+/* When AI panel is collapsed, expand main content */
+.creatio-ai-panel.collapsed ~ .sapUxAPObjectPageWrapper {
+    margin-right: 48px;
+}
+
+/* Object Page Header Enhancement */
+.sapUxAPObjectPageHeaderTitle {
+    padding: 0 !important;
+}
+
+/* Enhanced Avatar in Header */
+.sapUxAPObjectPageHeaderObjectImage .sapFAvatar {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border: 3px solid white;
+}
+
+/* Section Card Styling for Better Visual Hierarchy */
+.sapUxAPObjectPageSection {
+    margin-bottom: 1rem;
+}
+
+.sapUxAPObjectPageSection .sapUxAPObjectPageSectionTitle {
+    font-weight: 600;
+    color: #1a237e;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #e3f2fd;
+    margin-bottom: 1rem;
+}
+
+/* Form Field Group Styling */
+.sapUxAPObjectPageSubSection .sapUiFormElement {
+    padding: 0.5rem 0;
+}
+
+.sapUxAPObjectPageSubSection .sapMLabel {
+    font-size: 0.75rem;
+    color: #757575;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 500;
+}
+
+.sapUxAPObjectPageSubSection .sapMText {
+    font-size: 0.9375rem;
+    color: #212121;
+}
+
+/* Contact Info Section - Show More Link Fix */
+.sapUxAPObjectPageSubSection .sapMLink {
+    color: #0F75BC;
+    font-weight: 500;
+}
+
+/* Notes Field - Full Text Display */
+.sapUxAPObjectPageSubSection .sapMTextAreaInner {
+    min-height: 100px;
+}
+
+/* Activity Section Enhancement */
+.leads-activity-section {
+    background: linear-gradient(135deg, #fafafa 0%, #f5f5f5 100%);
+    border-radius: 8px;
+    padding: 1rem;
+}
+
+/* Qualification Section Color Coding */
+.leads-qualify-section .sapMObjStatus[state="Success"] {
+    background: #e8f5e9;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+}
+
+.leads-qualify-section .sapMObjStatus[state="Warning"] {
+    background: #fff3e0;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+}
+
+.leads-qualify-section .sapMObjStatus[state="Error"] {
+    background: #ffebee;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+}
+
+/* AI Insights Section in Overview */
+.leads-ai-insights {
+    background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-top: 0.5rem;
+}
+
+.leads-ai-insights .sapMTitle {
+    color: #1565c0;
+}
+
+/* ============================================================================
+   Responsive Adjustments for Leads Page
+   ============================================================================ */
+@media (max-width: 1200px) {
+    .sapUxAPObjectPageWrapper {
+        margin-right: 320px;
+    }
+}
+
+@media (max-width: 992px) {
+    .sapUxAPObjectPageWrapper {
+        margin-right: 0;
+        margin-bottom: 50vh;
+    }
+}
+
+/* ============================================================================
+   Print Styles
+   ============================================================================ */
+@media print {
+    .creatio-ai-panel,
+    .creatio-convert-btn,
+    .ai-planner-btn {
+        display: none !important;
+    }
+    
+    .sapUxAPObjectPageWrapper {
+        margin-right: 0 !important;
+    }
+}
+

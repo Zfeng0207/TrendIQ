@@ -47,6 +47,9 @@
   },
   "sap.ui5": {
     "flexEnabled": true,
+    "resourceRoots": {
+      "beautyleads/shared": "../../shared"
+    },
     "dependencies": {
       "minUI5Version": "1.120.0",
       "libs": {
