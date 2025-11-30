@@ -95,13 +95,19 @@
 }
 
 /* ============================================================================
-   Leads Detail Page - Enhanced Styling
+   Leads Detail Page - Professional Creatio Style
    ============================================================================ */
 
-/* Adjust main content to account for AI sidebar */
+/* Adjust main content to account for AI sidebar and profile sidebar */
 .sapUxAPObjectPageWrapper {
     margin-right: 380px;
-    transition: margin-right 0.3s ease;
+    margin-left: 0;
+    transition: margin 0.3s ease;
+}
+
+/* When profile sidebar is visible */
+.creatio-with-profile-sidebar .sapUxAPObjectPageWrapper {
+    margin-left: 280px;
 }
 
 /* When AI panel is collapsed, expand main content */
@@ -114,105 +120,166 @@
     padding: 0 !important;
 }
 
+/* Hide default Object Page header elements when using Creatio layout */
+.sapUxAPObjectPageHeaderObjectImageContainer {
+    display: none !important;
+}
+
 /* Enhanced Avatar in Header */
 .sapUxAPObjectPageHeaderObjectImage .sapFAvatar {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    border: 3px solid white;
+    box-shadow: var(--creatio-shadow-sm);
+    border: 2px solid white;
 }
 
 /* Section Card Styling for Better Visual Hierarchy */
 .sapUxAPObjectPageSection {
-    margin-bottom: 1rem;
+    margin-bottom: 0.875rem;
 }
 
 .sapUxAPObjectPageSection .sapUxAPObjectPageSectionTitle {
     font-weight: 600;
-    color: #1a237e;
+    color: var(--creatio-text-primary);
     padding-bottom: 0.5rem;
-    border-bottom: 2px solid #e3f2fd;
-    margin-bottom: 1rem;
+    border-bottom: 1px solid var(--creatio-border-light);
+    margin-bottom: 0.875rem;
+    font-size: var(--creatio-font-size-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
 }
 
 /* Form Field Group Styling */
 .sapUxAPObjectPageSubSection .sapUiFormElement {
-    padding: 0.5rem 0;
+    padding: 0.375rem 0;
 }
 
 .sapUxAPObjectPageSubSection .sapMLabel {
-    font-size: 0.75rem;
-    color: #757575;
+    font-size: var(--creatio-font-size-xs);
+    color: var(--creatio-text-secondary);
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.4px;
     font-weight: 500;
 }
 
 .sapUxAPObjectPageSubSection .sapMText {
-    font-size: 0.9375rem;
-    color: #212121;
+    font-size: var(--creatio-font-size-base);
+    color: var(--creatio-text-primary);
 }
 
 /* Contact Info Section - Show More Link Fix */
 .sapUxAPObjectPageSubSection .sapMLink {
-    color: #0F75BC;
+    color: var(--creatio-primary);
     font-weight: 500;
+}
+
+.sapUxAPObjectPageSubSection .sapMLink:hover {
+    color: var(--creatio-primary-dark);
 }
 
 /* Notes Field - Full Text Display */
 .sapUxAPObjectPageSubSection .sapMTextAreaInner {
-    min-height: 100px;
+    min-height: 80px;
+    border-radius: var(--creatio-radius-sm);
 }
 
 /* Activity Section Enhancement */
 .leads-activity-section {
-    background: linear-gradient(135deg, #fafafa 0%, #f5f5f5 100%);
-    border-radius: 8px;
-    padding: 1rem;
+    background: var(--creatio-bg-light);
+    border-radius: var(--creatio-radius-md);
+    padding: 0.875rem;
+    border: 1px solid var(--creatio-border-light);
 }
 
 /* Qualification Section Color Coding */
 .leads-qualify-section .sapMObjStatus[state="Success"] {
-    background: #e8f5e9;
-    padding: 0.25rem 0.75rem;
-    border-radius: 12px;
+    background: #E8F5E9;
+    padding: 0.25rem 0.625rem;
+    border-radius: var(--creatio-radius-full);
 }
 
 .leads-qualify-section .sapMObjStatus[state="Warning"] {
-    background: #fff3e0;
-    padding: 0.25rem 0.75rem;
-    border-radius: 12px;
+    background: #FFF3E0;
+    padding: 0.25rem 0.625rem;
+    border-radius: var(--creatio-radius-full);
 }
 
 .leads-qualify-section .sapMObjStatus[state="Error"] {
-    background: #ffebee;
-    padding: 0.25rem 0.75rem;
-    border-radius: 12px;
+    background: #FFEBEE;
+    padding: 0.25rem 0.625rem;
+    border-radius: var(--creatio-radius-full);
 }
 
 /* AI Insights Section in Overview */
 .leads-ai-insights {
-    background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
-    border-radius: 8px;
-    padding: 1rem;
+    background: linear-gradient(135deg, var(--creatio-primary-light) 0%, #B2EBF2 100%);
+    border-radius: var(--creatio-radius-md);
+    padding: 0.875rem;
     margin-top: 0.5rem;
 }
 
 .leads-ai-insights .sapMTitle {
-    color: #1565c0;
+    color: var(--creatio-primary-dark);
+}
+
+/* ============================================================================
+   Object Status Badges - Professional Styling
+   ============================================================================ */
+.sapMObjStatus {
+    font-size: var(--creatio-font-size-sm) !important;
+    font-weight: 500 !important;
+}
+
+/* ============================================================================
+   Table Styling - Clean Professional
+   ============================================================================ */
+.sapMListUl .sapMLIB,
+.sapMTable .sapMTableRow {
+    border-bottom: 1px solid var(--creatio-border-light) !important;
+}
+
+.sapMTable .sapMTableRow:hover {
+    background: var(--creatio-bg-light) !important;
 }
 
 /* ============================================================================
    Responsive Adjustments for Leads Page
    ============================================================================ */
+@media (max-width: 1400px) {
+    .sapUxAPObjectPageWrapper {
+        margin-right: 340px;
+    }
+    
+    .creatio-with-profile-sidebar .sapUxAPObjectPageWrapper {
+        margin-left: 240px;
+    }
+}
+
 @media (max-width: 1200px) {
     .sapUxAPObjectPageWrapper {
         margin-right: 320px;
+    }
+    
+    .creatio-with-profile-sidebar .sapUxAPObjectPageWrapper {
+        margin-left: 0;
+    }
+    
+    .creatio-profile-sidebar-fixed {
+        display: none;
     }
 }
 
 @media (max-width: 992px) {
     .sapUxAPObjectPageWrapper {
         margin-right: 0;
+        margin-left: 0;
         margin-bottom: 50vh;
+    }
+    
+    .creatio-profile-sidebar-fixed {
+        display: none;
+    }
+    
+    #creatioTagChipsContainer {
+        display: none;
     }
 }
 
@@ -222,12 +289,15 @@
 @media print {
     .creatio-ai-panel,
     .creatio-convert-btn,
-    .ai-planner-btn {
+    .ai-planner-btn,
+    .creatio-profile-sidebar-fixed,
+    #creatioTagChipsContainer {
         display: none !important;
     }
     
     .sapUxAPObjectPageWrapper {
         margin-right: 0 !important;
+        margin-left: 0 !important;
     }
 }
 

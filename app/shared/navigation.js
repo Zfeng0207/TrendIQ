@@ -2,38 +2,38 @@
 (function() {
     'use strict';
     
-    // Navigation configuration
+    // Navigation configuration - using launchpad URLs
     var navConfig = {
         currentApp: '', // Will be set per app
         apps: [
             {
                 id: 'leads',
                 title: 'Leads',
-                url: '/beautyleads.leads/index.html',
+                url: '/launchpad.html#leads-manage',
                 icon: 'lead'
             },
             {
                 id: 'prospects',
                 title: 'Prospects',
-                url: '/beautyleads.prospects/index.html',
+                url: '/launchpad.html#prospects-manage',
                 icon: 'person-placeholder'
             },
             {
                 id: 'accounts',
                 title: 'Accounts',
-                url: '/beautyleads.accounts/index.html',
+                url: '/launchpad.html#accounts-manage',
                 icon: 'customer-financial-fact-sheet'
             },
             {
                 id: 'opportunities',
                 title: 'Opportunities',
-                url: '/beautyleads.opportunities/index.html',
+                url: '/launchpad.html#opportunities-manage',
                 icon: 'sales-quote'
             },
             {
                 id: 'campaigns',
                 title: 'Marketing Campaigns',
-                url: '/beautyleads.campaigns/index.html',
+                url: '/launchpad.html#campaigns-manage',
                 icon: 'marketing-campaign'
             }
         ]

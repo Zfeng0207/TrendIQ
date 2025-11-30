@@ -1,60 +1,109 @@
 /**
  * Creatio-Inspired Layout Styling
- * Provides visual styling for chevron stage bars, KPI cards, AI panel, and entity profiles
+ * Professional enterprise CRM design with modern, clean aesthetics
+ * Inspired by Creatio's design language
  */
 
 /* ============================================================================
-   CSS Custom Properties (Variables)
+   CSS Custom Properties (Variables) - Professional Enterprise Palette
    ============================================================================ */
 :root {
-    /* Primary Colors */
-    --creatio-primary: #0F75BC;
-    --creatio-primary-dark: #0A5A8C;
-    --creatio-primary-light: #E3F2FD;
+    /* Primary Colors - Softer Teal/Blue Professional Tones */
+    --creatio-primary: #0097A7;
+    --creatio-primary-dark: #00838F;
+    --creatio-primary-light: #E0F7FA;
+    --creatio-primary-hover: #00ACC1;
     
-    /* Stage Colors */
-    --creatio-stage-new: #1976D2;
-    --creatio-stage-contacted: #7B1FA2;
-    --creatio-stage-qualified: #388E3C;
-    --creatio-stage-nurturing: #F57C00;
-    --creatio-stage-converted: #2E7D32;
-    --creatio-stage-lost: #D32F2F;
-    --creatio-stage-future: #E0E0E0;
-    --creatio-stage-completed: #4CAF50;
+    /* Secondary Accent */
+    --creatio-accent: #546E7A;
+    --creatio-accent-light: #78909C;
     
-    /* KPI Card Colors */
+    /* Stage Colors - Professional Pipeline */
+    --creatio-stage-new: #0288D1;
+    --creatio-stage-contacted: #5E35B1;
+    --creatio-stage-qualified: #00897B;
+    --creatio-stage-nurturing: #FB8C00;
+    --creatio-stage-converted: #43A047;
+    --creatio-stage-lost: #E53935;
+    --creatio-stage-future: rgba(255, 255, 255, 0.25);
+    --creatio-stage-completed: #26A69A;
+    
+    /* KPI Card Colors - Creatio's Palette */
     --creatio-kpi-blue: #1976D2;
-    --creatio-kpi-green: #388E3C;
-    --creatio-kpi-orange: #F57C00;
-    --creatio-kpi-red: #D32F2F;
-    --creatio-kpi-purple: #7B1FA2;
+    --creatio-kpi-teal: #009688;
+    --creatio-kpi-green: #43A047;
+    --creatio-kpi-orange: #FB8C00;
+    --creatio-kpi-red: #EF5350;
+    --creatio-kpi-purple: #7E57C2;
     
-    /* AI Panel Colors */
-    --creatio-ai-primary: #0F75BC;
+    /* KPI Card Background Tints */
+    --creatio-kpi-blue-bg: #E3F2FD;
+    --creatio-kpi-teal-bg: #E0F2F1;
+    --creatio-kpi-green-bg: #E8F5E9;
+    --creatio-kpi-orange-bg: #FFF3E0;
+    --creatio-kpi-red-bg: #FFEBEE;
+    
+    /* AI Panel Colors - Subtle Professional */
+    --creatio-ai-primary: #37474F;
+    --creatio-ai-accent: #0097A7;
     --creatio-ai-bg: #FFFFFF;
-    --creatio-ai-user-bg: #E3F2FD;
+    --creatio-ai-header-bg: #FAFAFA;
+    --creatio-ai-user-bg: #E0F7FA;
     --creatio-ai-assistant-bg: #F5F5F5;
     
-    /* Neutral Colors */
-    --creatio-border: #E0E0E0;
-    --creatio-text-primary: #212121;
-    --creatio-text-secondary: #757575;
+    /* Neutral Colors - Clean Enterprise */
+    --creatio-border: #E8E8E8;
+    --creatio-border-light: #F0F0F0;
+    --creatio-text-primary: #263238;
+    --creatio-text-secondary: #607D8B;
+    --creatio-text-tertiary: #90A4AE;
     --creatio-bg-light: #FAFAFA;
+    --creatio-bg-card: #FFFFFF;
     
-    /* Shadows */
-    --creatio-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
-    --creatio-shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
-    --creatio-shadow-lg: 0 10px 20px rgba(0, 0, 0, 0.12);
+    /* Shadows - Softer, More Subtle */
+    --creatio-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
+    --creatio-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+    --creatio-shadow-md: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --creatio-shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.1);
+    --creatio-shadow-xl: 0 8px 24px rgba(0, 0, 0, 0.12);
+    
+    /* Typography */
+    --creatio-font-family: "72", "72full", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --creatio-font-size-xs: 0.6875rem;
+    --creatio-font-size-sm: 0.75rem;
+    --creatio-font-size-base: 0.875rem;
+    --creatio-font-size-md: 1rem;
+    --creatio-font-size-lg: 1.125rem;
+    --creatio-font-size-xl: 1.5rem;
+    --creatio-font-size-2xl: 2rem;
+    
+    /* Spacing */
+    --creatio-space-xs: 0.25rem;
+    --creatio-space-sm: 0.5rem;
+    --creatio-space-md: 1rem;
+    --creatio-space-lg: 1.5rem;
+    --creatio-space-xl: 2rem;
+    
+    /* Border Radius */
+    --creatio-radius-sm: 4px;
+    --creatio-radius-md: 8px;
+    --creatio-radius-lg: 12px;
+    --creatio-radius-full: 9999px;
+    
+    /* Transitions */
+    --creatio-transition-fast: 0.15s ease;
+    --creatio-transition-base: 0.2s ease;
+    --creatio-transition-slow: 0.3s ease;
 }
 
 /* ============================================================================
-   Chevron Stage Bar
+   Chevron Stage Bar - Professional Creatio Style (No Emojis)
    ============================================================================ */
 .creatio-chevron-container {
-    background: linear-gradient(135deg, #1a237e 0%, #283593 100%);
+    background: linear-gradient(180deg, #1565C0 0%, #0D47A1 100%);
     border-radius: 0;
     padding: 0.5rem 1rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
     position: relative;
     z-index: 9500;
 }
@@ -67,7 +116,7 @@
     right: 380px !important;
     z-index: 9500 !important;
     padding: 0 !important;
-    background: linear-gradient(135deg, #1a237e 0%, #283593 100%) !important;
+    background: linear-gradient(180deg, #1565C0 0%, #0D47A1 100%) !important;
 }
 
 .creatio-chevron-bar {
@@ -75,20 +124,20 @@
     flex-direction: row;
     align-items: stretch;
     overflow-x: auto;
-    gap: 4px;
-    padding: 6px 0;
+    gap: 0;
+    padding: 4px 0;
 }
 
 .creatio-chevron-stage {
     position: relative;
     flex: 1;
-    min-width: 120px;
-    height: 48px;
-    padding: 0.5rem 1rem 0.5rem 1.5rem;
-    background: rgba(255, 255, 255, 0.15);
+    min-width: 130px;
+    height: 40px;
+    padding: 0 1rem 0 1.5rem;
+    background: rgba(255, 255, 255, 0.08);
     color: rgba(255, 255, 255, 0.7);
-    clip-path: polygon(0 0, calc(100% - 15px) 0, 100% 50%, calc(100% - 15px) 100%, 0 100%, 15px 50%);
-    transition: all 0.3s ease;
+    clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 50%, calc(100% - 16px) 100%, 0 100%, 16px 50%);
+    transition: all 0.2s ease;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -96,13 +145,13 @@
 }
 
 .creatio-chevron-stage:first-child {
-    clip-path: polygon(0 0, calc(100% - 15px) 0, 100% 50%, calc(100% - 15px) 100%, 0 100%);
+    clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 50%, calc(100% - 16px) 100%, 0 100%);
     border-radius: 4px 0 0 4px;
     padding-left: 1rem;
 }
 
 .creatio-chevron-stage:last-child {
-    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 15px 50%);
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 16px 50%);
     border-radius: 0 4px 4px 0;
 }
 
@@ -119,9 +168,10 @@
 }
 
 .creatio-chevron-stage .sapMBtnContent {
-    font-size: 0.75rem;
-    font-weight: 500;
+    font-size: var(--creatio-font-size-xs);
+    font-weight: 600;
     color: inherit;
+    letter-spacing: 0.3px;
 }
 
 .creatio-chevron-stage .sapMBtnIcon {
@@ -130,37 +180,41 @@
     color: inherit;
 }
 
-/* Stage States */
+/* Stage States - Clean Professional (Creatio-inspired) */
 .creatio-stage-completed {
-    background: linear-gradient(135deg, #66bb6a 0%, #43a047 100%);
+    background: linear-gradient(180deg, #4CAF50 0%, #388E3C 100%);
     color: white;
 }
 
 .creatio-stage-current {
-    background: linear-gradient(135deg, #42a5f5 0%, #1e88e5 100%);
+    background: linear-gradient(180deg, #2196F3 0%, #1976D2 100%);
     color: white;
-    box-shadow: 0 2px 8px rgba(66, 165, 245, 0.4);
+    box-shadow: 0 2px 6px rgba(33, 150, 243, 0.4);
     z-index: 1;
 }
 
 .creatio-stage-future {
-    background: rgba(255, 255, 255, 0.15);
-    color: rgba(255, 255, 255, 0.7);
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.5);
 }
 
 .creatio-stage-negative {
-    background: linear-gradient(135deg, #ef5350 0%, #e53935 100%) !important;
+    background: linear-gradient(180deg, #F44336 0%, #D32F2F 100%) !important;
 }
 
-/* Stage color variations */
-.creatio-stage-color-0.creatio-stage-current { background: var(--creatio-stage-new); }
-.creatio-stage-color-1.creatio-stage-current { background: var(--creatio-stage-contacted); }
-.creatio-stage-color-2.creatio-stage-current { background: var(--creatio-stage-qualified); }
-.creatio-stage-color-3.creatio-stage-current { background: var(--creatio-stage-nurturing); }
-.creatio-stage-color-4.creatio-stage-current { background: var(--creatio-stage-converted); }
-.creatio-stage-color-5.creatio-stage-current { background: var(--creatio-stage-lost); }
+/* Stage hover effect */
+.creatio-chevron-stage:hover:not(.creatio-stage-current) {
+    background: rgba(255, 255, 255, 0.15);
+    color: rgba(255, 255, 255, 0.85);
+}
 
-/* Hover effect - defined in Enhanced Stage Bar section */
+/* Stage color variations - all use same clean gradient style */
+.creatio-stage-color-0.creatio-stage-current { background: linear-gradient(180deg, #2196F3 0%, #1976D2 100%); }
+.creatio-stage-color-1.creatio-stage-current { background: linear-gradient(180deg, #673AB7 0%, #512DA8 100%); }
+.creatio-stage-color-2.creatio-stage-current { background: linear-gradient(180deg, #4CAF50 0%, #388E3C 100%); }
+.creatio-stage-color-3.creatio-stage-current { background: linear-gradient(180deg, #FF9800 0%, #F57C00 100%); }
+.creatio-stage-color-4.creatio-stage-current { background: linear-gradient(180deg, #4CAF50 0%, #388E3C 100%); }
+.creatio-stage-color-5.creatio-stage-current { background: linear-gradient(180deg, #F44336 0%, #D32F2F 100%); }
 
 /* Stage Info */
 .creatio-stage-info {
@@ -170,14 +224,15 @@
 }
 
 .creatio-stage-label {
-    font-size: 0.75rem;
+    font-size: var(--creatio-font-size-xs);
     color: var(--creatio-text-secondary);
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    font-weight: 500;
 }
 
 .creatio-stage-value {
-    font-size: 1rem;
+    font-size: var(--creatio-font-size-md);
     font-weight: 600;
     color: var(--creatio-text-primary);
 }
@@ -189,76 +244,103 @@
 }
 
 /* ============================================================================
-   KPI Card Row
+   KPI Card Row - Creatio Bold Blocks Style
    ============================================================================ */
 .creatio-kpi-row {
     display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    padding: 0.5rem;
+    flex-wrap: nowrap;
+    gap: 0.625rem;
+    padding: 1rem;
+    background: white;
 }
 
 .creatio-kpi-card {
     flex: 1;
     min-width: 150px;
-    max-width: 200px;
-    background: white;
-    border-radius: 8px;
-    padding: 1rem;
-    box-shadow: var(--creatio-shadow-sm);
-    border-left: 4px solid var(--creatio-primary);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    max-width: 250px;
+    background: #0D47A1;
+    border-radius: 6px;
+    padding: 1rem 1.25rem;
+    box-shadow: none;
+    border: none;
+    transition: transform 0.15s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.creatio-kpi-card::before {
+    display: none;
 }
 
 .creatio-kpi-card:hover {
     transform: translateY(-2px);
-    box-shadow: var(--creatio-shadow-md);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-.creatio-kpi-card.kpi-blue { border-left-color: var(--creatio-kpi-blue); }
-.creatio-kpi-card.kpi-green { border-left-color: var(--creatio-kpi-green); }
-.creatio-kpi-card.kpi-orange { border-left-color: var(--creatio-kpi-orange); }
-.creatio-kpi-card.kpi-red { border-left-color: var(--creatio-kpi-red); }
-.creatio-kpi-card.kpi-purple { border-left-color: var(--creatio-kpi-purple); }
+/* KPI Card Color Variants - Solid Bold Colors (Creatio Exact) */
+.creatio-kpi-card.kpi-blue { 
+    background: #0D47A1;
+}
+.creatio-kpi-card.kpi-teal { 
+    background: #00796B;
+}
+.creatio-kpi-card.kpi-green { 
+    background: #2E7D32;
+}
+.creatio-kpi-card.kpi-orange { 
+    background: #EF6C00;
+}
+.creatio-kpi-card.kpi-red { 
+    background: #C62828;
+}
+.creatio-kpi-card.kpi-purple { 
+    background: #4527A0;
+}
 
 .creatio-kpi-title {
     font-size: 0.75rem;
-    color: var(--creatio-text-secondary);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: 0.5rem;
+    color: rgba(255, 255, 255, 0.9);
+    text-transform: none;
+    letter-spacing: 0;
+    margin-bottom: 0.25rem;
+    font-weight: 400;
 }
 
 .creatio-kpi-value {
-    font-size: 1.75rem;
-    font-weight: 700;
-    color: var(--creatio-text-primary);
-    line-height: 1.2;
+    font-size: 2.25rem;
+    font-weight: 300;
+    color: white;
+    line-height: 1;
+    text-shadow: none;
 }
 
-.creatio-kpi-card.kpi-blue .creatio-kpi-value { color: var(--creatio-kpi-blue); }
-.creatio-kpi-card.kpi-green .creatio-kpi-value { color: var(--creatio-kpi-green); }
-.creatio-kpi-card.kpi-orange .creatio-kpi-value { color: var(--creatio-kpi-orange); }
-.creatio-kpi-card.kpi-red .creatio-kpi-value { color: var(--creatio-kpi-red); }
-.creatio-kpi-card.kpi-purple .creatio-kpi-value { color: var(--creatio-kpi-purple); }
+/* All KPI values are white on colored background */
+.creatio-kpi-card.kpi-blue .creatio-kpi-value,
+.creatio-kpi-card.kpi-teal .creatio-kpi-value,
+.creatio-kpi-card.kpi-green .creatio-kpi-value,
+.creatio-kpi-card.kpi-orange .creatio-kpi-value,
+.creatio-kpi-card.kpi-red .creatio-kpi-value,
+.creatio-kpi-card.kpi-purple .creatio-kpi-value { 
+    color: white; 
+}
 
 .creatio-kpi-subtitle {
-    font-size: 0.75rem;
-    color: var(--creatio-text-secondary);
-    margin-top: 0.25rem;
+    font-size: 0.6875rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin-top: 0.125rem;
 }
 
 .creatio-kpi-trend {
-    display: flex;
-    align-items: center;
+    display: none; /* Hide trend indicators for cleaner look */
     gap: 0.25rem;
     margin-top: 0.5rem;
-    font-size: 0.75rem;
+    font-size: 0.6875rem;
+    color: rgba(255, 255, 255, 0.85);
 }
 
-.creatio-kpi-trend.trend-up { color: var(--creatio-kpi-green); }
-.creatio-kpi-trend.trend-down { color: var(--creatio-kpi-red); }
-.creatio-kpi-trend.trend-neutral { color: var(--creatio-text-secondary); }
+.creatio-kpi-trend.trend-up { color: #C8E6C9; }
+.creatio-kpi-trend.trend-down { color: #FFCDD2; }
+.creatio-kpi-trend.trend-neutral { color: rgba(255, 255, 255, 0.7); }
 
 /* ============================================================================
    Hide Old Fiori Header Elements When Creatio Active
@@ -278,7 +360,7 @@ body.creatio-active [id*="action"] {
 }
 
 /* ============================================================================
-   AI Assistant Panel
+   AI Assistant Panel - Professional Subtle Design
    ============================================================================ */
 .creatio-ai-panel {
     position: fixed;
@@ -287,11 +369,12 @@ body.creatio-active [id*="action"] {
     height: 100vh;
     width: 360px;
     background: var(--creatio-ai-bg);
-    box-shadow: -4px 0 20px rgba(0, 0, 0, 0.1);
+    box-shadow: -2px 0 12px rgba(0, 0, 0, 0.06);
     z-index: 9600;
     display: flex;
     flex-direction: column;
-    transition: transform 0.3s ease;
+    transition: transform var(--creatio-transition-slow);
+    border-left: 1px solid var(--creatio-border-light);
 }
 
 .creatio-ai-panel.collapsed {
@@ -302,32 +385,43 @@ body.creatio-active [id*="action"] {
     padding: 0 !important;
     display: flex;
     flex-direction: column;
-    height: calc(100% - 48px);
+    height: calc(100% - 56px);
 }
 
-/* AI Panel Header */
+/* AI Panel Header - Clean Professional */
 .creatio-ai-header {
-    background: linear-gradient(135deg, var(--creatio-ai-primary) 0%, #1565C0 100%);
-    padding: 0.75rem 1rem;
+    background: var(--creatio-ai-header-bg);
+    padding: 0.875rem 1rem;
+    border-bottom: 1px solid var(--creatio-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
 .creatio-ai-header .sapMTitle {
-    color: white !important;
+    color: var(--creatio-text-primary) !important;
+    font-size: var(--creatio-font-size-base) !important;
 }
 
 .creatio-ai-header .sapMBtn {
-    color: white;
+    color: var(--creatio-text-secondary);
+}
+
+.creatio-ai-header .sapMBtn:hover {
+    color: var(--creatio-primary);
+    background: var(--creatio-primary-light);
 }
 
 .creatio-ai-logo {
-    color: white;
-    font-size: 1.5rem;
+    color: var(--creatio-ai-accent);
+    font-size: 1.25rem;
     margin-right: 0.5rem;
 }
 
 .creatio-ai-title {
-    color: white !important;
+    color: var(--creatio-text-primary) !important;
     font-weight: 600;
+    font-size: var(--creatio-font-size-base) !important;
 }
 
 /* AI Content Area */
@@ -336,47 +430,61 @@ body.creatio-active [id*="action"] {
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    background: var(--creatio-bg-light);
 }
 
 /* AI Welcome Message */
 .creatio-ai-welcome {
-    padding: 2rem;
+    padding: 1.5rem;
     text-align: center;
+    background: white;
+    border-bottom: 1px solid var(--creatio-border-light);
 }
 
 .creatio-ai-welcome-icon {
-    color: var(--creatio-ai-primary);
-    opacity: 0.8;
+    color: var(--creatio-ai-accent);
+    opacity: 0.9;
 }
 
 .creatio-ai-welcome-title {
-    font-size: 1.25rem;
+    font-size: var(--creatio-font-size-md);
     font-weight: 600;
     color: var(--creatio-text-primary);
+    margin-top: 0.5rem;
 }
 
 .creatio-ai-welcome-text {
-    font-size: 0.875rem;
+    font-size: var(--creatio-font-size-sm);
     color: var(--creatio-text-secondary);
     max-width: 280px;
-    margin: 0 auto;
+    margin: 0.5rem auto 0;
+    line-height: 1.5;
 }
 
-/* Quick Actions */
+/* Quick Actions - Outlined Pill Buttons */
 .creatio-ai-quick-actions {
-    padding: 0 1rem;
+    padding: 0.75rem 1rem;
     gap: 0.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    background: white;
+    border-bottom: 1px solid var(--creatio-border-light);
 }
 
 .creatio-ai-quick-actions .sapMBtn {
-    border-radius: 16px;
+    border-radius: var(--creatio-radius-full);
     border: 1px solid var(--creatio-border);
     background: white;
+    font-size: var(--creatio-font-size-sm);
+    padding: 0 0.875rem;
+    height: 32px;
+    transition: all var(--creatio-transition-fast);
 }
 
 .creatio-ai-quick-actions .sapMBtn:hover {
     background: var(--creatio-primary-light);
     border-color: var(--creatio-primary);
+    color: var(--creatio-primary);
 }
 
 /* Chat Messages */
@@ -384,24 +492,25 @@ body.creatio-active [id*="action"] {
     flex: 1;
     padding: 1rem;
     overflow-y: auto;
+    background: white;
 }
 
 .creatio-ai-message {
-    margin-bottom: 1rem;
-    max-width: 85%;
+    margin-bottom: 0.875rem;
+    max-width: 88%;
 }
 
 .creatio-ai-message.user-message {
     margin-left: auto;
     background: var(--creatio-ai-user-bg);
-    border-radius: 12px 12px 0 12px;
+    border-radius: var(--creatio-radius-lg) var(--creatio-radius-lg) var(--creatio-radius-sm) var(--creatio-radius-lg);
     padding: 0.75rem 1rem;
 }
 
 .creatio-ai-message.ai-message {
     margin-right: auto;
     background: var(--creatio-ai-assistant-bg);
-    border-radius: 12px 12px 12px 0;
+    border-radius: var(--creatio-radius-lg) var(--creatio-radius-lg) var(--creatio-radius-lg) var(--creatio-radius-sm);
     padding: 0.75rem 1rem;
 }
 
@@ -409,7 +518,7 @@ body.creatio-active [id*="action"] {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.375rem;
 }
 
 .creatio-ai-message-avatar {
@@ -418,155 +527,241 @@ body.creatio-active [id*="action"] {
 }
 
 .creatio-ai-message-text {
-    font-size: 0.875rem;
+    font-size: var(--creatio-font-size-base);
     color: var(--creatio-text-primary);
     line-height: 1.5;
     white-space: pre-wrap;
 }
 
 .creatio-ai-message-time {
-    font-size: 0.625rem;
-    color: var(--creatio-text-secondary);
+    font-size: var(--creatio-font-size-xs);
+    color: var(--creatio-text-tertiary);
     margin-top: 0.25rem;
     text-align: right;
 }
 
-/* Suggestions */
+/* Suggestions - Outlined Pills */
 .creatio-ai-suggestions {
-    padding: 0.5rem 1rem;
-    border-top: 1px solid var(--creatio-border);
+    padding: 0.625rem 1rem;
+    border-top: 1px solid var(--creatio-border-light);
     gap: 0.5rem;
     flex-wrap: wrap;
+    display: flex;
+    background: white;
 }
 
 .creatio-ai-suggestions .sapMBtn {
-    border-radius: 16px;
+    border-radius: var(--creatio-radius-full);
     border: 1px solid var(--creatio-primary);
     color: var(--creatio-primary);
     background: white;
-    font-size: 0.75rem;
+    font-size: var(--creatio-font-size-sm);
+    transition: all var(--creatio-transition-fast);
+}
+
+.creatio-ai-suggestions .sapMBtn:hover {
+    background: var(--creatio-primary);
+    color: white;
 }
 
 /* Input Area */
 .creatio-ai-input-area {
-    padding: 1rem;
+    padding: 0.875rem 1rem;
     background: white;
     border-top: 1px solid var(--creatio-border);
 }
 
 .creatio-ai-textarea .sapMTextArea {
-    border-radius: 8px;
+    border-radius: var(--creatio-radius-md);
     border: 1px solid var(--creatio-border);
 }
 
 .creatio-ai-textarea .sapMTextAreaInner {
-    border-radius: 8px;
+    border-radius: var(--creatio-radius-md);
 }
 
 .creatio-ai-input-actions .sapMBtn[type="Emphasized"] {
     border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    min-width: 40px;
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
     background: var(--creatio-primary);
+    transition: all var(--creatio-transition-fast);
+}
+
+.creatio-ai-input-actions .sapMBtn[type="Emphasized"]:hover {
+    background: var(--creatio-primary-dark);
+    transform: scale(1.05);
 }
 
 /* ============================================================================
-   Entity Profile Sidebar
+   Entity Profile Sidebar - Minimal Left Sidebar
    ============================================================================ */
 .creatio-entity-profile {
     background: white;
-    border-radius: 8px;
+    border-radius: var(--creatio-radius-md);
     box-shadow: var(--creatio-shadow-sm);
-    padding: 1.5rem;
-    width: 280px;
-    min-width: 280px;
+    padding: 1.25rem;
+    width: 260px;
+    min-width: 260px;
+    border: 1px solid var(--creatio-border-light);
 }
 
 .creatio-profile-header {
     text-align: center;
     padding-bottom: 1rem;
-    border-bottom: 1px solid var(--creatio-border);
+    border-bottom: 1px solid var(--creatio-border-light);
 }
 
 .creatio-profile-avatar {
-    box-shadow: var(--creatio-shadow-md);
+    box-shadow: var(--creatio-shadow-sm);
+    border: 2px solid white;
 }
 
 .creatio-profile-name {
     color: var(--creatio-text-primary);
-    margin-top: 0.75rem;
+    margin-top: 0.625rem;
+    font-size: var(--creatio-font-size-md);
+    font-weight: 600;
 }
 
 .creatio-profile-subtitle {
-    font-size: 0.875rem;
+    font-size: var(--creatio-font-size-sm);
     color: var(--creatio-text-secondary);
+    margin-top: 0.125rem;
 }
 
 .creatio-profile-badge {
-    margin-top: 0.5rem;
+    margin-top: 0.375rem;
 }
 
-/* Profile Actions */
+/* Profile Actions - Circular Buttons Row */
 .creatio-profile-actions {
-    padding: 1rem 0;
-    border-bottom: 1px solid var(--creatio-border);
-    gap: 0.5rem;
+    padding: 0.875rem 0;
+    border-bottom: 1px solid var(--creatio-border-light);
+    gap: 0.625rem;
+    display: flex;
+    justify-content: center;
 }
 
 .creatio-profile-actions .sapMBtn {
     border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    min-width: 40px;
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
     border: 1px solid var(--creatio-border);
-    background: var(--creatio-bg-light);
+    background: white;
+    transition: all var(--creatio-transition-fast);
+}
+
+.creatio-profile-actions .sapMBtn .sapMBtnIcon {
+    font-size: 0.875rem;
 }
 
 .creatio-profile-actions .sapMBtn:hover {
     background: var(--creatio-primary-light);
     border-color: var(--creatio-primary);
+}
+
+.creatio-profile-actions .sapMBtn:hover .sapMBtnIcon {
     color: var(--creatio-primary);
 }
 
 /* Profile Info Fields */
 .creatio-profile-info {
-    padding-top: 0.5rem;
+    padding-top: 0.625rem;
 }
 
 .creatio-profile-field {
     display: flex;
     align-items: flex-start;
-    gap: 0.75rem;
+    gap: 0.625rem;
     padding: 0.5rem 0;
 }
 
 .creatio-profile-field-icon {
-    color: var(--creatio-text-secondary);
-    font-size: 1rem;
+    color: var(--creatio-text-tertiary);
+    font-size: 0.875rem;
     margin-top: 0.125rem;
 }
 
 .creatio-profile-field-label {
-    font-size: 0.625rem;
+    font-size: var(--creatio-font-size-xs);
     color: var(--creatio-text-secondary);
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.4px;
 }
 
 .creatio-profile-field-value {
-    font-size: 0.875rem;
+    font-size: var(--creatio-font-size-base);
     color: var(--creatio-text-primary);
 }
 
 /* Communication Options Panel */
 .creatio-profile-comm-panel {
-    margin-top: 1rem;
+    margin-top: 0.875rem;
 }
 
 .creatio-profile-comm-panel .sapMPanelHdr {
-    font-size: 0.75rem;
+    font-size: var(--creatio-font-size-xs);
     color: var(--creatio-text-secondary);
+}
+
+/* Next Steps Section */
+.creatio-next-steps-section {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #E0E0E0;
+}
+
+.creatio-section-title {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: #212121;
+    margin-bottom: 0.75rem;
+}
+
+.creatio-next-step-item {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #F5F5F5;
+}
+
+.creatio-next-step-item:last-child {
+    border-bottom: none;
+}
+
+.creatio-next-step-item .sapMCb {
+    margin-right: 0.5rem;
+}
+
+.creatio-next-step-text {
+    font-size: 0.8125rem;
+    color: #212121;
+}
+
+.creatio-next-step-date {
+    font-size: 0.6875rem;
+    color: #757575;
+}
+
+/* Profile Sidebar - Fixed Position Left */
+.creatio-profile-sidebar-fixed {
+    position: fixed;
+    left: 0;
+    top: 104px;
+    width: 280px;
+    height: calc(100vh - 104px);
+    background: white;
+    border-right: 1px solid var(--creatio-border-light);
+    z-index: 9400;
+    overflow-y: auto;
+    padding: 1rem;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.04);
+}
+
+/* Adjust main content when profile sidebar is visible */
+.creatio-with-profile-sidebar .sapUxAPObjectPageWrapper {
+    margin-left: 280px;
 }
 
 /* ============================================================================
@@ -673,11 +868,11 @@ body.creatio-active [id*="action"] {
 }
 
 /* ============================================================================
-   Animation Effects
+   Animation Effects - Subtle Professional
    ============================================================================ */
 @keyframes slideInRight {
     from {
-        transform: translateX(100%);
+        transform: translateX(20px);
         opacity: 0;
     }
     to {
@@ -695,26 +890,26 @@ body.creatio-active [id*="action"] {
     }
 }
 
-@keyframes pulse {
-    0%, 100% {
-        transform: scale(1);
+@keyframes slideUp {
+    from {
+        transform: translateY(8px);
+        opacity: 0;
     }
-    50% {
-        transform: scale(1.05);
+    to {
+        transform: translateY(0);
+        opacity: 1;
     }
 }
 
 .creatio-ai-panel {
-    animation: slideInRight 0.3s ease;
+    animation: slideInRight 0.25s ease;
 }
 
 .creatio-ai-message {
-    animation: fadeIn 0.3s ease;
+    animation: fadeIn 0.2s ease;
 }
 
-.creatio-kpi-card:hover .creatio-kpi-value {
-    animation: pulse 0.3s ease;
-}
+/* Removed pulse animation on hover for more professional feel */
 
 /* Loading state for AI */
 .creatio-ai-loading {
@@ -749,7 +944,7 @@ body.creatio-active [id*="action"] {
 }
 
 /* ============================================================================
-   Enhanced AI Panel - Sections
+   Enhanced AI Panel - Sections (Creatio Professional Style)
    ============================================================================ */
 .creatio-ai-panel-enhanced {
     width: 380px;
@@ -757,6 +952,7 @@ body.creatio-active [id*="action"] {
 
 .creatio-ai-panel-enhanced .sapMPanelContent {
     overflow: hidden;
+    background: var(--creatio-bg-light);
 }
 
 .creatio-ai-scroll {
@@ -769,11 +965,12 @@ body.creatio-active [id*="action"] {
     padding: 0;
 }
 
-/* AI Section Base */
+/* AI Section Base - Clean Minimal */
 .creatio-ai-section {
     padding: 1rem;
-    border-bottom: 1px solid var(--creatio-border);
+    border-bottom: 1px solid var(--creatio-border-light);
     background: white;
+    margin-bottom: 0;
 }
 
 .creatio-ai-section:last-child {
@@ -781,29 +978,37 @@ body.creatio-active [id*="action"] {
 }
 
 .creatio-section-icon {
-    color: var(--creatio-primary);
+    color: var(--creatio-text-secondary);
     margin-right: 0.5rem;
+    font-size: 0.875rem;
 }
 
 .creatio-section-title {
     color: var(--creatio-text-primary) !important;
-    font-weight: 600 !important;
+    font-weight: 500 !important;
+    font-size: var(--creatio-font-size-sm) !important;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
 }
 
 /* ============================================================================
-   Score Breakdown Section
+   Score Breakdown Section - Simplified Professional
    ============================================================================ */
 .creatio-score-cards {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    gap: 0.625rem;
+    margin-top: 0.75rem;
 }
 
 .creatio-score-card {
     padding: 0.75rem;
     background: var(--creatio-bg-light);
-    border-radius: 8px;
-    gap: 1rem;
+    border-radius: var(--creatio-radius-md);
+    gap: 0.875rem;
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--creatio-border-light);
 }
 
 .creatio-score-ring-container {
@@ -815,8 +1020,8 @@ body.creatio-active [id*="action"] {
 }
 
 .creatio-ring-text {
-    font-size: 12px;
-    font-weight: 700;
+    font-size: 11px;
+    font-weight: 600;
     fill: var(--creatio-text-primary);
 }
 
@@ -826,21 +1031,21 @@ body.creatio-active [id*="action"] {
 }
 
 .creatio-score-label {
-    font-size: 0.75rem;
-    font-weight: 600;
+    font-size: var(--creatio-font-size-sm);
+    font-weight: 500;
     color: var(--creatio-text-primary);
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.125rem;
 }
 
 .creatio-score-desc {
-    font-size: 0.6875rem;
+    font-size: var(--creatio-font-size-xs);
     color: var(--creatio-text-secondary);
     line-height: 1.4;
 }
 
 .creatio-score-number {
-    font-size: 1.5rem;
-    font-weight: 700;
+    font-size: 1.25rem;
+    font-weight: 600;
     color: var(--creatio-kpi-green);
 }
 
@@ -848,77 +1053,86 @@ body.creatio-active [id*="action"] {
 .creatio-sentiment-card {
     padding: 0.75rem;
     background: var(--creatio-bg-light);
-    border-radius: 8px;
+    border-radius: var(--creatio-radius-md);
+    border: 1px solid var(--creatio-border-light);
 }
 
 .creatio-sentiment-icon-positive {
     color: var(--creatio-kpi-green);
-    margin-right: 0.5rem;
+    margin-right: 0.375rem;
 }
 
 .creatio-sentiment-value {
-    font-size: 0.875rem;
-    font-weight: 600;
+    font-size: var(--creatio-font-size-base);
+    font-weight: 500;
     color: var(--creatio-kpi-green);
 }
 
 /* Overall Rating */
 .creatio-overall-rating {
-    padding: 1rem;
-    background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
-    border-radius: 8px;
-}
-
-.creatio-rating-label {
-    font-size: 0.6875rem;
-    color: var(--creatio-text-secondary);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.creatio-rating-badge {
+    padding: 0.875rem;
+    background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
+    border-radius: var(--creatio-radius-md);
     margin-top: 0.5rem;
 }
 
+.creatio-rating-label {
+    font-size: var(--creatio-font-size-xs);
+    color: var(--creatio-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.creatio-rating-badge {
+    margin-top: 0.375rem;
+}
+
 .creatio-rating-badge .sapMObjStatusText {
-    font-weight: 700;
-    font-size: 1rem;
+    font-weight: 600;
+    font-size: var(--creatio-font-size-base);
 }
 
 /* ============================================================================
-   Next Best Actions Section
+   Next Best Actions Section - Professional Style
    ============================================================================ */
 .creatio-actions-list {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
+    margin-top: 0.75rem;
 }
 
 .creatio-action-item {
-    padding: 0.75rem;
+    padding: 0.625rem 0.75rem;
     background: var(--creatio-bg-light);
-    border-radius: 8px;
-    transition: background 0.2s ease;
+    border-radius: var(--creatio-radius-md);
+    transition: all var(--creatio-transition-fast);
+    display: flex;
+    align-items: center;
+    border: 1px solid transparent;
 }
 
 .creatio-action-item:hover {
-    background: var(--creatio-primary-light);
+    background: white;
+    border-color: var(--creatio-border);
+    box-shadow: var(--creatio-shadow-xs);
 }
 
 .creatio-action-icon {
-    color: var(--creatio-primary);
-    margin-right: 0.75rem;
+    color: var(--creatio-text-secondary);
+    margin-right: 0.625rem;
+    font-size: 0.875rem;
 }
 
 .creatio-action-label {
-    font-size: 0.8125rem;
+    font-size: var(--creatio-font-size-base);
     font-weight: 500;
     color: var(--creatio-text-primary);
 }
 
 .creatio-action-due {
-    font-size: 0.6875rem;
-    color: var(--creatio-text-secondary);
+    font-size: var(--creatio-font-size-xs);
+    color: var(--creatio-text-tertiary);
 }
 
 .creatio-action-priority {
@@ -926,188 +1140,176 @@ body.creatio-active [id*="action"] {
 }
 
 .creatio-action-priority .sapMObjStatusText {
-    font-size: 0.625rem;
+    font-size: var(--creatio-font-size-xs);
+    font-weight: 500;
 }
 
 .creatio-action-btn {
-    border-radius: 50% !important;
-    width: 36px !important;
-    height: 36px !important;
-    min-width: 36px !important;
+    border-radius: var(--creatio-radius-full) !important;
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
     background: var(--creatio-primary) !important;
     border: none !important;
+    transition: all var(--creatio-transition-fast) !important;
 }
 
 .creatio-action-btn .sapMBtnIcon {
     color: white !important;
-    font-size: 1rem !important;
+    font-size: 0.875rem !important;
 }
 
 .creatio-action-btn:hover {
     background: var(--creatio-primary-dark) !important;
-    transform: scale(1.1);
+    transform: scale(1.05);
 }
 
 /* ============================================================================
-   Quick Contact Section
+   Quick Contact Section - Outlined Pill Buttons
    ============================================================================ */
 .creatio-quick-contact-section {
-    background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%) !important;
+    background: white !important;
+    border-bottom: 1px solid var(--creatio-border-light) !important;
 }
 
 .creatio-quick-contact-buttons {
     display: flex;
-    justify-content: space-around;
-    gap: 8px;
-    padding: 8px 0;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.5rem 0;
+    margin-top: 0.5rem;
 }
 
 .creatio-contact-btn {
     flex: 1;
-    min-width: 70px !important;
-    border-radius: 8px !important;
-    padding: 8px 4px !important;
+    min-width: 60px !important;
+    max-width: 80px !important;
+    border-radius: var(--creatio-radius-md) !important;
+    padding: 0.5rem 0.25rem !important;
     height: auto !important;
-    min-height: 56px !important;
+    min-height: 52px !important;
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
     justify-content: center !important;
-    border: 1px solid transparent !important;
-    transition: all 0.2s ease !important;
+    border: 1px solid var(--creatio-border) !important;
+    background: white !important;
+    transition: all var(--creatio-transition-fast) !important;
 }
 
 .creatio-contact-btn .sapMBtnInner {
     flex-direction: column !important;
     height: auto !important;
-    padding: 8px 4px !important;
+    padding: 0.5rem 0.25rem !important;
+    background: transparent !important;
 }
 
 .creatio-contact-btn .sapMBtnIcon {
     margin-right: 0 !important;
-    margin-bottom: 4px !important;
-    font-size: 1.25rem !important;
+    margin-bottom: 0.25rem !important;
+    font-size: 1.125rem !important;
 }
 
 .creatio-contact-btn .sapMBtnContent {
-    font-size: 0.6875rem !important;
+    font-size: var(--creatio-font-size-xs) !important;
     font-weight: 500 !important;
 }
 
-/* Call button */
+/* Call button - Subtle */
 .creatio-contact-call {
-    background: white !important;
-    color: #4CAF50 !important;
-    border-color: #4CAF50 !important;
+    border-color: #66BB6A !important;
 }
 
 .creatio-contact-call .sapMBtnIcon,
 .creatio-contact-call .sapMBtnContent {
-    color: #4CAF50 !important;
+    color: #43A047 !important;
 }
 
 .creatio-contact-call:hover {
-    background: #4CAF50 !important;
+    background: #E8F5E9 !important;
+    border-color: #43A047 !important;
 }
 
-.creatio-contact-call:hover .sapMBtnIcon,
-.creatio-contact-call:hover .sapMBtnContent {
-    color: white !important;
-}
-
-/* Email button */
+/* Email button - Subtle */
 .creatio-contact-email {
-    background: white !important;
-    color: #2196F3 !important;
-    border-color: #2196F3 !important;
+    border-color: #64B5F6 !important;
 }
 
 .creatio-contact-email .sapMBtnIcon,
 .creatio-contact-email .sapMBtnContent {
-    color: #2196F3 !important;
+    color: #1976D2 !important;
 }
 
 .creatio-contact-email:hover {
-    background: #2196F3 !important;
+    background: #E3F2FD !important;
+    border-color: #1976D2 !important;
 }
 
-.creatio-contact-email:hover .sapMBtnIcon,
-.creatio-contact-email:hover .sapMBtnContent {
-    color: white !important;
-}
-
-/* WhatsApp button */
+/* WhatsApp button - Subtle */
 .creatio-contact-whatsapp {
-    background: white !important;
-    color: #25D366 !important;
-    border-color: #25D366 !important;
+    border-color: #81C784 !important;
 }
 
 .creatio-contact-whatsapp .sapMBtnIcon,
 .creatio-contact-whatsapp .sapMBtnContent {
-    color: #25D366 !important;
+    color: #2E7D32 !important;
 }
 
 .creatio-contact-whatsapp:hover {
-    background: #25D366 !important;
+    background: #E8F5E9 !important;
+    border-color: #2E7D32 !important;
 }
 
-.creatio-contact-whatsapp:hover .sapMBtnIcon,
-.creatio-contact-whatsapp:hover .sapMBtnContent {
-    color: white !important;
-}
-
-/* Schedule button */
+/* Schedule button - Subtle */
 .creatio-contact-schedule {
-    background: white !important;
-    color: #FF9800 !important;
-    border-color: #FF9800 !important;
+    border-color: #FFB74D !important;
 }
 
 .creatio-contact-schedule .sapMBtnIcon,
 .creatio-contact-schedule .sapMBtnContent {
-    color: #FF9800 !important;
+    color: #F57C00 !important;
 }
 
 .creatio-contact-schedule:hover {
-    background: #FF9800 !important;
-}
-
-.creatio-contact-schedule:hover .sapMBtnIcon,
-.creatio-contact-schedule:hover .sapMBtnContent {
-    color: white !important;
+    background: #FFF3E0 !important;
+    border-color: #F57C00 !important;
 }
 
 /* ============================================================================
-   Recommended Products Section
+   Recommended Products Section - Clean Cards
    ============================================================================ */
 .creatio-products-list {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
+    margin-top: 0.75rem;
 }
 
 .creatio-product-card {
-    padding: 0.75rem;
+    padding: 0.625rem 0.75rem;
     background: var(--creatio-bg-light);
-    border-radius: 8px;
-    gap: 0.75rem;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border-radius: var(--creatio-radius-md);
+    gap: 0.625rem;
+    display: flex;
+    align-items: center;
+    transition: all var(--creatio-transition-fast);
+    border: 1px solid transparent;
 }
 
 .creatio-product-card:hover {
-    transform: translateX(4px);
-    box-shadow: var(--creatio-shadow-sm);
+    background: white;
+    border-color: var(--creatio-border);
+    box-shadow: var(--creatio-shadow-xs);
 }
 
 .creatio-product-details {
     flex: 1;
     min-width: 0;
-    margin-left: 0.5rem;
+    margin-left: 0.375rem;
 }
 
 .creatio-product-name {
-    font-size: 0.8125rem;
+    font-size: var(--creatio-font-size-base);
     font-weight: 500;
     color: var(--creatio-text-primary);
     white-space: nowrap;
@@ -1116,27 +1318,30 @@ body.creatio-active [id*="action"] {
 }
 
 .creatio-product-meta {
-    font-size: 0.6875rem;
+    font-size: var(--creatio-font-size-xs);
     color: var(--creatio-text-secondary);
+    margin-top: 0.125rem;
 }
 
 .creatio-product-trend .sapMObjStatusText {
-    font-size: 0.75rem;
-    font-weight: 600;
+    font-size: var(--creatio-font-size-sm);
+    font-weight: 500;
 }
 
 /* ============================================================================
-   Engagement History Section
+   Engagement History Section - Clean Timeline
    ============================================================================ */
 .creatio-engagement-stats {
     padding: 0.75rem;
     background: var(--creatio-bg-light);
-    border-radius: 8px;
+    border-radius: var(--creatio-radius-md);
+    margin-top: 0.75rem;
+    border: 1px solid var(--creatio-border-light);
 }
 
 .creatio-stat-number {
-    font-size: 1.25rem;
-    font-weight: 700;
+    font-size: 1.125rem;
+    font-weight: 600;
     color: var(--creatio-text-primary);
 }
 
@@ -1145,66 +1350,71 @@ body.creatio-active [id*="action"] {
 }
 
 .creatio-stat-label {
-    font-size: 0.625rem;
+    font-size: var(--creatio-font-size-xs);
     color: var(--creatio-text-secondary);
     text-transform: uppercase;
     letter-spacing: 0.3px;
+    margin-top: 0.125rem;
 }
 
 /* Mini Timeline */
 .creatio-mini-timeline {
     position: relative;
     padding-left: 0;
+    margin-top: 0.75rem;
 }
 
 .creatio-timeline-item {
     position: relative;
-    padding: 0.5rem 0;
-    gap: 0.75rem;
+    padding: 0.375rem 0;
+    gap: 0.625rem;
+    display: flex;
+    align-items: flex-start;
 }
 
 .creatio-timeline-indicator {
     position: relative;
-    width: 28px;
+    width: 26px;
     flex-shrink: 0;
 }
 
 .creatio-timeline-dot {
-    width: 28px;
-    height: 28px;
+    width: 26px;
+    height: 26px;
     border-radius: 50%;
     background: var(--creatio-primary-light);
     color: var(--creatio-primary);
     display: flex;
     align-items: center;
     justify-content: center;
+    font-size: 0.75rem;
 }
 
 .creatio-timeline-line {
     position: absolute;
-    left: 13px;
-    top: 28px;
+    left: 12px;
+    top: 26px;
     width: 2px;
-    height: calc(100% - 8px);
-    background: var(--creatio-border);
+    height: calc(100% - 4px);
+    background: var(--creatio-border-light);
 }
 
 .creatio-timeline-content {
     flex: 1;
     min-width: 0;
-    padding-bottom: 0.5rem;
+    padding-bottom: 0.375rem;
 }
 
 .creatio-timeline-text {
-    font-size: 0.8125rem;
+    font-size: var(--creatio-font-size-base);
     color: var(--creatio-text-primary);
     line-height: 1.4;
 }
 
 .creatio-timeline-date {
-    font-size: 0.6875rem;
-    color: var(--creatio-text-secondary);
-    margin-top: 0.25rem;
+    font-size: var(--creatio-font-size-xs);
+    color: var(--creatio-text-tertiary);
+    margin-top: 0.125rem;
 }
 
 /* ============================================================================
@@ -1257,7 +1467,7 @@ body.creatio-active [id*="action"] {
 }
 
 /* ============================================================================
-   Convert to Prospect Button
+   Convert to Prospect Button - Professional CTA
    ============================================================================ */
 #creatioConvertBtnContainer {
     position: fixed !important;
@@ -1268,27 +1478,27 @@ body.creatio-active [id*="action"] {
 }
 
 #creatioConvertBtnContainer .sapMBtn {
-    border-radius: 28px !important;
-    padding: 0 2rem !important;
-    height: 48px !important;
-    min-width: 200px !important;
-    font-size: 0.9375rem !important;
+    border-radius: var(--creatio-radius-full) !important;
+    padding: 0 1.75rem !important;
+    height: 44px !important;
+    min-width: 180px !important;
+    font-size: var(--creatio-font-size-base) !important;
     font-weight: 600 !important;
-    box-shadow: 0 4px 16px rgba(15, 117, 188, 0.3) !important;
-    transition: all 0.2s ease !important;
-    background: linear-gradient(135deg, #0F75BC 0%, #1565C0 100%) !important;
+    box-shadow: var(--creatio-shadow-md) !important;
+    transition: all var(--creatio-transition-fast) !important;
+    background: linear-gradient(135deg, var(--creatio-primary) 0%, var(--creatio-primary-dark) 100%) !important;
     border: none !important;
 }
 
 #creatioConvertBtnContainer .sapMBtn:hover {
-    transform: translateY(-2px) !important;
-    box-shadow: 0 6px 20px rgba(15, 117, 188, 0.4) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: var(--creatio-shadow-lg) !important;
 }
 
 #creatioConvertBtnContainer .sapMBtn:disabled {
-    opacity: 0.6 !important;
+    opacity: 0.5 !important;
     box-shadow: none !important;
-    background: #9e9e9e !important;
+    background: var(--creatio-text-tertiary) !important;
 }
 
 #creatioConvertBtnContainer .sapMBtnContent {
@@ -1300,22 +1510,22 @@ body.creatio-active [id*="action"] {
 }
 
 .creatio-convert-btn {
-    border-radius: 28px !important;
-    padding: 0 2rem !important;
-    height: 48px !important;
-    font-size: 0.9375rem !important;
+    border-radius: var(--creatio-radius-full) !important;
+    padding: 0 1.75rem !important;
+    height: 44px !important;
+    font-size: var(--creatio-font-size-base) !important;
     font-weight: 600 !important;
-    box-shadow: 0 4px 16px rgba(15, 117, 188, 0.3) !important;
-    transition: all 0.2s ease !important;
+    box-shadow: var(--creatio-shadow-md) !important;
+    transition: all var(--creatio-transition-fast) !important;
 }
 
 .creatio-convert-btn:hover {
-    transform: translateY(-2px) !important;
-    box-shadow: 0 6px 20px rgba(15, 117, 188, 0.4) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: var(--creatio-shadow-lg) !important;
 }
 
 .creatio-convert-btn:disabled {
-    opacity: 0.6;
+    opacity: 0.5;
     box-shadow: none !important;
 }
 
@@ -1327,81 +1537,211 @@ body.creatio-active [id*="action"] {
 }
 
 .creatio-kpi-progress .sapMPIBar {
-    height: 6px !important;
-    border-radius: 3px;
+    height: 4px !important;
+    border-radius: 2px;
 }
 
 .creatio-kpi-progress .sapMPIBarRemaining {
-    background: var(--creatio-border) !important;
+    background: rgba(255, 255, 255, 0.3) !important;
 }
 
 /* ============================================================================
-   Enhanced Stage Bar
+   Tag Chips - Creatio Style
    ============================================================================ */
-.creatio-stage-emoji {
-    font-size: 1rem;
-    margin-bottom: 2px;
+.creatio-tags-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    padding: 0.5rem 0;
+}
+
+.creatio-tag-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.25rem 0.625rem;
+    background: var(--creatio-bg-light);
+    border: 1px solid var(--creatio-border);
+    border-radius: var(--creatio-radius-full);
+    font-size: var(--creatio-font-size-sm);
+    color: var(--creatio-text-primary);
+    transition: all var(--creatio-transition-fast);
+    cursor: default;
+}
+
+.creatio-tag-chip:hover {
+    background: white;
+    border-color: var(--creatio-text-tertiary);
+}
+
+.creatio-tag-chip .tag-text {
+    font-weight: 500;
+}
+
+.creatio-tag-chip .tag-remove {
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--creatio-text-tertiary);
+    cursor: pointer;
+    transition: all var(--creatio-transition-fast);
+    font-size: 0.625rem;
+}
+
+.creatio-tag-chip .tag-remove:hover {
+    background: var(--creatio-text-tertiary);
+    color: white;
+}
+
+/* Tag Color Variants */
+.creatio-tag-chip.tag-ai {
+    background: #E3F2FD;
+    border-color: #90CAF9;
+    color: #1565C0;
+}
+
+.creatio-tag-chip.tag-hot {
+    background: #FFF3E0;
+    border-color: #FFCC80;
+    color: #E65100;
+}
+
+.creatio-tag-chip.tag-webinar {
+    background: #F3E5F5;
+    border-color: #CE93D8;
+    color: #7B1FA2;
+}
+
+.creatio-tag-chip.tag-priority {
+    background: #FFEBEE;
+    border-color: #EF9A9A;
+    color: #C62828;
+}
+
+/* Add Tag Button */
+.creatio-add-tag-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.625rem;
+    background: transparent;
+    border: 1px dashed var(--creatio-border);
+    border-radius: var(--creatio-radius-full);
+    font-size: var(--creatio-font-size-sm);
+    color: var(--creatio-text-secondary);
+    cursor: pointer;
+    transition: all var(--creatio-transition-fast);
+}
+
+.creatio-add-tag-btn:hover {
+    border-color: var(--creatio-primary);
+    color: var(--creatio-primary);
+    background: var(--creatio-primary-light);
+}
+
+.creatio-add-tag-btn .sapUiIcon {
+    font-size: 0.75rem;
+}
+
+/* ============================================================================
+   Enhanced Stage Bar (Professional Icons)
+   ============================================================================ */
+.creatio-stage-icon {
+    color: inherit !important;
+    margin-right: 0.5rem;
+}
+
+.creatio-stage-icon .sapUiIcon {
+    color: inherit !important;
 }
 
 .creatio-chevron-stage .creatio-stage-label {
-    font-size: 0.625rem;
-    font-weight: 700;
+    font-size: 0.6875rem;
+    font-weight: 600;
     letter-spacing: 0.5px;
     color: inherit;
     text-transform: uppercase;
 }
 
-.creatio-chevron-stage.creatio-stage-completed .creatio-stage-emoji,
-.creatio-chevron-stage.creatio-stage-current .creatio-stage-emoji {
-    filter: grayscale(0);
-}
-
-.creatio-chevron-stage.creatio-stage-future .creatio-stage-emoji {
-    filter: grayscale(0.3);
-    opacity: 0.8;
-}
-
 /* Stage content container */
+.creatio-chevron-stage > .sapMHBox,
 .creatio-chevron-stage > .sapMVBox {
     align-items: center;
     justify-content: center;
-}
-
-/* Hover effect for stages */
-.creatio-chevron-stage:hover:not(.creatio-stage-current) {
-    filter: brightness(1.15);
-    background: rgba(255, 255, 255, 0.25);
+    gap: 0.375rem;
 }
 
 /* ============================================================================
    Enhanced Avatar
    ============================================================================ */
 .creatio-avatar-enhanced {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    border: 3px solid white;
+    box-shadow: var(--creatio-shadow-sm);
+    border: 2px solid white;
 }
 
 .creatio-avatar-enhanced .sapFAvatarInitialsHolder {
-    font-weight: 700;
-    letter-spacing: 1px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
 }
 
 /* ============================================================================
-   Section Visual Hierarchy
+   Section Visual Hierarchy - Professional Typography
    ============================================================================ */
 .sapUxAPObjectPageSection .sapUxAPObjectPageSectionContainer {
     background: white;
-    border-radius: 8px;
-    box-shadow: var(--creatio-shadow-sm);
-    margin-bottom: 1rem;
+    border-radius: var(--creatio-radius-md);
+    box-shadow: var(--creatio-shadow-xs);
+    margin-bottom: 0.875rem;
     padding: 1rem;
+    border: 1px solid var(--creatio-border-light);
 }
 
 .sapUxAPObjectPageSubSection {
     background: var(--creatio-bg-light);
-    border-radius: 6px;
-    padding: 1rem;
+    border-radius: var(--creatio-radius-sm);
+    padding: 0.875rem;
     margin-bottom: 0.5rem;
+}
+
+/* Section Titles */
+.sapUxAPObjectPageSectionTitle {
+    font-size: var(--creatio-font-size-sm) !important;
+    font-weight: 600 !important;
+    color: var(--creatio-text-primary) !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.3px !important;
+}
+
+/* Form Labels */
+.sapMLabel {
+    font-size: var(--creatio-font-size-xs) !important;
+    color: var(--creatio-text-secondary) !important;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    font-weight: 500 !important;
+}
+
+/* Form Values */
+.sapMText {
+    font-size: var(--creatio-font-size-base) !important;
+    color: var(--creatio-text-primary) !important;
+    line-height: 1.5 !important;
+}
+
+/* Links */
+.sapMLink {
+    font-size: var(--creatio-font-size-base) !important;
+    color: var(--creatio-primary) !important;
+    font-weight: 500 !important;
+}
+
+.sapMLink:hover {
+    color: var(--creatio-primary-dark) !important;
 }
 
 /* ============================================================================
@@ -1420,42 +1760,293 @@ body.creatio-active [id*="action"] {
 }
 
 /* ============================================================================
-   Additional Animations
+   Additional Animations - Subtle and Professional
    ============================================================================ */
-@keyframes slideUp {
+@keyframes sectionFadeIn {
     from {
-        transform: translateY(20px);
         opacity: 0;
+        transform: translateY(4px);
     }
     to {
+        opacity: 1;
         transform: translateY(0);
-        opacity: 1;
-    }
-}
-
-@keyframes scaleIn {
-    from {
-        transform: scale(0.9);
-        opacity: 0;
-    }
-    to {
-        transform: scale(1);
-        opacity: 1;
     }
 }
 
 .creatio-ai-section {
-    animation: slideUp 0.3s ease forwards;
+    animation: sectionFadeIn 0.2s ease forwards;
 }
 
-.creatio-ai-section:nth-child(1) { animation-delay: 0.05s; }
-.creatio-ai-section:nth-child(2) { animation-delay: 0.1s; }
-.creatio-ai-section:nth-child(3) { animation-delay: 0.15s; }
-.creatio-ai-section:nth-child(4) { animation-delay: 0.2s; }
+.creatio-ai-section:nth-child(1) { animation-delay: 0.02s; }
+.creatio-ai-section:nth-child(2) { animation-delay: 0.04s; }
+.creatio-ai-section:nth-child(3) { animation-delay: 0.06s; }
+.creatio-ai-section:nth-child(4) { animation-delay: 0.08s; }
+.creatio-ai-section:nth-child(5) { animation-delay: 0.1s; }
 
-.creatio-score-card {
-    animation: scaleIn 0.3s ease forwards;
+/* No animation on score cards for cleaner look */
+
+/* ============================================================================
+   Dashboard Widgets - Creatio Style
+   ============================================================================ */
+.creatio-dashboard-container {
+    padding: 1rem;
+    background: #FAFAFA;
+    margin: 0 -16px;
+    border-bottom: 1px solid #E0E0E0;
 }
 
-/* Convert button animation removed to ensure visibility */
+/* When dashboard is inside Object Page sections area */
+.sapUxAPObjectPageWrapper .creatio-dashboard-container {
+    margin: 0;
+    padding: 1rem 1.5rem;
+}
+
+.creatio-dashboard-row {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Quick Info Row (Customer need, Contact, Account, Created on) */
+.creatio-quick-info-row {
+    display: flex;
+    gap: 2rem;
+    padding: 1rem;
+    background: white;
+    border-bottom: 1px solid #E0E0E0;
+}
+
+.creatio-quick-info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.creatio-quick-info-label {
+    font-size: 0.6875rem;
+    color: #757575;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.creatio-quick-info-value {
+    font-size: 0.875rem;
+    color: #212121;
+    font-weight: 500;
+}
+
+.creatio-quick-info-value.link {
+    color: #1976D2;
+    cursor: pointer;
+}
+
+.creatio-quick-info-value.link:hover {
+    text-decoration: underline;
+}
+
+/* Dashboard Widget Card */
+.creatio-widget-card {
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #E0E0E0;
+    padding: 1.25rem;
+    flex: 1;
+}
+
+.creatio-widget-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.creatio-widget-icon {
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.creatio-widget-icon svg {
+    width: 16px;
+    height: 16px;
+}
+
+.creatio-widget-title {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: #212121;
+}
+
+.creatio-widget-content {
+    display: flex;
+    gap: 2rem;
+}
+
+.creatio-widget-metrics {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    min-width: 180px;
+}
+
+.creatio-metric-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.creatio-metric-label {
+    font-size: 0.75rem;
+    color: #757575;
+}
+
+.creatio-metric-value {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9375rem;
+    color: #212121;
+    font-weight: 500;
+}
+
+.creatio-metric-icon {
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.creatio-metric-icon.success { color: #4CAF50; }
+.creatio-metric-icon.warning { color: #FF9800; }
+.creatio-metric-icon.info { color: #2196F3; }
+
+/* Chart Container */
+.creatio-widget-chart {
+    flex: 1;
+    min-height: 120px;
+    display: flex;
+    flex-direction: column;
+}
+
+.creatio-chart-title {
+    font-size: 0.6875rem;
+    color: #757575;
+    margin-bottom: 0.5rem;
+}
+
+.creatio-chart-container {
+    flex: 1;
+    position: relative;
+}
+
+.creatio-chart-svg {
+    width: 100%;
+    height: 100%;
+}
+
+/* SVG Line Chart Styling */
+.creatio-chart-line {
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.creatio-chart-line.primary { stroke: #2196F3; }
+.creatio-chart-line.success { stroke: #4CAF50; }
+.creatio-chart-line.warning { stroke: #FF9800; }
+
+.creatio-chart-area {
+    opacity: 0.1;
+}
+
+.creatio-chart-area.primary { fill: #2196F3; }
+.creatio-chart-area.success { fill: #4CAF50; }
+.creatio-chart-area.warning { fill: #FF9800; }
+
+.creatio-chart-axis {
+    font-size: 0.625rem;
+    fill: #9E9E9E;
+}
+
+/* Contact Roles Table */
+.creatio-contact-roles {
+    margin-top: 1.5rem;
+}
+
+.creatio-contact-roles-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #E0E0E0;
+}
+
+.creatio-contact-roles-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: #212121;
+}
+
+.creatio-contact-roles-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.creatio-contact-roles-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 4px;
+    border: 1px solid #E0E0E0;
+    background: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #757575;
+    transition: all 0.15s ease;
+}
+
+.creatio-contact-roles-btn:hover {
+    border-color: #1976D2;
+    color: #1976D2;
+}
+
+.creatio-contact-roles-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.creatio-contact-roles-table th {
+    text-align: left;
+    padding: 0.75rem 1rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: #757575;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    border-bottom: 1px solid #E0E0E0;
+}
+
+.creatio-contact-roles-table td {
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    color: #212121;
+    border-bottom: 1px solid #F5F5F5;
+}
+
+.creatio-contact-roles-table td.link {
+    color: #1976D2;
+    cursor: pointer;
+}
+
+.creatio-contact-roles-table td.link:hover {
+    text-decoration: underline;
+}
 

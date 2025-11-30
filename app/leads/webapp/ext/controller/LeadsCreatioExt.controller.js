@@ -32,6 +32,7 @@ sap.ui.define([
     "sap/m/CustomListItem",
     "sap/m/ProgressIndicator",
     "sap/m/Link",
+    "sap/m/CheckBox",
     "sap/f/Avatar",
     "sap/f/Card",
     "sap/ui/core/Icon",
@@ -41,7 +42,7 @@ sap.ui.define([
     ControllerExtension, Fragment, JSONModel, MessageBox, MessageToast,
     VBox, HBox, FlexBox, Text, Title, Label, Button, ObjectNumber, ObjectStatus, 
     Panel, TextArea, ScrollContainer, List, StandardListItem, CustomListItem,
-    ProgressIndicator, Link, Avatar, Card, Icon, BusyIndicator, HTML
+    ProgressIndicator, Link, CheckBox, Avatar, Card, Icon, BusyIndicator, HTML
 ) {
     "use strict";
     
@@ -78,6 +79,13 @@ sap.ui.define([
         { id: "catalog", label: "Send Catalog", icon: "sap-icon://document", priority: "Medium", dueText: "This week", type: "Default" },
         { id: "email", label: "Send Email", icon: "sap-icon://email", priority: "Medium", dueText: "This week", type: "Default" },
         { id: "whatsapp", label: "WhatsApp", icon: "sap-icon://discussion-2", priority: "Low", dueText: "Anytime", type: "Default" }
+    ];
+
+    // Mock tags for lead categorization
+    const MOCK_TAGS = [
+        { id: "ai", text: "AI", colorClass: "tag-ai", removable: true },
+        { id: "hot_leads", text: "Hot_leads", colorClass: "tag-hot", removable: true },
+        { id: "webinar_2023", text: "Webinar_2023", colorClass: "tag-webinar", removable: true }
     ];
 
     return ControllerExtension.extend("beautyleads.leads.ext.controller.LeadsCreatioExt", {
@@ -150,10 +158,10 @@ sap.ui.define([
             // KPI model with score data
             this._oKPIModel = new JSONModel({
                 kpis: [
-                    { id: "daysSinceCreated", title: "Days Since Created", value: "0", numericValue: 0, color: "blue", icon: "sap-icon://calendar" },
-                    { id: "aiScore", title: "AI Score", value: "0%", numericValue: 0, color: "green", icon: "sap-icon://target-group" },
-                    { id: "trendScore", title: "Trend Score", value: "0/100", numericValue: 0, color: "purple", icon: "sap-icon://trend-up" },
-                    { id: "estimatedValue", title: "Est. Value", value: "RM 0", numericValue: 0, color: "orange", icon: "sap-icon://money-bills" }
+                    { id: "daysInFunnel", title: "Days in funnel", value: "16", numericValue: 16, color: "blue" },
+                    { id: "daysAtStage", title: "Days at current stage", value: "14", numericValue: 14, color: "teal" },
+                    { id: "emailsSent", title: "Emails sent", value: "6", numericValue: 6, color: "orange" },
+                    { id: "outgoingCalls", title: "Outgoing calls", value: "4", numericValue: 4, color: "red" }
                 ],
                 aiScore: 0,
                 trendScore: 0,
@@ -172,6 +180,11 @@ sap.ui.define([
                 engagement: MOCK_ENGAGEMENT,
                 activities: MOCK_ACTIVITIES,
                 actions: NEXT_BEST_ACTIONS
+            });
+
+            // Tags model
+            this._oTagsModel = new JSONModel({
+                tags: MOCK_TAGS
             });
         },
 
@@ -197,11 +210,29 @@ sap.ui.define([
         _onViewAfterRendering: function () {
             console.log("[LeadsCreatioExt] View rendered, initializing components");
             
-            // Delay to ensure DOM is ready
-            setTimeout(() => {
-                this._initializeCreatioComponents();
-                this._setupBindingContextListener();
-            }, 500);
+            // Robust initialization with retry mechanism
+            const fnInit = () => {
+                // Check if critical DOM elements exist
+                const oObjectPage = this.base.getView().byId("fe::ObjectPage");
+                if (oObjectPage && oObjectPage.getDomRef()) {
+                    this._initializeCreatioComponents();
+                    this._setupBindingContextListener();
+                    return true;
+                }
+                return false;
+            };
+
+            // Try immediately
+            if (!fnInit()) {
+                // Retry a few times if DOM isn't ready
+                let attempts = 0;
+                const interval = setInterval(() => {
+                    attempts++;
+                    if (fnInit() || attempts > 10) {
+                        clearInterval(interval);
+                    }
+                }, 500);
+            }
         },
 
         /**
@@ -253,11 +284,301 @@ sap.ui.define([
             }
 
             // Render components
+            this._renderTagChips();
             this._renderChevronStageBar();
             this._renderKPICards();
+            this._renderDashboardWidgets();
+            this._renderProfileSidebar();
             this._renderEnhancedAIPanel();
             this._renderEntityProfile();
             this._renderConvertButton();
+        },
+
+        /**
+         * Render Tag Chips in header area
+         * @private
+         */
+        _renderTagChips: function () {
+            const that = this;
+            
+            // Create tag chips container
+            let oTagContainer = document.getElementById("creatioTagChipsContainer");
+            if (!oTagContainer) {
+                oTagContainer = document.createElement("div");
+                oTagContainer.id = "creatioTagChipsContainer";
+                oTagContainer.className = "creatio-tags-container";
+                oTagContainer.style.cssText = "position:fixed;top:48px;left:165px;z-index:9550;padding:0.375rem 0;";
+                document.body.appendChild(oTagContainer);
+            }
+
+            // Clear existing content
+            oTagContainer.innerHTML = "";
+
+            // Render tags
+            const aTags = this._oTagsModel.getProperty("/tags") || [];
+            aTags.forEach((oTag) => {
+                const oChip = document.createElement("div");
+                oChip.className = "creatio-tag-chip " + (oTag.colorClass || "");
+                oChip.innerHTML = `
+                    <span class="tag-text">${oTag.text}</span>
+                    ${oTag.removable ? '<span class="tag-remove" data-tag-id="' + oTag.id + '">✕</span>' : ''}
+                `;
+                
+                // Add remove handler
+                const oRemoveBtn = oChip.querySelector(".tag-remove");
+                if (oRemoveBtn) {
+                    oRemoveBtn.addEventListener("click", function() {
+                        that._onRemoveTag(oTag.id);
+                    });
+                }
+                
+                oTagContainer.appendChild(oChip);
+            });
+
+            // Add "Add tag" button
+            const oAddBtn = document.createElement("button");
+            oAddBtn.className = "creatio-add-tag-btn";
+            oAddBtn.innerHTML = '<span>+</span><span>Add tag</span>';
+            oAddBtn.addEventListener("click", function() {
+                that._onAddTag();
+            });
+            oTagContainer.appendChild(oAddBtn);
+
+            console.log("[LeadsCreatioExt] Tag chips rendered");
+        },
+
+        /**
+         * Handle tag removal
+         * @private
+         */
+        _onRemoveTag: function (sTagId) {
+            const aTags = this._oTagsModel.getProperty("/tags") || [];
+            const aNewTags = aTags.filter(t => t.id !== sTagId);
+            this._oTagsModel.setProperty("/tags", aNewTags);
+            this._renderTagChips();
+            MessageToast.show("Tag removed");
+        },
+
+        /**
+         * Handle add tag
+         * @private
+         */
+        _onAddTag: function () {
+            MessageToast.show("Add tag dialog would open here");
+        },
+
+        /**
+         * Render Profile Sidebar
+         * @private
+         */
+        _renderProfileSidebar: function () {
+            const that = this;
+            
+            // Create sidebar container
+            let oSidebarContainer = document.getElementById("creatioProfileSidebar");
+            if (oSidebarContainer) {
+                oSidebarContainer.remove();
+            }
+            
+            oSidebarContainer = document.createElement("div");
+            oSidebarContainer.id = "creatioProfileSidebar";
+            oSidebarContainer.className = "creatio-profile-sidebar-fixed";
+            document.body.appendChild(oSidebarContainer);
+
+            // Create profile sidebar content using SAPUI5 controls
+            const oSidebar = new VBox({
+                width: "100%"
+            });
+            oSidebar.addStyleClass("creatio-entity-profile");
+
+            // Profile Header with Avatar
+            const oProfileHeader = new VBox({
+                alignItems: "Center"
+            });
+            oProfileHeader.addStyleClass("creatio-profile-header");
+
+            // Avatar
+            const oAvatar = new Avatar({
+                initials: "OJ",
+                displaySize: "L",
+                backgroundColor: "Accent3"
+            });
+            oAvatar.addStyleClass("creatio-profile-avatar creatio-avatar-enhanced");
+            oProfileHeader.addItem(oAvatar);
+
+            // Name
+            const oName = new Title({
+                text: "Loading...",
+                level: "H5"
+            });
+            oName.addStyleClass("creatio-profile-name");
+            oProfileHeader.addItem(oName);
+
+            // Subtitle (date info)
+            const oSubtitle = new Text({
+                text: ""
+            });
+            oSubtitle.addStyleClass("creatio-profile-subtitle");
+            oProfileHeader.addItem(oSubtitle);
+
+            oSidebar.addItem(oProfileHeader);
+
+            // Quick Action Buttons Row
+            const oActionsRow = new HBox({
+                justifyContent: "Center",
+                alignItems: "Center"
+            });
+            oActionsRow.addStyleClass("creatio-profile-actions");
+
+            // Call button
+            const oCallBtn = new Button({
+                icon: "sap-icon://call",
+                type: "Default",
+                tooltip: "Call",
+                press: function() { that._onQuickCall(); }
+            });
+            oActionsRow.addItem(oCallBtn);
+
+            // Chat button
+            const oChatBtn = new Button({
+                icon: "sap-icon://discussion-2",
+                type: "Default",
+                tooltip: "Chat",
+                press: function() { that._onQuickWhatsApp(); }
+            });
+            oActionsRow.addItem(oChatBtn);
+
+            // Email button
+            const oEmailBtn = new Button({
+                icon: "sap-icon://email",
+                type: "Default",
+                tooltip: "Email",
+                press: function() { that._onQuickEmail(); }
+            });
+            oActionsRow.addItem(oEmailBtn);
+
+            // Flag button
+            const oFlagBtn = new Button({
+                icon: "sap-icon://flag",
+                type: "Default",
+                tooltip: "Flag",
+                press: function() { MessageToast.show("Flagged for follow-up"); }
+            });
+            oActionsRow.addItem(oFlagBtn);
+
+            oSidebar.addItem(oActionsRow);
+
+            // Profile Info Fields
+            const oInfoSection = new VBox();
+            oInfoSection.addStyleClass("creatio-profile-info");
+
+            // Account field
+            const oAccountField = this._createProfileField("Account", "Loading...", "sap-icon://building");
+            oInfoSection.addItem(oAccountField);
+
+            // Job Title field
+            const oJobField = this._createProfileField("Full job Title", "Loading...", "sap-icon://employee");
+            oInfoSection.addItem(oJobField);
+
+            oSidebar.addItem(oInfoSection);
+
+            // Communication Options expandable section
+            const oCommPanel = new Panel({
+                headerText: "Communication options",
+                expandable: true,
+                expanded: false
+            });
+            oCommPanel.addStyleClass("creatio-profile-comm-panel");
+            oSidebar.addItem(oCommPanel);
+
+            // Next Steps Section (Creatio style)
+            const oNextStepsSection = new VBox();
+            oNextStepsSection.addStyleClass("creatio-next-steps-section");
+            
+            const oNextStepsTitle = new Text({ text: "Next steps" });
+            oNextStepsTitle.addStyleClass("creatio-section-title");
+            oNextStepsSection.addItem(oNextStepsTitle);
+            
+            // Next step items
+            const aNextSteps = [
+                { text: "Schedule follow-up call", icon: "sap-icon://call", date: "Today" },
+                { text: "Send product catalog", icon: "sap-icon://document", date: "Tomorrow" },
+                { text: "Review meeting notes", icon: "sap-icon://notes", date: "Dec 2" }
+            ];
+            
+            aNextSteps.forEach((oStep) => {
+                const oStepItem = new HBox({
+                    alignItems: "Center"
+                });
+                oStepItem.addStyleClass("creatio-next-step-item");
+                
+                const oCheckbox = new CheckBox({
+                    selected: false,
+                    select: function() {
+                        MessageToast.show("Step completed: " + oStep.text);
+                    }
+                });
+                oStepItem.addItem(oCheckbox);
+                
+                const oStepContent = new VBox();
+                const oStepText = new Text({ text: oStep.text });
+                oStepText.addStyleClass("creatio-next-step-text");
+                oStepContent.addItem(oStepText);
+                
+                const oStepDate = new Text({ text: oStep.date });
+                oStepDate.addStyleClass("creatio-next-step-date");
+                oStepContent.addItem(oStepDate);
+                
+                oStepItem.addItem(oStepContent);
+                oNextStepsSection.addItem(oStepItem);
+            });
+            
+            oSidebar.addItem(oNextStepsSection);
+
+            // Place sidebar
+            oSidebar.placeAt(oSidebarContainer);
+            this._oProfileSidebar = oSidebar;
+            this._oProfileAvatar = oAvatar;
+            this._oProfileName = oName;
+            this._oProfileSubtitle = oSubtitle;
+            this._oAccountField = oAccountField;
+            this._oJobField = oJobField;
+
+            // Add class to body for layout adjustment
+            document.body.classList.add("creatio-with-profile-sidebar");
+
+            console.log("[LeadsCreatioExt] Profile sidebar rendered");
+        },
+
+        /**
+         * Create a profile info field
+         * @private
+         */
+        _createProfileField: function (sLabel, sValue, sIcon) {
+            const oField = new HBox({
+                alignItems: "Start"
+            });
+            oField.addStyleClass("creatio-profile-field");
+
+            const oIcon = new Icon({
+                src: sIcon,
+                size: "0.875rem"
+            });
+            oIcon.addStyleClass("creatio-profile-field-icon");
+            oField.addItem(oIcon);
+
+            const oContent = new VBox();
+            const oLabel = new Text({ text: sLabel });
+            oLabel.addStyleClass("creatio-profile-field-label");
+            oContent.addItem(oLabel);
+
+            const oValue = new Text({ text: sValue });
+            oValue.addStyleClass("creatio-profile-field-value");
+            oContent.addItem(oValue);
+            oField.addItem(oContent);
+
+            oField._valueText = oValue;
+            return oField;
         },
 
         /**
@@ -286,18 +607,18 @@ sap.ui.define([
         },
 
         /**
-         * Build the chevron stage bar
+         * Build the chevron stage bar (Professional - No Emojis)
          * @private
          */
         _buildChevronBar: function () {
             const that = this;
             const aStages = [
-                { key: "New", label: "NEW", icon: "sap-icon://add", emoji: "➕" },
-                { key: "Contacted", label: "CONTACTED", icon: "sap-icon://call", emoji: "📞" },
-                { key: "Qualified", label: "QUALIFIED", icon: "sap-icon://accept", emoji: "✅" },
-                { key: "Nurturing", label: "NURTURING", icon: "sap-icon://nurture-leads", emoji: "🌱" },
-                { key: "Converted", label: "CONVERTED", icon: "sap-icon://complete", emoji: "🎉" },
-                { key: "Lost", label: "LOST", icon: "sap-icon://decline", emoji: "❌", isNegative: true }
+                { key: "New", label: "NEW", icon: "sap-icon://add" },
+                { key: "Contacted", label: "CONTACTED", icon: "sap-icon://call" },
+                { key: "Qualified", label: "QUALIFIED", icon: "sap-icon://accept" },
+                { key: "Nurturing", label: "NURTURING", icon: "sap-icon://tree" },
+                { key: "Converted", label: "CONVERTED", icon: "sap-icon://complete" },
+                { key: "Lost", label: "LOST", icon: "sap-icon://decline", isNegative: true }
             ];
 
             const oBar = new HBox({
@@ -308,7 +629,7 @@ sap.ui.define([
             oBar.addStyleClass("creatio-chevron-bar");
 
             aStages.forEach((oStage, iIndex) => {
-                const oChevron = new VBox({
+                const oChevron = new HBox({
                     alignItems: "Center",
                     justifyContent: "Center"
                 });
@@ -317,20 +638,18 @@ sap.ui.define([
                 oChevron.data("stageKey", oStage.key);
                 oChevron.data("stageIndex", iIndex);
 
-                // Stage content with icon and label
-                const oContent = new VBox({
-                    alignItems: "Center"
+                // Stage content with SAP icon and label (horizontal layout)
+                const oStageIcon = new Icon({
+                    src: oStage.icon,
+                    size: "1rem"
                 });
-                
-                const oIcon = new Text({ text: oStage.emoji });
-                oIcon.addStyleClass("creatio-stage-emoji");
+                oStageIcon.addStyleClass("creatio-stage-icon");
                 
                 const oLabel = new Text({ text: oStage.label });
                 oLabel.addStyleClass("creatio-stage-label");
                 
-                oContent.addItem(oIcon);
-                oContent.addItem(oLabel);
-                oChevron.addItem(oContent);
+                oChevron.addItem(oStageIcon);
+                oChevron.addItem(oLabel);
 
                 // Click handler
                 oChevron.attachBrowserEvent("click", function() {
@@ -407,51 +726,238 @@ sap.ui.define([
         },
 
         /**
-         * Create an enhanced KPI card with progress indicator
+         * Create a clean KPI card (Creatio style - no progress bars)
          * @private
          */
         _createEnhancedKPICard: function (oKPI) {
             const oCard = new VBox();
             oCard.addStyleClass("creatio-kpi-card kpi-" + oKPI.color);
             
-            // Title row with icon
-            const oTitleRow = new HBox({
-                alignItems: "Center",
-                justifyContent: "SpaceBetween"
-            });
-            
+            // Title
             const oTitle = new Text({ text: oKPI.title });
             oTitle.addStyleClass("creatio-kpi-title");
-            oTitleRow.addItem(oTitle);
 
-            // Value
+            // Large Value
             const oValue = new Text({ text: oKPI.value });
             oValue.addStyleClass("creatio-kpi-value");
             
-            // Progress bar for scores
-            let oProgress = null;
-            if (oKPI.id === "aiScore" || oKPI.id === "trendScore") {
-                oProgress = new ProgressIndicator({
-                    percentValue: oKPI.numericValue,
-                    showValue: false,
-                    height: "6px",
-                    state: this._getProgressState(oKPI.numericValue)
-                });
-                oProgress.addStyleClass("creatio-kpi-progress sapUiTinyMarginTop");
-            }
-            
-            oCard.addItem(oTitleRow);
+            oCard.addItem(oTitle);
             oCard.addItem(oValue);
-            if (oProgress) {
-                oCard.addItem(oProgress);
-            }
             
             // Store reference for updates
             oCard.data("kpiId", oKPI.id);
             oCard._valueText = oValue;
-            oCard._progress = oProgress;
             
             return oCard;
+        },
+
+        /**
+         * Render Dashboard Widgets (Engagement & Email Nurturing)
+         * @private
+         */
+        _renderDashboardWidgets: function () {
+            // Create dashboard container
+            let oDashContainer = document.getElementById("creatioDashboardContainer");
+            if (oDashContainer) {
+                // Already rendered
+                return;
+            }
+
+            oDashContainer = document.createElement("div");
+            oDashContainer.id = "creatioDashboardContainer";
+            oDashContainer.className = "creatio-dashboard-container";
+
+            // Quick Info Row
+            const sQuickInfoHTML = `
+                <div class="creatio-quick-info-row">
+                    <div class="creatio-quick-info-item">
+                        <span class="creatio-quick-info-label">Customer need</span>
+                        <span class="creatio-quick-info-value">Beauty Products</span>
+                    </div>
+                    <div class="creatio-quick-info-item">
+                        <span class="creatio-quick-info-label">Contact</span>
+                        <span class="creatio-quick-info-value link">Sarah Chen</span>
+                    </div>
+                    <div class="creatio-quick-info-item">
+                        <span class="creatio-quick-info-label">Account</span>
+                        <span class="creatio-quick-info-value link">GlowUp Cosmetics</span>
+                    </div>
+                    <div class="creatio-quick-info-item">
+                        <span class="creatio-quick-info-label">Created on</span>
+                        <span class="creatio-quick-info-value">Nov 14, 2025</span>
+                    </div>
+                </div>
+            `;
+
+            // Engagement Widget with Line Chart
+            const sEngagementHTML = `
+                <div class="creatio-dashboard-row">
+                    <div class="creatio-widget-card">
+                        <div class="creatio-widget-header">
+                            <div class="creatio-widget-icon" style="color: #2196F3;">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14l-5-5 1.41-1.41L12 14.17l4.59-4.58L18 11l-6 6z"/>
+                                </svg>
+                            </div>
+                            <span class="creatio-widget-title">Engagement</span>
+                        </div>
+                        <div class="creatio-widget-content">
+                            <div class="creatio-widget-metrics">
+                                <div class="creatio-metric-item">
+                                    <span class="creatio-metric-label">Forms submitted</span>
+                                    <span class="creatio-metric-value">
+                                        <span class="creatio-metric-icon success">✓</span> 2
+                                    </span>
+                                </div>
+                                <div class="creatio-metric-item">
+                                    <span class="creatio-metric-label">Duration of last visit</span>
+                                    <span class="creatio-metric-value">3m 45s</span>
+                                </div>
+                                <div class="creatio-metric-item">
+                                    <span class="creatio-metric-label">Last site visit</span>
+                                    <span class="creatio-metric-value">Nov 28, 2025</span>
+                                </div>
+                                <div class="creatio-metric-item">
+                                    <span class="creatio-metric-label">Avg. duration</span>
+                                    <span class="creatio-metric-value">2m 15s</span>
+                                </div>
+                            </div>
+                            <div class="creatio-widget-chart">
+                                <span class="creatio-chart-title">Site activity (last 30 days)</span>
+                                <div class="creatio-chart-container">
+                                    <svg class="creatio-chart-svg" viewBox="0 0 300 100" preserveAspectRatio="none">
+                                        <defs>
+                                            <linearGradient id="engagementGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                                                <stop offset="0%" style="stop-color:#2196F3;stop-opacity:0.2"/>
+                                                <stop offset="100%" style="stop-color:#2196F3;stop-opacity:0"/>
+                                            </linearGradient>
+                                        </defs>
+                                        <path class="creatio-chart-area primary" d="M0,80 L30,60 L60,70 L90,40 L120,55 L150,35 L180,45 L210,25 L240,30 L270,20 L300,15 L300,100 L0,100 Z" fill="url(#engagementGradient)"/>
+                                        <path class="creatio-chart-line primary" d="M0,80 L30,60 L60,70 L90,40 L120,55 L150,35 L180,45 L210,25 L240,30 L270,20 L300,15"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="creatio-widget-card">
+                        <div class="creatio-widget-header">
+                            <div class="creatio-widget-icon" style="color: #4CAF50;">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                                </svg>
+                            </div>
+                            <span class="creatio-widget-title">Email nurturing</span>
+                        </div>
+                        <div class="creatio-widget-content">
+                            <div class="creatio-widget-metrics">
+                                <div class="creatio-metric-item">
+                                    <span class="creatio-metric-label">Sent emails</span>
+                                    <span class="creatio-metric-value">6</span>
+                                </div>
+                                <div class="creatio-metric-item">
+                                    <span class="creatio-metric-label">Open %</span>
+                                    <span class="creatio-metric-value">
+                                        <span class="creatio-metric-icon success">✓</span> 83%
+                                    </span>
+                                </div>
+                                <div class="creatio-metric-item">
+                                    <span class="creatio-metric-label">Clicks %</span>
+                                    <span class="creatio-metric-value">
+                                        <span class="creatio-metric-icon warning">!</span> 33%
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="creatio-widget-chart">
+                                <span class="creatio-chart-title">Email engagement (last 6 emails)</span>
+                                <div class="creatio-chart-container">
+                                    <svg class="creatio-chart-svg" viewBox="0 0 300 100" preserveAspectRatio="none">
+                                        <defs>
+                                            <linearGradient id="emailGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                                                <stop offset="0%" style="stop-color:#4CAF50;stop-opacity:0.2"/>
+                                                <stop offset="100%" style="stop-color:#4CAF50;stop-opacity:0"/>
+                                            </linearGradient>
+                                        </defs>
+                                        <path class="creatio-chart-area success" d="M0,40 L50,35 L100,55 L150,30 L200,45 L250,25 L300,35 L300,100 L0,100 Z" fill="url(#emailGradient)"/>
+                                        <path class="creatio-chart-line success" d="M0,40 L50,35 L100,55 L150,30 L200,45 L250,25 L300,35"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Contact Roles Section
+            const sContactRolesHTML = `
+                <div class="creatio-contact-roles">
+                    <div class="creatio-contact-roles-header">
+                        <span class="creatio-contact-roles-title">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="#757575">
+                                <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
+                            </svg>
+                            Contact roles (2)
+                        </span>
+                        <div class="creatio-contact-roles-actions">
+                            <button class="creatio-contact-roles-btn" title="Add">+</button>
+                            <button class="creatio-contact-roles-btn" title="Settings">⚙</button>
+                        </div>
+                    </div>
+                    <table class="creatio-contact-roles-table">
+                        <thead>
+                            <tr>
+                                <th>Contact</th>
+                                <th>Role</th>
+                                <th>Primary</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="link">Sarah Chen</td>
+                                <td>Decision maker</td>
+                                <td>✓</td>
+                            </tr>
+                            <tr>
+                                <td class="link">Mike Johnson</td>
+                                <td>Influencer</td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            `;
+
+            oDashContainer.innerHTML = sQuickInfoHTML + sEngagementHTML + sContactRolesHTML;
+
+            // Find insertion point - inside Object Page main content area
+            const oObjectPage = document.querySelector(".sapUxAPObjectPageLayout");
+            if (oObjectPage) {
+                // Strategy 1: Try to find the wrapper and place before the sections
+                const oWrapper = oObjectPage.querySelector(".sapUxAPObjectPageWrapper");
+                if (oWrapper) {
+                    // Insert at beginning of wrapper content, after header
+                    const oScrollContainer = oWrapper.querySelector(".sapUxAPObjectPageWrapperTransition") || oWrapper;
+                    const oFirstSection = oScrollContainer.querySelector(".sapUxAPObjectPageSection");
+                    if (oFirstSection) {
+                        oFirstSection.parentNode.insertBefore(oDashContainer, oFirstSection);
+                        console.log("[LeadsCreatioExt] Dashboard widgets rendered (before sections)");
+                        return;
+                    }
+                }
+
+                // Strategy 2: Fallback to header content
+                const oHeaderContent = oObjectPage.querySelector(".sapUxAPObjectPageHeaderContent");
+                if (oHeaderContent) {
+                    oHeaderContent.appendChild(oDashContainer);
+                    console.log("[LeadsCreatioExt] Dashboard widgets rendered (in header)");
+                    return;
+                }
+            }
+            
+            // Strategy 3: Last resort - append to body at fixed position
+            document.body.appendChild(oDashContainer);
+            oDashContainer.style.cssText = "position:fixed;top:200px;left:0;right:380px;z-index:100;";
+            console.log("[LeadsCreatioExt] Dashboard widgets rendered (fixed fallback)");
         },
 
         /**
@@ -1164,19 +1670,31 @@ sap.ui.define([
                 });
                 oContainer.addStyleClass(sClass);
                 
-                // Try to find Object Page header and add container
+                // Try multiple injection points
                 const oObjectPage = oView.byId("fe::ObjectPage");
                 if (oObjectPage) {
-                    try {
-                        const oDomRef = oObjectPage.getDomRef();
-                        if (oDomRef) {
-                            const oHeaderContent = oDomRef.querySelector(".sapUxAPObjectPageHeaderContent");
-                            if (oHeaderContent) {
-                                oContainer.placeAt(oHeaderContent, "first");
-                            }
+                    const oDomRef = oObjectPage.getDomRef();
+                    if (oDomRef) {
+                        // 1. Try standard header content
+                        const oHeaderContent = oDomRef.querySelector(".sapUxAPObjectPageHeaderContent");
+                        if (oHeaderContent) {
+                            oContainer.placeAt(oHeaderContent, "first");
+                            return oContainer;
                         }
-                    } catch (e) {
-                        console.warn("[LeadsCreatioExt] Could not place container in header:", e);
+                        
+                        // 2. Try header title (fallback)
+                        const oHeaderTitle = oDomRef.querySelector(".sapUxAPObjectPageHeaderTitle");
+                        if (oHeaderTitle) {
+                            oContainer.placeAt(oHeaderTitle, "after");
+                            return oContainer;
+                        }
+
+                        // 3. Fallback: Prepend to Object Page Wrapper
+                        const oWrapper = oDomRef.querySelector(".sapUxAPObjectPageWrapper");
+                        if (oWrapper) {
+                            oContainer.placeAt(oWrapper, "first");
+                            return oContainer;
+                        }
                     }
                 }
             }
@@ -1242,6 +1760,33 @@ sap.ui.define([
                 allowSMS: false,
                 converted: oData.converted || false
             });
+
+            // Update profile sidebar if it exists
+            this._updateProfileSidebar(oData, sName, sInitials, sColor);
+        },
+
+        /**
+         * Update profile sidebar content
+         * @private
+         */
+        _updateProfileSidebar: function (oData, sName, sInitials, sColor) {
+            if (this._oProfileAvatar) {
+                this._oProfileAvatar.setInitials(sInitials);
+                this._oProfileAvatar.setBackgroundColor(sColor);
+            }
+            if (this._oProfileName) {
+                this._oProfileName.setText(sName);
+            }
+            if (this._oProfileSubtitle) {
+                const sSubtitle = this._formatDate(oData.createdAt) + (oData.city ? " • " + oData.city : "");
+                this._oProfileSubtitle.setText(sSubtitle);
+            }
+            if (this._oAccountField && this._oAccountField._valueText) {
+                this._oAccountField._valueText.setText(oData.outletName || "-");
+            }
+            if (this._oJobField && this._oJobField._valueText) {
+                this._oJobField._valueText.setText(oData.contactName || "-");
+            }
         },
 
         /**
@@ -1641,12 +2186,31 @@ sap.ui.define([
             if (this._oAIPanelModel) {
                 this._oAIPanelModel.destroy();
             }
+            if (this._oTagsModel) {
+                this._oTagsModel.destroy();
+            }
             if (this._oAIPanel) {
                 this._oAIPanel.destroy();
             }
             if (this._oConvertButton) {
                 this._oConvertButton.destroy();
             }
+            if (this._oProfileSidebar) {
+                this._oProfileSidebar.destroy();
+            }
+            
+            // Remove DOM elements
+            const oTagContainer = document.getElementById("creatioTagChipsContainer");
+            if (oTagContainer) {
+                oTagContainer.remove();
+            }
+            const oSidebarContainer = document.getElementById("creatioProfileSidebar");
+            if (oSidebarContainer) {
+                oSidebarContainer.remove();
+            }
+            
+            // Remove body class
+            document.body.classList.remove("creatio-with-profile-sidebar");
         }
     });
 });

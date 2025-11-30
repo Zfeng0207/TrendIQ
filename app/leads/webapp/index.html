@@ -5,6 +5,52 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Lead Management</title>
+    
+    <!-- Redirect to launchpad if accessed directly (not in iframe/launchpad context) -->
+    <script>
+        (function() {
+            // Check if we're in the launchpad context (loaded as iframe or component)
+            var isInLaunchpad = (window.parent !== window) || 
+                                (window.location.href.indexOf('launchpad') >= 0) ||
+                                (document.referrer.indexOf('launchpad') >= 0) ||
+                                (window.frameElement !== null);
+            
+            // Also check if we're being loaded by SAP shell
+            var hasSAPShell = typeof window['sap-ushell-config'] !== 'undefined' || 
+                             document.querySelector('[data-sap-ui-xx-placeholder]') !== null;
+            
+            // If accessed directly (not in launchpad), redirect to launchpad
+            if (!isInLaunchpad && !hasSAPShell && window.location.pathname.indexOf('/beautyleads.leads/') >= 0) {
+                window.location.href = '/launchpad.html#leads-manage';
+            }
+            
+            // If in launchpad context, hide standalone navigation elements (launchpad provides its own)
+            if (isInLaunchpad || hasSAPShell) {
+                document.documentElement.classList.add('in-launchpad');
+            }
+        })();
+    </script>
+    
+    <!-- Hide standalone UI when in launchpad (launchpad.html provides navigation and Creatio elements) -->
+    <style>
+        html.in-launchpad .beauty-nav-bar,
+        html.in-launchpad #creatioStageBar,
+        html.in-launchpad #creatioKPICards,
+        html.in-launchpad #creatioAIPanel,
+        html.in-launchpad #aiPlannerFABLeads {
+            display: none !important;
+        }
+        html.in-launchpad body {
+            padding-top: 0 !important;
+        }
+        html.in-launchpad body.creatio-active {
+            padding-top: 0 !important;
+        }
+        html.in-launchpad body.creatio-active #container {
+            margin-right: 0 !important;
+        }
+    </style>
+    
     <link rel="stylesheet" type="text/css" href="css/custom.css">
     <style>
         html, body, body > div, #container, #container-uiarea {
@@ -349,11 +395,11 @@
                 <span style="font-size: 10px;">▼</span>
             </button>
             <div class="beauty-nav-menu" id="navMenu">
-                <a href="/beautyleads.leads/index.html" class="beauty-nav-item active">Leads</a>
-                <a href="/beautyleads.prospects/index.html" class="beauty-nav-item">Prospects</a>
-                <a href="/beautyleads.opportunities/index.html" class="beauty-nav-item">Opportunities</a>
-                <a href="/beautyleads.accounts/index.html" class="beauty-nav-item">Accounts</a>
-                <a href="/beautyleads.campaigns/index.html" class="beauty-nav-item">Marketing Campaigns</a>
+                <a href="/launchpad.html#leads-manage" class="beauty-nav-item active">Leads</a>
+                <a href="/launchpad.html#prospects-manage" class="beauty-nav-item">Prospects</a>
+                <a href="/launchpad.html#opportunities-manage" class="beauty-nav-item">Opportunities</a>
+                <a href="/launchpad.html#accounts-manage" class="beauty-nav-item">Accounts</a>
+                <a href="/launchpad.html#campaigns-manage" class="beauty-nav-item">Marketing Campaigns</a>
             </div>
         </div>
     </div>
@@ -835,7 +881,7 @@
                                 console.log("=== PROSPECT ID FOUND IN BATCH ===", prospectID);
                                 
                                 setTimeout(function() {
-                                    var prospectUrl = "/beautyleads.prospects/index.html#/Prospects(" + prospectID + ")";
+                                    var prospectUrl = "/launchpad.html#prospects-manage&/Prospects(" + prospectID + ")";
                                     console.log("=== NAVIGATING TO PROSPECT ===", prospectUrl);
                                     window.location.href = prospectUrl;
                                 }, 2000);
@@ -855,7 +901,7 @@
                             if (prospectID) {
                                 console.log("Prospect ID found:", prospectID);
                                 setTimeout(function() {
-                                    var prospectUrl = "/beautyleads.prospects/index.html#/Prospects(" + prospectID + ")";
+                                    var prospectUrl = "/launchpad.html#prospects-manage&/Prospects(" + prospectID + ")";
                                     window.location.href = prospectUrl;
                                 }, 2000);
                             }
@@ -883,7 +929,7 @@
                             if (prospectID) {
                                 console.log("Prospect ID found:", prospectID);
                                 setTimeout(function() {
-                                    var prospectUrl = "/beautyleads.prospects/index.html#/Prospects(" + prospectID + ")";
+                                    var prospectUrl = "/launchpad.html#prospects-manage&/Prospects(" + prospectID + ")";
                                     window.location.href = prospectUrl;
                                 }, 2000);
                             }
