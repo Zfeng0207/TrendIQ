@@ -1,0 +1,101 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:layout="sap.ui.layout"
+    xmlns:f="sap.f">
+    
+    <!-- Creatio-style AI Assistant Chat Panel -->
+    <Panel
+        class="creatio-ai-panel"
+        expandable="true"
+        expanded="{aiPanelModel>/expanded}"
+        headerText=""
+        width="100%">
+        
+        <customHeader>
+            <Toolbar class="creatio-ai-header">
+                <core:Icon src="sap-icon://da-2" class="creatio-ai-logo"/>
+                <Title text="AI Assistant" level="H5" class="creatio-ai-title"/>
+                <ToolbarSpacer/>
+                <Button
+                    icon="sap-icon://undo"
+                    tooltip="{i18n>resetChat}"
+                    type="Transparent"
+                    press=".onResetAIChat"/>
+                <Button
+                    icon="{= ${aiPanelModel>/expanded} ? 'sap-icon://slim-arrow-right' : 'sap-icon://slim-arrow-left'}"
+                    tooltip="{= ${aiPanelModel>/expanded} ? '{i18n>collapse}' : '{i18n>expand}'}"
+                    type="Transparent"
+                    press=".onToggleAIPanel"/>
+            </Toolbar>
+        </customHeader>
+        
+        <content>
+            <VBox class="creatio-ai-content" height="100%">
+                <!-- Welcome Message -->
+                <VBox class="creatio-ai-welcome sapUiSmallMargin" visible="{= ${aiPanelModel>/messages}.length === 0}">
+                    <core:Icon src="sap-icon://da-2" size="3rem" class="creatio-ai-welcome-icon"/>
+                    <Text text="AI Assistant" class="creatio-ai-welcome-title sapUiTinyMarginTop"/>
+                    <Text text="{i18n>aiWelcomeMessage}" class="creatio-ai-welcome-text sapUiTinyMarginTop" textAlign="Center"/>
+                </VBox>
+                
+                <!-- Quick Action Buttons -->
+                <HBox class="creatio-ai-quick-actions sapUiSmallMargin" wrap="Wrap" justifyContent="Center" visible="{= ${aiPanelModel>/messages}.length === 0}">
+                    <!-- Quick actions rendered dynamically based on entity type -->
+                </HBox>
+                
+                <!-- Chat Messages -->
+                <ScrollContainer
+                    class="creatio-ai-messages"
+                    height="100%"
+                    vertical="true"
+                    horizontal="false"
+                    focusable="false">
+                    <VBox items="{aiPanelModel>/messages}">
+                        <!-- Message template rendered by controller -->
+                    </VBox>
+                </ScrollContainer>
+                
+                <!-- Suggested Actions (shown after AI response) -->
+                <HBox class="creatio-ai-suggestions sapUiTinyMargin" wrap="Wrap" visible="{aiPanelModel>/showSuggestions}">
+                    <!-- Suggestion buttons rendered dynamically -->
+                </HBox>
+                
+                <!-- Input Area -->
+                <VBox class="creatio-ai-input-area">
+                    <HBox class="creatio-ai-input-row" alignItems="End">
+                        <TextArea
+                            id="aiChatInput"
+                            value="{aiPanelModel>/inputText}"
+                            placeholder="{i18n>aiInputPlaceholder}"
+                            rows="2"
+                            growing="true"
+                            growingMaxLines="4"
+                            width="100%"
+                            class="creatio-ai-textarea"/>
+                    </HBox>
+                    <HBox class="creatio-ai-input-actions sapUiTinyMarginTop" justifyContent="SpaceBetween" alignItems="Center">
+                        <HBox>
+                            <Button
+                                icon="sap-icon://attachment"
+                                type="Transparent"
+                                tooltip="{i18n>attachFile}"
+                                enabled="false"/>
+                            <Button
+                                icon="sap-icon://list"
+                                type="Transparent"
+                                tooltip="{i18n>formatOptions}"/>
+                        </HBox>
+                        <Button
+                            icon="sap-icon://paper-plane"
+                            type="Emphasized"
+                            tooltip="{i18n>sendMessage}"
+                            press=".onSendAIMessage"
+                            enabled="{= ${aiPanelModel>/inputText}.length > 0}"/>
+                    </HBox>
+                </VBox>
+            </VBox>
+        </content>
+    </Panel>
+</core:FragmentDefinition>
+

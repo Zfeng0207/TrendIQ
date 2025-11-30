@@ -1,0 +1,122 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:layout="sap.ui.layout"
+    xmlns:f="sap.f">
+    
+    <!-- Creatio-style Entity Profile Sidebar -->
+    <VBox class="creatio-entity-profile">
+        <!-- Profile Header with Avatar -->
+        <VBox class="creatio-profile-header" alignItems="Center">
+            <f:Avatar
+                src="{profileModel>/avatarUrl}"
+                displaySize="L"
+                initials="{profileModel>/initials}"
+                backgroundColor="{profileModel>/avatarColor}"
+                class="creatio-profile-avatar"/>
+            
+            <Title text="{profileModel>/name}" level="H4" class="creatio-profile-name sapUiTinyMarginTop" textAlign="Center"/>
+            <Text text="{profileModel>/subtitle}" class="creatio-profile-subtitle" textAlign="Center"/>
+            
+            <!-- Status/Score Badge -->
+            <ObjectStatus
+                text="{profileModel>/badgeText}"
+                state="{profileModel>/badgeState}"
+                icon="{profileModel>/badgeIcon}"
+                class="creatio-profile-badge sapUiTinyMarginTop"
+                visible="{= !!${profileModel>/badgeText}}"/>
+        </VBox>
+        
+        <!-- Quick Action Buttons -->
+        <HBox class="creatio-profile-actions sapUiSmallMarginTop" justifyContent="Center">
+            <Button
+                icon="sap-icon://call"
+                type="Transparent"
+                tooltip="{i18n>call}"
+                press=".onProfileCall"
+                visible="{profileModel>/showCall}"/>
+            <Button
+                icon="sap-icon://message-popup"
+                type="Transparent"
+                tooltip="{i18n>message}"
+                press=".onProfileMessage"
+                visible="{profileModel>/showMessage}"/>
+            <Button
+                icon="sap-icon://email"
+                type="Transparent"
+                tooltip="{i18n>email}"
+                press=".onProfileEmail"
+                visible="{profileModel>/showEmail}"/>
+            <Button
+                icon="sap-icon://appointment"
+                type="Transparent"
+                tooltip="{i18n>schedule}"
+                press=".onProfileSchedule"
+                visible="{profileModel>/showSchedule}"/>
+        </HBox>
+        
+        <!-- Key Information -->
+        <VBox class="creatio-profile-info sapUiSmallMarginTop">
+            <layout:VerticalLayout class="sapUiSmallMargin" width="100%">
+                <!-- Account/Company -->
+                <HBox class="creatio-profile-field" visible="{= !!${profileModel>/account}}">
+                    <core:Icon src="sap-icon://building" class="creatio-profile-field-icon"/>
+                    <VBox class="creatio-profile-field-content">
+                        <Text text="{i18n>account}" class="creatio-profile-field-label"/>
+                        <Link text="{profileModel>/account}" press=".onNavigateToAccount" class="creatio-profile-field-value"/>
+                    </VBox>
+                </HBox>
+                
+                <!-- Job Title -->
+                <HBox class="creatio-profile-field" visible="{= !!${profileModel>/jobTitle}}">
+                    <core:Icon src="sap-icon://person-placeholder" class="creatio-profile-field-icon"/>
+                    <VBox class="creatio-profile-field-content">
+                        <Text text="{i18n>jobTitle}" class="creatio-profile-field-label"/>
+                        <Text text="{profileModel>/jobTitle}" class="creatio-profile-field-value"/>
+                    </VBox>
+                </HBox>
+                
+                <!-- Source/Platform -->
+                <HBox class="creatio-profile-field" visible="{= !!${profileModel>/source}}">
+                    <core:Icon src="{profileModel>/sourceIcon}" class="creatio-profile-field-icon"/>
+                    <VBox class="creatio-profile-field-content">
+                        <Text text="{i18n>source}" class="creatio-profile-field-label"/>
+                        <Text text="{profileModel>/source}" class="creatio-profile-field-value"/>
+                    </VBox>
+                </HBox>
+                
+                <!-- Owner/Assigned To -->
+                <HBox class="creatio-profile-field" visible="{= !!${profileModel>/owner}}">
+                    <core:Icon src="sap-icon://employee" class="creatio-profile-field-icon"/>
+                    <VBox class="creatio-profile-field-content">
+                        <Text text="{i18n>owner}" class="creatio-profile-field-label"/>
+                        <Text text="{profileModel>/owner}" class="creatio-profile-field-value"/>
+                    </VBox>
+                </HBox>
+                
+                <!-- Created Date -->
+                <HBox class="creatio-profile-field" visible="{= !!${profileModel>/createdAt}}">
+                    <core:Icon src="sap-icon://calendar" class="creatio-profile-field-icon"/>
+                    <VBox class="creatio-profile-field-content">
+                        <Text text="{i18n>createdOn}" class="creatio-profile-field-label"/>
+                        <Text text="{profileModel>/createdAt}" class="creatio-profile-field-value"/>
+                    </VBox>
+                </HBox>
+            </layout:VerticalLayout>
+        </VBox>
+        
+        <!-- Communication Options Toggle -->
+        <Panel
+            headerText="{i18n>communicationOptions}"
+            expandable="true"
+            expanded="false"
+            class="creatio-profile-comm-panel sapUiSmallMarginTop">
+            <VBox class="sapUiSmallMargin">
+                <CheckBox text="{i18n>allowCalls}" selected="{profileModel>/allowCalls}"/>
+                <CheckBox text="{i18n>allowEmails}" selected="{profileModel>/allowEmails}"/>
+                <CheckBox text="{i18n>allowSMS}" selected="{profileModel>/allowSMS}"/>
+            </VBox>
+        </Panel>
+    </VBox>
+</core:FragmentDefinition>
+

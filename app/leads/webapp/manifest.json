@@ -94,7 +94,11 @@
       }
     },
     "resources": {
-      "css": []
+      "css": [
+        {
+          "uri": "css/custom.css"
+        }
+      ]
     },
     "routing": {
       "config": {},
@@ -175,7 +179,7 @@
             "extensions": {
               "sap.ui.controllerExtensions": {
                 "sap.fe.templates.ObjectPage.ObjectPageController": {
-                  "controllerName": "beautyleads.leads.ext.controller.CustomActions"
+                  "controllerName": "beautyleads.leads.ext.controller.LeadsCreatioExt"
                 }
               }
             }

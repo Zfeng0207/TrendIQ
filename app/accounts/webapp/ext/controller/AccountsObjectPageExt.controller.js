@@ -2,8 +2,18 @@ sap.ui.define([
     "sap/ui/core/mvc/ControllerExtension",
     "sap/ui/core/Fragment",
     "sap/m/MessageBox",
-    "sap/m/MessageToast"
-], function (ControllerExtension, Fragment, MessageBox, MessageToast) {
+    "sap/m/MessageToast",
+    "sap/m/VBox",
+    "sap/m/HBox",
+    "sap/m/Text",
+    "sap/m/Title",
+    "sap/m/Button",
+    "sap/m/Panel",
+    "sap/m/TextArea",
+    "sap/m/ScrollContainer",
+    "sap/ui/core/Icon",
+    "sap/ui/model/json/JSONModel"
+], function (ControllerExtension, Fragment, MessageBox, MessageToast, VBox, HBox, Text, Title, Button, Panel, TextArea, ScrollContainer, Icon, JSONModel) {
     "use strict";
 
     return ControllerExtension.extend("beautyleads.accounts.ext.controller.AccountsObjectPageExt", {
@@ -12,7 +22,380 @@ sap.ui.define([
             this._loadRelatedData();
             this._checkOnboardingParameter();
             this._interceptActionResponses();
+            this._initializeCreatioComponents();
             console.log("=== AccountsObjectPageExt Controller Initialized ===");
+        },
+        
+        // =====================================================
+        // CREATIO-STYLE COMPONENTS
+        // =====================================================
+        
+        /**
+         * Initialize Creatio-style AI panel for accounts
+         */
+        _initializeCreatioComponents: function() {
+            const that = this;
+            
+            // Load Creatio CSS
+            this._loadCreatioCSS();
+            
+            // Initialize models
+            this._oKPIModel = new JSONModel({
+                kpis: [
+                    { id: "totalRevenue", title: "Total Revenue", value: "RM 0", color: "blue" },
+                    { id: "openOpportunities", title: "Open Opportunities", value: "0", color: "green" },
+                    { id: "healthScore", title: "Health Score", value: "0%", color: "purple" },
+                    { id: "activeContacts", title: "Active Contacts", value: "0", color: "orange" }
+                ]
+            });
+            
+            this._oAIMessages = [];
+            
+            // Render after view is ready
+            const oView = this.base.getView();
+            if (oView) {
+                oView.attachAfterRendering(function() {
+                    setTimeout(function() {
+                        that._renderKPICards();
+                        that._renderAIPanel();
+                        that._setupEntityDataListener();
+                    }, 500);
+                });
+            }
+        },
+        
+        /**
+         * Load Creatio CSS
+         */
+        _loadCreatioCSS: function() {
+            const sPath = sap.ui.require.toUrl("beautyleads/shared/creatio-layout.css");
+            if (!document.querySelector('link[href*="creatio-layout.css"]')) {
+                const oLink = document.createElement("link");
+                oLink.rel = "stylesheet";
+                oLink.href = sPath;
+                document.head.appendChild(oLink);
+            }
+        },
+        
+        /**
+         * Setup listener for entity data changes
+         */
+        _setupEntityDataListener: function() {
+            const oView = this.base.getView();
+            if (!oView) return;
+            
+            oView.attachModelContextChange(this._onEntityDataChange.bind(this));
+            
+            const oContext = oView.getBindingContext();
+            if (oContext) {
+                this._updateKPIsFromEntity(oContext.getObject());
+            }
+        },
+        
+        /**
+         * Handle entity data change
+         */
+        _onEntityDataChange: function() {
+            const oView = this.base.getView();
+            const oContext = oView && oView.getBindingContext();
+            if (oContext) {
+                oContext.requestObject().then((oData) => {
+                    this._updateKPIsFromEntity(oData);
+                });
+            }
+        },
+        
+        /**
+         * Update KPIs from entity data
+         */
+        _updateKPIsFromEntity: function(oData) {
+            if (!oData || !this._oKPIModel) return;
+            
+            // Format currency
+            const formatCurrency = (val) => {
+                if (!val) return "RM 0";
+                return "RM " + parseFloat(val).toLocaleString("en-MY", { minimumFractionDigits: 0 });
+            };
+            
+            this._oKPIModel.setProperty("/kpis/0/value", formatCurrency(oData.annualRevenue || oData.forecastedRevenueContribution));
+            
+            // Count open opportunities
+            const aOpps = oData.opportunities || [];
+            const iOpenOpps = aOpps.filter(o => o.stage && !o.stage.startsWith("Closed")).length;
+            this._oKPIModel.setProperty("/kpis/1/value", iOpenOpps.toString());
+            
+            this._oKPIModel.setProperty("/kpis/2/value", (oData.healthScore || 0) + "%");
+            
+            // Count active contacts
+            const aContacts = oData.contacts || [];
+            const iActiveContacts = aContacts.filter(c => c.status === "Active").length;
+            this._oKPIModel.setProperty("/kpis/3/value", iActiveContacts.toString());
+        },
+        
+        /**
+         * Render KPI Cards
+         */
+        _renderKPICards: function() {
+            const oView = this.base.getView();
+            if (!oView) return;
+            
+            // Find header area
+            const oObjectPage = oView.byId("fe::ObjectPage");
+            if (!oObjectPage) return;
+            
+            try {
+                const oDomRef = oObjectPage.getDomRef();
+                if (!oDomRef) return;
+                
+                const oHeaderContent = oDomRef.querySelector(".sapUxAPObjectPageHeaderContent");
+                if (!oHeaderContent) return;
+                
+                // Create KPI container
+                const oKPIContainer = new VBox({
+                    id: oView.createId("accountsKPIContainer"),
+                    width: "100%"
+                });
+                oKPIContainer.addStyleClass("creatio-header-kpi-section");
+                
+                const oKPIRow = new HBox({
+                    class: "creatio-kpi-row sapUiSmallMarginBottom",
+                    justifyContent: "Start",
+                    wrap: "Wrap"
+                });
+                
+                const aKPIs = this._oKPIModel.getProperty("/kpis");
+                aKPIs.forEach((oKPI) => {
+                    const oCard = new VBox({ class: "creatio-kpi-card kpi-" + oKPI.color });
+                    oCard.addItem(new Text({ text: oKPI.title, class: "creatio-kpi-title" }));
+                    oCard.addItem(new Text({ text: oKPI.value, class: "creatio-kpi-value" }));
+                    oCard.data("kpiId", oKPI.id);
+                    oKPIRow.addItem(oCard);
+                });
+                
+                oKPIContainer.addItem(oKPIRow);
+                oKPIContainer.placeAt(oHeaderContent, "first");
+            } catch (e) {
+                console.warn("[AccountsObjectPageExt] Could not render KPIs:", e);
+            }
+        },
+        
+        /**
+         * Render AI Panel
+         */
+        _renderAIPanel: function() {
+            const that = this;
+            
+            const oAIPanel = new Panel({
+                class: "creatio-ai-panel",
+                expandable: false,
+                expanded: true
+            });
+            
+            const oHeader = new HBox({
+                class: "creatio-ai-header",
+                justifyContent: "SpaceBetween",
+                alignItems: "Center",
+                items: [
+                    new HBox({
+                        alignItems: "Center",
+                        items: [
+                            new Icon({ src: "sap-icon://da-2", class: "creatio-ai-logo" }),
+                            new Title({ text: "AI Assistant", level: "H5", class: "creatio-ai-title" })
+                        ]
+                    }),
+                    new HBox({
+                        items: [
+                            new Button({ icon: "sap-icon://undo", type: "Transparent", press: function() { that._onResetAIChat(); } }),
+                            new Button({ icon: "sap-icon://slim-arrow-right", type: "Transparent", press: function() { that._onToggleAIPanel(); } })
+                        ]
+                    })
+                ]
+            });
+            
+            const oWelcome = new VBox({
+                class: "creatio-ai-welcome sapUiSmallMargin",
+                alignItems: "Center",
+                items: [
+                    new Icon({ src: "sap-icon://da-2", size: "3rem" }),
+                    new Text({ text: "AI Assistant", class: "creatio-ai-welcome-title sapUiTinyMarginTop" }),
+                    new Text({ text: "Ask about account health, growth opportunities, or risk alerts.", class: "creatio-ai-welcome-text sapUiTinyMarginTop", textAlign: "Center" })
+                ]
+            });
+            
+            const oQuickActions = this._createAIQuickActions();
+            
+            this._oAIMessagesContainer = new ScrollContainer({
+                class: "creatio-ai-messages",
+                height: "300px",
+                vertical: true,
+                horizontal: false
+            });
+            
+            this._oAIInput = new TextArea({
+                placeholder: "Type your message...",
+                rows: 2,
+                growing: true,
+                growingMaxLines: 4,
+                width: "100%"
+            });
+            
+            const oInputArea = new VBox({
+                class: "creatio-ai-input-area",
+                items: [
+                    this._oAIInput,
+                    new HBox({ justifyContent: "End", items: [
+                        new Button({ icon: "sap-icon://paper-plane", type: "Emphasized", press: function() { that._onSendAIMessage(); } })
+                    ]})
+                ]
+            });
+            
+            const oContent = new VBox({
+                class: "creatio-ai-content",
+                items: [oWelcome, oQuickActions, this._oAIMessagesContainer, oInputArea]
+            });
+            
+            oAIPanel.setCustomHeader(oHeader);
+            oAIPanel.addContent(oContent);
+            oAIPanel.placeAt(document.body);
+            this._oAIPanel = oAIPanel;
+        },
+        
+        /**
+         * Create AI quick actions
+         */
+        _createAIQuickActions: function() {
+            const that = this;
+            const aActions = [
+                { id: "healthAnalysis", label: "Account Health Analysis", icon: "sap-icon://monitor-payments" },
+                { id: "growthRecs", label: "Growth Recommendations", icon: "sap-icon://trend-up" },
+                { id: "riskAlerts", label: "Risk Warnings", icon: "sap-icon://warning" },
+                { id: "overview", label: "Account Overview", icon: "sap-icon://hint" }
+            ];
+            
+            const oBox = new HBox({ class: "creatio-ai-quick-actions sapUiSmallMargin", wrap: "Wrap", justifyContent: "Center" });
+            
+            aActions.forEach((oAction) => {
+                const oBtn = new Button({
+                    text: oAction.label,
+                    icon: oAction.icon,
+                    type: "Transparent",
+                    press: function() { that._onAIQuickAction(oAction.id); }
+                });
+                oBtn.addStyleClass("sapUiTinyMarginEnd sapUiTinyMarginBottom");
+                oBox.addItem(oBtn);
+            });
+            
+            return oBox;
+        },
+        
+        /**
+         * Handle AI quick action
+         */
+        _onAIQuickAction: function(sActionId) {
+            const mQueries = {
+                "healthAnalysis": "Account Health Analysis",
+                "growthRecs": "Growth Recommendations",
+                "riskAlerts": "Risk Warnings",
+                "overview": "Account Overview"
+            };
+            this._sendAIQuery(mQueries[sActionId] || "Help");
+        },
+        
+        /**
+         * Send AI message
+         */
+        _onSendAIMessage: function() {
+            if (!this._oAIInput) return;
+            const sMessage = this._oAIInput.getValue();
+            if (!sMessage || sMessage.trim() === "") return;
+            
+            this._sendAIQuery(sMessage);
+            this._oAIInput.setValue("");
+        },
+        
+        /**
+         * Send query to AI
+         */
+        _sendAIQuery: function(sQuery) {
+            const oView = this.base.getView();
+            const oContext = oView && oView.getBindingContext();
+            const oData = oContext ? oContext.getObject() : {};
+            
+            // Add user message
+            this._oAIMessages.push({
+                type: "user",
+                text: sQuery,
+                timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            });
+            
+            // Generate mock AI response
+            let sResponse = this._generateAIResponse(sQuery, oData);
+            
+            this._oAIMessages.push({
+                type: "ai",
+                text: sResponse,
+                timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            });
+            
+            this._refreshAIMessages();
+        },
+        
+        /**
+         * Generate AI response
+         */
+        _generateAIResponse: function(sQuery, oData) {
+            const sLower = sQuery.toLowerCase();
+            
+            if (sLower.includes("health")) {
+                const iHealth = oData.healthScore || 75;
+                return `Account health analysis:\n\n• Health Score: ${iHealth}%\n• Risk Level: ${oData.riskLevel || 'Low'}\n• Sentiment: ${oData.recentSentimentTrend || 'Stable'}\n\n${iHealth >= 70 ? 'Account is in good standing.' : 'Attention needed.'}`;
+            }
+            if (sLower.includes("growth") || sLower.includes("recommend")) {
+                return "Growth recommendations:\n\n1. Upsell premium product lines\n2. Cross-sell complementary categories\n3. Volume increase with tiered pricing\n\nEstimated potential: RM 15,000/month";
+            }
+            if (sLower.includes("risk") || sLower.includes("warning")) {
+                return `Risk assessment:\n\n• Risk Level: ${oData.riskLevel || 'Low'}\n• Potential Concerns: None critical\n• Monitoring: Order frequency, payments\n\nNo immediate action required.`;
+            }
+            return `Account "${oData.accountName || 'Unknown'}" is a ${oData.accountType || 'partner'} with ${oData.accountTier || 'standard'} tier. Health: ${oData.healthScore || 'N/A'}%.`;
+        },
+        
+        /**
+         * Refresh AI messages
+         */
+        _refreshAIMessages: function() {
+            if (!this._oAIMessagesContainer) return;
+            
+            this._oAIMessagesContainer.removeAllContent();
+            
+            this._oAIMessages.forEach((oMsg) => {
+                const oMsgBox = new VBox({ class: "creatio-ai-message " + (oMsg.type === "user" ? "user-message" : "ai-message") });
+                oMsgBox.addItem(new Text({ text: oMsg.text, class: "creatio-ai-message-text" }));
+                oMsgBox.addItem(new Text({ text: oMsg.timestamp, class: "creatio-ai-message-time" }));
+                this._oAIMessagesContainer.addContent(oMsgBox);
+            });
+            
+            const oDomRef = this._oAIMessagesContainer.getDomRef();
+            if (oDomRef) oDomRef.scrollTop = oDomRef.scrollHeight;
+        },
+        
+        /**
+         * Reset AI chat
+         */
+        _onResetAIChat: function() {
+            this._oAIMessages = [];
+            if (this._oAIMessagesContainer) {
+                this._oAIMessagesContainer.removeAllContent();
+            }
+        },
+        
+        /**
+         * Toggle AI panel
+         */
+        _onToggleAIPanel: function() {
+            if (this._oAIPanel) {
+                const oDomRef = this._oAIPanel.getDomRef();
+                if (oDomRef) oDomRef.classList.toggle("collapsed");
+            }
         },
         
         // Intercept OData responses to detect when our action completes

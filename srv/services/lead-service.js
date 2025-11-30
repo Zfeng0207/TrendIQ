@@ -206,6 +206,69 @@ module.exports = async function() {
         return updatedLead;
     });
 
+    // Action: Change Lead Status (for Creatio chevron stage bar)
+    this.on('changeStatus', async (req) => {
+        const leadID = req.params[0].ID;
+        const isActiveEntity = req.params[0].IsActiveEntity;
+        const { newStatus } = req.data;
+
+        // Valid status transitions
+        const validStatuses = ['New', 'Contacted', 'Qualified', 'Nurturing', 'Converted', 'Lost'];
+        
+        if (!validStatuses.includes(newStatus)) {
+            return req.error(400, `Invalid status: ${newStatus}. Valid values are: ${validStatuses.join(', ')}`);
+        }
+
+        // Get lead data from appropriate source
+        const lead = await getLeadData(leadID, isActiveEntity);
+
+        if (!lead) {
+            return req.error(404, `Lead ${leadID} not found`);
+        }
+
+        // Validate status transition
+        if (lead.status === 'Converted') {
+            return req.error(400, 'Cannot change status of a converted lead');
+        }
+
+        if (lead.status === 'Lost' && newStatus !== 'New') {
+            return req.error(400, 'Lost leads can only be reactivated to New status');
+        }
+
+        // Update the status
+        const updateData = {
+            status: newStatus,
+            lastStatusChange: new Date().toISOString()
+        };
+
+        // If moving to Qualified, update quality
+        if (newStatus === 'Qualified' && lead.leadQuality !== 'Hot') {
+            updateData.leadQuality = 'Warm';
+        }
+
+        // If marking as Lost or Converted, set end date
+        if (newStatus === 'Lost' || newStatus === 'Converted') {
+            updateData.closedDate = new Date().toISOString();
+        }
+
+        await updateLeadData(leadID, isActiveEntity, updateData);
+
+        // Also update active entity if working on draft
+        if (isActiveEntity === false) {
+            try {
+                await UPDATE(Leads).set(updateData).where({ ID: leadID });
+            } catch (e) {
+                // Active entity might not exist yet, ignore
+            }
+        }
+
+        console.log(`Lead ${leadID} status changed from ${lead.status} to ${newStatus}`);
+
+        // Return the updated entity
+        const updatedLead = await getLeadData(leadID, isActiveEntity);
+        return updatedLead;
+    });
+
     // Before CREATE: Set defaults and validate
     this.before('CREATE', 'Leads', async (req) => {
         const lead = req.data;

@@ -1,0 +1,12 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:layout="sap.ui.layout">
+    
+    <!-- Creatio-style KPI Cards Row -->
+    <HBox class="creatio-kpi-row sapUiSmallMarginBottom" justifyContent="Start" wrap="Wrap">
+        <!-- KPI cards will be rendered dynamically based on entity configuration -->
+        <!-- Each card shows: title, value, optional trend indicator -->
+    </HBox>
+</core:FragmentDefinition>
+

@@ -76,6 +76,13 @@
         }
       }
     },
+    "resources": {
+      "css": [
+        {
+          "uri": "css/custom.css"
+        }
+      ]
+    },
     "routing": {
       "routes": [
         {
@@ -136,6 +143,15 @@
               "controlConfiguration": {
                 "@com.sap.vocabularies.UI.v1.Identification": {
                   "actions": {}
+                }
+              }
+            }
+          },
+          "extends": {
+            "extensions": {
+              "sap.ui.controllerExtensions": {
+                "sap.fe.templates.ObjectPage.ObjectPageController": {
+                  "controllerName": "beautyleads.opportunities.ext.controller.OpportunitiesCreatioExt"
                 }
               }
             }

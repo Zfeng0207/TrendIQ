@@ -1,0 +1,33 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:layout="sap.ui.layout"
+    core:require="{
+        ChevronStageBarController: 'beautyleads/shared/ChevronStageBarController'
+    }">
+    
+    <!-- Creatio-style Chevron Stage Progress Bar -->
+    <VBox class="creatio-chevron-container sapUiSmallMarginBottom">
+        <!-- Stage Progress Bar -->
+        <HBox class="creatio-chevron-bar" justifyContent="Start" alignItems="Center">
+            <!-- Stages will be rendered dynamically based on the entity type -->
+            <!-- Each stage is a clickable chevron shape -->
+        </HBox>
+        
+        <!-- Stage Info Below Bar -->
+        <HBox class="creatio-stage-info sapUiTinyMarginTop" justifyContent="SpaceBetween" alignItems="Center">
+            <VBox>
+                <Text text="{i18n>currentStage}" class="creatio-stage-label"/>
+                <Text text="{stageName}" class="creatio-stage-value sapUiTinyMarginTop"/>
+            </VBox>
+            <VBox alignItems="End">
+                <Text text="{i18n>daysInStage}" class="creatio-stage-label"/>
+                <ObjectNumber
+                    number="{daysInStage}"
+                    unit="{i18n>days}"
+                    class="creatio-stage-days"/>
+            </VBox>
+        </HBox>
+    </VBox>
+</core:FragmentDefinition>
+

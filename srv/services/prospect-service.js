@@ -284,6 +284,44 @@ module.exports = async function() {
         });
     });
 
+    // Action: Change Prospect Status (for Creatio chevron stage bar)
+    this.on('changeStatus', 'Prospects', async (req) => {
+        const prospectID = req.params[0].ID;
+        const { newStatus } = req.data;
+
+        // Valid status transitions
+        const validStatuses = ['New', 'Contacted', 'Qualified', 'Negotiating', 'In Review', 'Converted'];
+        
+        if (!validStatuses.includes(newStatus)) {
+            return req.error(400, `Invalid status: ${newStatus}. Valid values are: ${validStatuses.join(', ')}`);
+        }
+
+        const prospect = await SELECT.one.from(Prospects).where({ ID: prospectID });
+
+        if (!prospect) {
+            return req.error(404, `Prospect ${prospectID} not found`);
+        }
+
+        // Update the status
+        const updateData = {
+            status: newStatus,
+            modifiedAt: new Date().toISOString()
+        };
+
+        // If moving to Qualified, calculate score
+        if (newStatus === 'Qualified') {
+            updateData.prospectScore = calculateProspectScore(prospect);
+        }
+
+        await UPDATE(Prospects).set(updateData).where({ ID: prospectID });
+
+        console.log(`Prospect ${prospectID} status changed from ${prospect.status} to ${newStatus}`);
+
+        // Return the updated prospect
+        const updatedProspect = await SELECT.one.from(Prospects).where({ ID: prospectID });
+        return updatedProspect;
+    });
+
     // Action: Assign to Sales Rep
     this.on('assignToSalesRep', 'Prospects', async (req) => {
         const prospectID = req.params[0].ID;

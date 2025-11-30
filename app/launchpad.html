@@ -6,6 +6,156 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smart Commerce CRM - Fiori Launchpad</title>
 
+    <style>
+        /* Hide the default shell header title when our dropdown is present */
+        .sapUshellShellHeadTitle,
+        .sapUshellShellHead h1 > span:first-child,
+        [class*="shellAppTitle"] {
+            visibility: hidden !important;
+        }
+        
+        /* Navigation Dropdown Styles */
+        .crm-nav-dropdown {
+            position: fixed;
+            top: 8px;
+            left: 165px;
+            z-index: 10000;
+            display: inline-flex;
+            align-items: center;
+        }
+        
+        .crm-nav-trigger {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: transparent;
+            border: 1px solid transparent;
+            border-radius: 8px;
+            color: #32363a;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .crm-nav-trigger:hover {
+            background: rgba(0, 0, 0, 0.05);
+            border-color: rgba(0, 0, 0, 0.1);
+        }
+        
+        .crm-nav-trigger .arrow {
+            font-size: 10px;
+            transition: transform 0.2s ease;
+        }
+        
+        .crm-nav-dropdown.open .crm-nav-trigger .arrow {
+            transform: rotate(180deg);
+        }
+        
+        .crm-nav-menu {
+            display: none;
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 0;
+            min-width: 280px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            z-index: 10001;
+        }
+        
+        .crm-nav-dropdown.open .crm-nav-menu {
+            display: block;
+            animation: slideDown 0.2s ease;
+        }
+        
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .crm-nav-section {
+            padding: 8px 0;
+            border-bottom: 1px solid #e5e5e5;
+        }
+        
+        .crm-nav-section:last-child {
+            border-bottom: none;
+        }
+        
+        .crm-nav-section-title {
+            padding: 8px 16px 4px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .crm-nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: #1f2937;
+            text-decoration: none;
+            font-size: 14px;
+            transition: background-color 0.15s ease;
+            cursor: pointer;
+        }
+        
+        .crm-nav-item:hover {
+            background-color: #f3f4f6;
+        }
+        
+        .crm-nav-item.active {
+            background-color: #e0f2fe;
+            color: #0369a1;
+        }
+        
+        .crm-nav-item-icon {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        
+        .crm-nav-item-icon.dashboard { background: #dbeafe; color: #2563eb; }
+        .crm-nav-item-icon.leads { background: #fef3c7; color: #d97706; }
+        .crm-nav-item-icon.prospects { background: #d1fae5; color: #059669; }
+        .crm-nav-item-icon.opportunities { background: #ede9fe; color: #7c3aed; }
+        .crm-nav-item-icon.accounts { background: #fee2e2; color: #dc2626; }
+        .crm-nav-item-icon.campaigns { background: #fce7f3; color: #db2777; }
+        
+        .crm-nav-item-content {
+            flex: 1;
+        }
+        
+        .crm-nav-item-title {
+            font-weight: 500;
+        }
+        
+        .crm-nav-item-desc {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 2px;
+        }
+        
+        .crm-nav-item-badge {
+            padding: 2px 8px;
+            background: #dbeafe;
+            color: #1d4ed8;
+            font-size: 11px;
+            font-weight: 600;
+            border-radius: 12px;
+        }
+    </style>
+
     <script type="text/javascript">
         window["sap-ushell-config"] = {
             defaultRenderer: "fiori2",
@@ -24,7 +174,8 @@
                             search: "hidden",
                             enableSearch: false,
                             enablePersonalization: true,
-                            enableRecentActivity: true
+                            enableRecentActivity: true,
+                            appState: "lean"
                         }
                     }
                 }
@@ -191,9 +342,176 @@
         data-sap-ui-flexibilityServices='[{"connector": "LocalStorageConnector"}]'>
     </script>
     <script>
+        // Navigation apps configuration
+        var crmNavApps = {
+            dashboard: [
+                { id: 'dashboard-display', title: 'CRM Dashboard', desc: 'Analytics Overview', icon: '📊', hash: '#dashboard-display' }
+            ],
+            pipeline: [
+                { id: 'leads-manage', title: 'Leads', desc: 'Capture & Qualify', icon: '🎯', hash: '#leads-manage', badge: 'Step 1' },
+                { id: 'prospects-manage', title: 'Prospects', desc: 'Qualified Pipeline', icon: '👤', hash: '#prospects-manage', badge: 'Step 2' },
+                { id: 'opportunities-manage', title: 'Opportunities', desc: 'Deals & Proposals', icon: '💼', hash: '#opportunities-manage', badge: 'Step 3' },
+                { id: 'accounts-manage', title: 'Accounts', desc: 'Customer Management', icon: '🏢', hash: '#accounts-manage', badge: 'Step 4' }
+            ],
+            marketing: [
+                { id: 'campaigns-manage', title: 'Marketing Campaigns', desc: 'Trend-Driven Automation', icon: '📣', hash: '#campaigns-manage' }
+            ]
+        };
+        
+        // Get current app title from hash
+        function getCurrentAppTitle() {
+            var hash = window.location.hash;
+            var allApps = [...crmNavApps.dashboard, ...crmNavApps.pipeline, ...crmNavApps.marketing];
+            var currentApp = allApps.find(function(app) { return hash.includes(app.id); });
+            return currentApp ? currentApp.title : 'Smart Beauty CRM Dashboard';
+        }
+        
+        // Create navigation dropdown HTML
+        function createNavDropdown() {
+            var currentTitle = getCurrentAppTitle();
+            var currentHash = window.location.hash;
+            
+            var html = '<div class="crm-nav-dropdown" id="crmNavDropdown">' +
+                '<div class="crm-nav-trigger" id="crmNavTrigger">' +
+                '<span id="crmNavCurrentTitle">' + currentTitle + '</span>' +
+                '<span class="arrow">▼</span>' +
+                '</div>' +
+                '<div class="crm-nav-menu">';
+            
+            // Dashboard section
+            html += '<div class="crm-nav-section">' +
+                '<div class="crm-nav-section-title">Dashboard</div>';
+            crmNavApps.dashboard.forEach(function(app) {
+                var isActive = currentHash.includes(app.id) ? ' active' : '';
+                html += '<a href="' + app.hash + '" class="crm-nav-item' + isActive + '">' +
+                    '<div class="crm-nav-item-icon dashboard">' + app.icon + '</div>' +
+                    '<div class="crm-nav-item-content">' +
+                    '<div class="crm-nav-item-title">' + app.title + '</div>' +
+                    '<div class="crm-nav-item-desc">' + app.desc + '</div>' +
+                    '</div></a>';
+            });
+            html += '</div>';
+            
+            // Sales Pipeline section
+            html += '<div class="crm-nav-section">' +
+                '<div class="crm-nav-section-title">Sales Pipeline</div>';
+            crmNavApps.pipeline.forEach(function(app) {
+                var isActive = currentHash.includes(app.id) ? ' active' : '';
+                var iconClass = app.id.replace('-manage', '');
+                html += '<a href="' + app.hash + '" class="crm-nav-item' + isActive + '">' +
+                    '<div class="crm-nav-item-icon ' + iconClass + '">' + app.icon + '</div>' +
+                    '<div class="crm-nav-item-content">' +
+                    '<div class="crm-nav-item-title">' + app.title + '</div>' +
+                    '<div class="crm-nav-item-desc">' + app.desc + '</div>' +
+                    '</div>' +
+                    (app.badge ? '<div class="crm-nav-item-badge">' + app.badge + '</div>' : '') +
+                    '</a>';
+            });
+            html += '</div>';
+            
+            // Marketing section
+            html += '<div class="crm-nav-section">' +
+                '<div class="crm-nav-section-title">Marketing</div>';
+            crmNavApps.marketing.forEach(function(app) {
+                var isActive = currentHash.includes(app.id) ? ' active' : '';
+                html += '<a href="' + app.hash + '" class="crm-nav-item' + isActive + '">' +
+                    '<div class="crm-nav-item-icon campaigns">' + app.icon + '</div>' +
+                    '<div class="crm-nav-item-content">' +
+                    '<div class="crm-nav-item-title">' + app.title + '</div>' +
+                    '<div class="crm-nav-item-desc">' + app.desc + '</div>' +
+                    '</div></a>';
+            });
+            html += '</div>';
+            
+            html += '</div></div>';
+            return html;
+        }
+        
+        // Create and inject fixed navigation dropdown
+        function injectNavDropdown() {
+            // Check if already injected
+            if (document.getElementById('crmNavDropdown')) {
+                // Update title if already exists
+                var titleSpan = document.getElementById('crmNavCurrentTitle');
+                if (titleSpan) {
+                    titleSpan.textContent = getCurrentAppTitle();
+                }
+                // Update active states
+                updateActiveStates();
+                return;
+            }
+            
+            // Create dropdown container
+            var dropdownContainer = document.createElement('div');
+            dropdownContainer.innerHTML = createNavDropdown();
+            var dropdown = dropdownContainer.firstChild;
+            
+            // Append to body (fixed position)
+            document.body.appendChild(dropdown);
+            
+            // Setup event listeners
+            var trigger = document.getElementById('crmNavTrigger');
+            var navDropdown = document.getElementById('crmNavDropdown');
+            
+            if (trigger && navDropdown) {
+                trigger.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    navDropdown.classList.toggle('open');
+                });
+                
+                document.addEventListener('click', function(e) {
+                    if (!navDropdown.contains(e.target)) {
+                        navDropdown.classList.remove('open');
+                    }
+                });
+                
+                // Close dropdown when clicking on nav items
+                document.querySelectorAll('.crm-nav-item').forEach(function(item) {
+                    item.addEventListener('click', function() {
+                        navDropdown.classList.remove('open');
+                    });
+                });
+            }
+            
+            console.log('[CRM Nav] Navigation dropdown injected successfully');
+        }
+        
+        // Update active states based on current hash
+        function updateActiveStates() {
+            document.querySelectorAll('.crm-nav-item').forEach(function(item) {
+                item.classList.remove('active');
+                var href = item.getAttribute('href');
+                if (href && window.location.hash.includes(href.replace('#', ''))) {
+                    item.classList.add('active');
+                }
+            });
+        }
+        
+        // Setup navigation watcher for hash changes
+        function setupNavigationWatcher() {
+            window.addEventListener('hashchange', function() {
+                // Update title and active states
+                setTimeout(function() {
+                    var titleSpan = document.getElementById('crmNavCurrentTitle');
+                    if (titleSpan) {
+                        titleSpan.textContent = getCurrentAppTitle();
+                    }
+                    updateActiveStates();
+                }, 100);
+            });
+        }
+        
         sap.ui.getCore().attachInit(function () {
             sap.ushell.Container.createRenderer(null, true).then(function(renderer) {
                 renderer.placeAt("content");
+                
+                // Setup navigation watcher
+                setupNavigationWatcher();
+                
+                // Inject navigation after shell is rendered (multiple attempts)
+                setTimeout(injectNavDropdown, 500);
+                setTimeout(injectNavDropdown, 1000);
+                setTimeout(injectNavDropdown, 2000);
             });
         });
     </script>

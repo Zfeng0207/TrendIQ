@@ -1,3 +1,6 @@
+/* Import shared Creatio layout styles */
+@import "../../../shared/creatio-layout.css";
+
 /* Custom styles for Opportunities table - larger text and spacing */
 
 /* Increase table row height and spacing */

@@ -23,6 +23,7 @@ service ProspectService @(path: '/prospect') {
         action bulkImport(prospects: String); // JSON array
         action generateAbout() returns Prospects; // AI-generated prospect about information
         action initiateAIMeeting() returns String; // AI Meeting Initiator - returns meeting script
+        action changeStatus(newStatus: String) returns Prospects; // Change prospect status (Creatio chevron bar)
         action createOpportunity() returns {
             message: String;
             opportunityID: UUID;

@@ -1,3 +1,6 @@
+/* Import shared Creatio layout styles */
+@import "../../../shared/creatio-layout.css";
+
 /* Prospects App Custom Styles */
 
 /* Floating Action Button */

@@ -17,6 +17,7 @@ service LeadService @(path: '/lead') {
         action qualifyLead();
         action updateAIScore() returns Leads;
         action generateAISummary() returns String; // Generate AI Summary - returns summary text
+        action changeStatus(newStatus: String) returns Leads; // Change lead status (Creatio chevron bar)
     };
 
     // Read-only views for lead analytics

@@ -15,6 +15,7 @@ using from './services/workflow-service';
 using from './services/prospect-service';
 using from './services/marketing-service';
 using from './services/dashboard-service';
+using from './services/ai-assistant-service';
 
 // Import all UI annotations
 using from './services/lead-service-annotations';

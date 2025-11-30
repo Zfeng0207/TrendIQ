@@ -218,7 +218,7 @@
             "extensions": {
               "sap.ui.controllerExtensions": {
                 "sap.fe.templates.ObjectPage.ObjectPageController": {
-                  "controllerName": "beautyleads.prospects.ext.controller.ObjectPageExt"
+                  "controllerName": "beautyleads.prospects.ext.controller.ProspectsCreatioExt"
                 }
               }
             }
