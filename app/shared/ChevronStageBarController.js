@@ -19,10 +19,10 @@ sap.ui.define([
             stages: [
                 { key: "New", label: "New", icon: "sap-icon://add", color: "#1976D2" },
                 { key: "Contacted", label: "Contacted", icon: "sap-icon://call", color: "#7B1FA2" },
+                { key: "Engaged", label: "Engaged", icon: "sap-icon://collaborate", color: "#00796B" },
                 { key: "Qualified", label: "Qualified", icon: "sap-icon://accept", color: "#388E3C" },
-                { key: "Nurturing", label: "Nurturing", icon: "sap-icon://nurture-leads", color: "#F57C00" },
                 { key: "Converted", label: "Converted", icon: "sap-icon://complete", color: "#2E7D32", isFinal: true },
-                { key: "Lost", label: "Lost", icon: "sap-icon://decline", color: "#D32F2F", isFinal: true, isNegative: true }
+                { key: "Disqualified", label: "Disqualified", icon: "sap-icon://decline", color: "#D32F2F", isFinal: true, isNegative: true }
             ],
             stageField: "status",
             dateField: "createdAt"
@@ -30,20 +30,20 @@ sap.ui.define([
         prospects: {
             stages: [
                 { key: "New", label: "New", icon: "sap-icon://add", color: "#1976D2" },
-                { key: "Contacted", label: "Contacted", icon: "sap-icon://call", color: "#7B1FA2" },
-                { key: "Qualified", label: "Qualified", icon: "sap-icon://accept", color: "#388E3C" },
-                { key: "Negotiating", label: "Negotiating", icon: "sap-icon://sales-quote", color: "#F57C00" },
-                { key: "In Review", label: "In Review", icon: "sap-icon://inspection", color: "#0288D1" },
-                { key: "Converted", label: "Converted", icon: "sap-icon://complete", color: "#2E7D32", isFinal: true }
+                { key: "Engaged", label: "Engaged", icon: "sap-icon://collaborate", color: "#7B1FA2" },
+                { key: "Discovery", label: "Discovery", icon: "sap-icon://search", color: "#00796B" },
+                { key: "Proposal", label: "Proposal", icon: "sap-icon://document", color: "#F57C00" },
+                { key: "Negotiation", label: "Negotiation", icon: "sap-icon://sales-quote", color: "#E64A19" },
+                { key: "Converted", label: "Converted", icon: "sap-icon://complete", color: "#2E7D32", isFinal: true },
+                { key: "Lost", label: "Lost", icon: "sap-icon://decline", color: "#D32F2F", isFinal: true, isNegative: true }
             ],
             stageField: "status",
             dateField: "discoveryDate"
         },
         opportunities: {
             stages: [
-                { key: "Prospecting", label: "Prospecting", icon: "sap-icon://search", color: "#1976D2" },
-                { key: "Qualification", label: "Qualification", icon: "sap-icon://checklist-item", color: "#7B1FA2" },
-                { key: "Needs Analysis", label: "Needs Analysis", icon: "sap-icon://study-leave", color: "#00796B" },
+                { key: "Qualification", label: "Qualification", icon: "sap-icon://checklist-item", color: "#1976D2" },
+                { key: "Discovery", label: "Discovery", icon: "sap-icon://search", color: "#7B1FA2" },
                 { key: "Proposal", label: "Proposal", icon: "sap-icon://document", color: "#F57C00" },
                 { key: "Negotiation", label: "Negotiation", icon: "sap-icon://sales-quote", color: "#E64A19" },
                 { key: "Closed Won", label: "Closed Won", icon: "sap-icon://complete", color: "#2E7D32", isFinal: true },

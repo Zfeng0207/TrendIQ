@@ -559,9 +559,8 @@ sap.ui.define([
         _buildChevronBar: function () {
             const that = this;
             const aStages = [
-                { key: "Prospecting", label: "PROSPECTING", icon: "sap-icon://search" },
                 { key: "Qualification", label: "QUALIFICATION", icon: "sap-icon://checklist-item" },
-                { key: "Needs Analysis", label: "NEEDS ANALYSIS", icon: "sap-icon://study-leave" },
+                { key: "Discovery", label: "DISCOVERY", icon: "sap-icon://search" },
                 { key: "Proposal", label: "PROPOSAL", icon: "sap-icon://document" },
                 { key: "Negotiation", label: "NEGOTIATION", icon: "sap-icon://sales-quote" },
                 { key: "Closed Won", label: "CLOSED WON", icon: "sap-icon://complete" },
@@ -615,7 +614,7 @@ sap.ui.define([
             const oView = this.base.getView();
             if (!oView) return;
 
-            const aStageKeys = ["Prospecting", "Qualification", "Needs Analysis", "Proposal", "Negotiation", "Closed Won", "Closed Lost"];
+            const aStageKeys = ["Qualification", "Discovery", "Proposal", "Negotiation", "Closed Won", "Closed Lost"];
             const iCurrentIndex = aStageKeys.indexOf(sCurrentStage);
 
             const oContainer = oView.byId("oppsChevronContainer");
@@ -1582,8 +1581,8 @@ sap.ui.define([
          */
         _onStageClick: function (oStage, iTargetIndex) {
             const that = this;
-            const sCurrentStage = this._oEntityData?.stage || "Prospecting";
-            const aStageKeys = ["Prospecting", "Qualification", "Needs Analysis", "Proposal", "Negotiation", "Closed Won", "Closed Lost"];
+            const sCurrentStage = this._oEntityData?.stage || "Qualification";
+            const aStageKeys = ["Qualification", "Discovery", "Proposal", "Negotiation", "Closed Won", "Closed Lost"];
             const iCurrentIndex = aStageKeys.indexOf(sCurrentStage);
 
             if (iTargetIndex === iCurrentIndex) return;

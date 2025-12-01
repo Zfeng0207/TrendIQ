@@ -563,11 +563,11 @@ sap.ui.define([
         _buildLifecycleBar: function () {
             const that = this;
             const aStages = [
-                { key: "Prospect", label: "PROSPECT", icon: "sap-icon://lead", description: "New potential customer" },
                 { key: "Onboarding", label: "ONBOARDING", icon: "sap-icon://user-edit", description: "Setting up account" },
                 { key: "Active", label: "ACTIVE", icon: "sap-icon://accept", description: "Regular business" },
-                { key: "At-Risk", label: "AT-RISK", icon: "sap-icon://warning", description: "Attention needed", isWarning: true },
-                { key: "Churned", label: "CHURNED", icon: "sap-icon://decline", description: "Lost customer", isNegative: true }
+                { key: "At Risk", label: "AT RISK", icon: "sap-icon://warning", description: "Attention needed", isWarning: true },
+                { key: "Churned", label: "CHURNED", icon: "sap-icon://decline", description: "Lost customer", isNegative: true },
+                { key: "Inactive", label: "INACTIVE", icon: "sap-icon://sys-cancel", description: "Account inactive" }
             ];
 
             const oBar = new HBox({
@@ -617,7 +617,7 @@ sap.ui.define([
             const oView = this.base.getView();
             if (!oView) return;
 
-            const aStageKeys = ["Prospect", "Onboarding", "Active", "At-Risk", "Churned"];
+            const aStageKeys = ["Onboarding", "Active", "At Risk", "Churned", "Inactive"];
             const iCurrentIndex = aStageKeys.indexOf(sCurrentStatus);
 
             const oContainer = oView.byId("accountsLifecycleContainer");
@@ -1582,14 +1582,13 @@ sap.ui.define([
          */
         _mapStatusToLifecycle: function (sStatus) {
             const mMapping = {
-                "Prospect": "Prospect",
-                "New": "Onboarding",
                 "Onboarding": "Onboarding",
                 "Active": "Active",
-                "At-Risk": "At-Risk",
-                "AtRisk": "At-Risk",
+                "At Risk": "At Risk",
+                "At-Risk": "At Risk",
+                "AtRisk": "At Risk",
                 "Churned": "Churned",
-                "Inactive": "Churned"
+                "Inactive": "Inactive"
             };
             return mMapping[sStatus] || "Active";
         },
@@ -1694,7 +1693,7 @@ sap.ui.define([
         _onLifecycleStageClick: function (oStage, iTargetIndex) {
             const that = this;
             const sCurrentStatus = this._mapStatusToLifecycle(this._oEntityData?.accountStatus || "Active");
-            const aStageKeys = ["Prospect", "Onboarding", "Active", "At-Risk", "Churned"];
+            const aStageKeys = ["Onboarding", "Active", "At Risk", "Churned", "Inactive"];
             const iCurrentIndex = aStageKeys.indexOf(sCurrentStatus);
 
             if (iTargetIndex === iCurrentIndex) return;

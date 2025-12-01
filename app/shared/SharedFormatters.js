@@ -230,26 +230,25 @@ sap.ui.define([], function () {
                 // Lead statuses
                 "New": "Information",
                 "Contacted": "Warning",
+                "Engaged": "Warning",
                 "Qualified": "Success",
-                "Nurturing": "Warning",
                 "Converted": "Success",
-                "Lost": "Error",
-                "Archived": "None",
+                "Disqualified": "Error",
                 // Prospect statuses
-                "Negotiating": "Warning",
-                "In Review": "Information",
-                // Opportunity stages
-                "Prospecting": "Information",
-                "Qualification": "Warning",
-                "Needs Analysis": "Warning",
+                "Discovery": "Warning",
                 "Proposal": "Warning",
                 "Negotiation": "Warning",
+                "Lost": "Error",
+                // Opportunity stages
+                "Qualification": "Warning",
                 "Closed Won": "Success",
                 "Closed Lost": "Error",
                 // Account statuses
+                "Onboarding": "Information",
                 "Active": "Success",
-                "Inactive": "None",
-                "Prospect": "Information"
+                "At Risk": "Warning",
+                "Churned": "Error",
+                "Inactive": "None"
             };
             return mStatusStates[sStatus] || "None";
         },

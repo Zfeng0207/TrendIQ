@@ -128,7 +128,7 @@ module.exports = class DashboardService extends cds.ApplicationService {
             
             // Stage criticality
             const positiveStages = ['Proposal', 'Negotiation'];
-            const earlyStages = ['Prospecting', 'Qualification', 'Needs Analysis'];
+            const earlyStages = ['Qualification', 'Discovery'];
             opp.stageCriticality = positiveStages.includes(opp.stage) ? 3 : earlyStages.includes(opp.stage) ? 2 : 0;
         });
     }

@@ -602,11 +602,12 @@ sap.ui.define([
             const that = this;
             const aStages = [
                 { key: "New", label: "NEW", icon: "sap-icon://add" },
-                { key: "Contacted", label: "CONTACTED", icon: "sap-icon://call" },
-                { key: "Qualified", label: "QUALIFIED", icon: "sap-icon://accept" },
-                { key: "Negotiating", label: "NEGOTIATING", icon: "sap-icon://sales-quote" },
-                { key: "In Review", label: "IN REVIEW", icon: "sap-icon://inspection" },
-                { key: "Converted", label: "CONVERTED", icon: "sap-icon://complete" }
+                { key: "Engaged", label: "ENGAGED", icon: "sap-icon://collaborate" },
+                { key: "Discovery", label: "DISCOVERY", icon: "sap-icon://search" },
+                { key: "Proposal", label: "PROPOSAL", icon: "sap-icon://document" },
+                { key: "Negotiation", label: "NEGOTIATION", icon: "sap-icon://sales-quote" },
+                { key: "Converted", label: "CONVERTED", icon: "sap-icon://complete" },
+                { key: "Lost", label: "LOST", icon: "sap-icon://decline", isNegative: true }
             ];
 
             const oBar = new HBox({
@@ -658,7 +659,7 @@ sap.ui.define([
             const oView = this.base.getView();
             if (!oView) return;
 
-            const aStageKeys = ["New", "Contacted", "Qualified", "Negotiating", "In Review", "Converted"];
+            const aStageKeys = ["New", "Engaged", "Discovery", "Proposal", "Negotiation", "Converted", "Lost"];
             const iCurrentIndex = aStageKeys.indexOf(sCurrentStatus);
 
             // Find all chevron stages and update their state
@@ -1760,7 +1761,7 @@ sap.ui.define([
         _onStageClick: function (oStage, iTargetIndex) {
             const that = this;
             const sCurrentStatus = this._oEntityData?.status || "New";
-            const aStageKeys = ["New", "Contacted", "Qualified", "Negotiating", "In Review", "Converted"];
+            const aStageKeys = ["New", "Engaged", "Discovery", "Proposal", "Negotiation", "Converted", "Lost"];
             const iCurrentIndex = aStageKeys.indexOf(sCurrentStatus);
 
             if (iTargetIndex === iCurrentIndex) return;

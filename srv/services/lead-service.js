@@ -213,7 +213,7 @@ module.exports = async function() {
         const { newStatus } = req.data;
 
         // Valid status transitions
-        const validStatuses = ['New', 'Contacted', 'Qualified', 'Nurturing', 'Converted', 'Lost'];
+        const validStatuses = ['New', 'Contacted', 'Engaged', 'Qualified', 'Converted', 'Disqualified'];
         
         if (!validStatuses.includes(newStatus)) {
             return req.error(400, `Invalid status: ${newStatus}. Valid values are: ${validStatuses.join(', ')}`);
@@ -231,8 +231,8 @@ module.exports = async function() {
             return req.error(400, 'Cannot change status of a converted lead');
         }
 
-        if (lead.status === 'Lost' && newStatus !== 'New') {
-            return req.error(400, 'Lost leads can only be reactivated to New status');
+        if (lead.status === 'Disqualified' && newStatus !== 'New') {
+            return req.error(400, 'Disqualified leads can only be reactivated to New status');
         }
 
         // Update the status
@@ -246,8 +246,8 @@ module.exports = async function() {
             updateData.leadQuality = 'Warm';
         }
 
-        // If marking as Lost or Converted, set end date
-        if (newStatus === 'Lost' || newStatus === 'Converted') {
+        // If marking as Disqualified or Converted, set end date
+        if (newStatus === 'Disqualified' || newStatus === 'Converted') {
             updateData.closedDate = new Date().toISOString();
         }
 

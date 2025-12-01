@@ -419,34 +419,40 @@
                     <span class="stage-label">New</span>
                 </div>
             </div>
-            <div class="stage completed" data-stage="Contacted">
+            <div class="stage completed" data-stage="Engaged">
                 <div class="stage-content">
-                    <span class="stage-icon">📞</span>
-                    <span class="stage-label">Contacted</span>
+                    <span class="stage-icon">💬</span>
+                    <span class="stage-label">Engaged</span>
                 </div>
             </div>
-            <div class="stage active" data-stage="Qualified">
+            <div class="stage active" data-stage="Discovery">
                 <div class="stage-content">
-                    <span class="stage-icon">✅</span>
-                    <span class="stage-label">Qualified</span>
+                    <span class="stage-icon">🔍</span>
+                    <span class="stage-label">Discovery</span>
                 </div>
             </div>
-            <div class="stage" data-stage="Negotiating">
+            <div class="stage" data-stage="Proposal">
                 <div class="stage-content">
-                    <span class="stage-icon">💼</span>
-                    <span class="stage-label">Negotiating</span>
+                    <span class="stage-icon">📄</span>
+                    <span class="stage-label">Proposal</span>
                 </div>
             </div>
-            <div class="stage" data-stage="In Review">
+            <div class="stage" data-stage="Negotiation">
                 <div class="stage-content">
-                    <span class="stage-icon">📋</span>
-                    <span class="stage-label">In Review</span>
+                    <span class="stage-icon">🤝</span>
+                    <span class="stage-label">Negotiation</span>
                 </div>
             </div>
             <div class="stage success" data-stage="Converted">
                 <div class="stage-content">
                     <span class="stage-icon">🎉</span>
                     <span class="stage-label">Converted</span>
+                </div>
+            </div>
+            <div class="stage lost" data-stage="Lost">
+                <div class="stage-content">
+                    <span class="stage-icon">❌</span>
+                    <span class="stage-label">Lost</span>
                 </div>
             </div>
         </div>
@@ -588,7 +594,7 @@
                 }
                 
                 // Update stage bar based on visible status
-                var statusValues = ['New', 'Contacted', 'Qualified', 'Negotiating', 'In Review', 'Converted'];
+                var statusValues = ['New', 'Engaged', 'Discovery', 'Proposal', 'Negotiation', 'Converted', 'Lost'];
                 var foundStatus = null;
                 
                 // Look for status in form fields
@@ -631,7 +637,7 @@
             // Update stage bar based on current status
             function updateStageBar(currentStatus) {
                 var stages = document.querySelectorAll('.creatio-stage-bar .stage');
-                var stageOrder = ['New', 'Contacted', 'Qualified', 'Negotiating', 'In Review', 'Converted'];
+                var stageOrder = ['New', 'Engaged', 'Discovery', 'Proposal', 'Negotiation', 'Converted', 'Lost'];
                 var currentIndex = stageOrder.indexOf(currentStatus);
                 
                 stages.forEach(function(stage, index) {

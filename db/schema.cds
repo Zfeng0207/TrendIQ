@@ -14,7 +14,7 @@ entity Leads : managed, cuid, aspects.Address, aspects.AIInsights {
     outletName   : String(200) @title: 'Outlet Name';
     brandToPitch : String(100) @title: 'Brand to Pitch';
     status       : String(20) @title: 'Status' default 'New'
-                   @assert.enum: ['New', 'Contacted', 'Qualified', 'Nurturing', 'Converted', 'Lost', 'Archived'];
+                   @assert.enum: ['New', 'Contacted', 'Engaged', 'Qualified', 'Converted', 'Disqualified'];
     platform     : String(50) @title: 'Platform'
                    @assert.enum: ['Instagram', 'TikTok', 'Facebook', 'LinkedIn', 'Web', 'Referral', 'Other'];
     contactEmail : String(200) @title: 'Contact Email';

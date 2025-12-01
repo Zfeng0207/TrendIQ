@@ -34,7 +34,7 @@ service LeadService @(path: '/lead') {
     } group by source;
 
     @readonly entity HotLeads as projection on leads.Leads
-        where leadQuality = 'Hot' and status <> 'Converted' and status <> 'Lost';
+        where leadQuality = 'Hot' and status <> 'Converted' and status <> 'Disqualified';
 
     // Associated CRM entities (read-only from lead context)
     @readonly entity Users as projection on crm.Users;

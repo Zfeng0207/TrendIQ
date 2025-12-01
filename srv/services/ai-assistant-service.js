@@ -475,7 +475,7 @@ module.exports = cds.service.impl(async function () {
     function calculateProspectConversionLikelihood(prospect) {
         let likelihood = prospect.prospectScore || 50;
         if (prospect.status === 'Qualified') likelihood += 15;
-        if (prospect.status === 'Negotiating') likelihood += 25;
+        if (prospect.status === 'Negotiation') likelihood += 25;
         return Math.min(likelihood, 95);
     }
 

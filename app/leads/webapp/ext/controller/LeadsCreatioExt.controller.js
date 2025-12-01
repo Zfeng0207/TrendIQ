@@ -616,10 +616,10 @@ sap.ui.define([
             const aStages = [
                 { key: "New", label: "NEW", icon: "sap-icon://add" },
                 { key: "Contacted", label: "CONTACTED", icon: "sap-icon://call" },
+                { key: "Engaged", label: "ENGAGED", icon: "sap-icon://collaborate" },
                 { key: "Qualified", label: "QUALIFIED", icon: "sap-icon://accept" },
-                { key: "Nurturing", label: "NURTURING", icon: "sap-icon://tree" },
                 { key: "Converted", label: "CONVERTED", icon: "sap-icon://complete" },
-                { key: "Lost", label: "LOST", icon: "sap-icon://decline", isNegative: true }
+                { key: "Disqualified", label: "DISQUALIFIED", icon: "sap-icon://decline", isNegative: true }
             ];
 
             const oBar = new HBox({
@@ -671,7 +671,7 @@ sap.ui.define([
             const oView = this.base.getView();
             if (!oView) return;
 
-            const aStageKeys = ["New", "Contacted", "Qualified", "Nurturing", "Converted", "Lost"];
+            const aStageKeys = ["New", "Contacted", "Engaged", "Qualified", "Converted", "Disqualified"];
             const iCurrentIndex = aStageKeys.indexOf(sCurrentStatus);
 
             // Find all chevron stages and update their state
@@ -691,7 +691,7 @@ sap.ui.define([
                     oChevron.addStyleClass("creatio-stage-completed");
                 } else if (iIndex === iCurrentIndex) {
                     oChevron.addStyleClass("creatio-stage-current");
-                    if (sCurrentStatus === "Lost") {
+                    if (sCurrentStatus === "Disqualified") {
                         oChevron.addStyleClass("creatio-stage-negative");
                     }
                 } else {
@@ -1845,11 +1845,11 @@ sap.ui.define([
         _onStageClick: function (oStage, iTargetIndex) {
             const that = this;
             const sCurrentStatus = this._oEntityData?.status || "New";
-            const aStageKeys = ["New", "Contacted", "Qualified", "Nurturing", "Converted", "Lost"];
+            const aStageKeys = ["New", "Contacted", "Engaged", "Qualified", "Converted", "Disqualified"];
             const iCurrentIndex = aStageKeys.indexOf(sCurrentStatus);
 
             if (iTargetIndex === iCurrentIndex) return;
-            if (iTargetIndex < iCurrentIndex && oStage.key !== "Lost") {
+            if (iTargetIndex < iCurrentIndex && oStage.key !== "Disqualified") {
                 MessageToast.show("Cannot move backwards in the pipeline");
                 return;
             }

@@ -433,22 +433,16 @@
     <!-- Creatio-style Stage Progress Bar for Opportunities -->
     <div id="creatioStageBar" class="creatio-stage-bar" style="display: none;">
         <div class="stage-container">
-            <div class="stage completed" data-stage="Prospecting">
-                <div class="stage-content">
-                    <span class="stage-icon">🔍</span>
-                    <span class="stage-label">Prospecting</span>
-                </div>
-            </div>
             <div class="stage completed" data-stage="Qualification">
                 <div class="stage-content">
                     <span class="stage-icon">✓</span>
                     <span class="stage-label">Qualification</span>
                 </div>
             </div>
-            <div class="stage active" data-stage="Needs Analysis">
+            <div class="stage active" data-stage="Discovery">
                 <div class="stage-content">
-                    <span class="stage-icon">📊</span>
-                    <span class="stage-label">Needs Analysis</span>
+                    <span class="stage-icon">🔍</span>
+                    <span class="stage-label">Discovery</span>
                 </div>
             </div>
             <div class="stage" data-stage="Proposal">
@@ -623,7 +617,7 @@
                 }
                 
                 // Update stage bar based on visible status/stage
-                var stageValues = ['Prospecting', 'Qualification', 'Needs Analysis', 'Proposal', 'Negotiation', 'Closed Won', 'Closed Lost'];
+                var stageValues = ['Qualification', 'Discovery', 'Proposal', 'Negotiation', 'Closed Won', 'Closed Lost'];
                 var foundStage = null;
                 
                 // Look for stage in visible content
@@ -653,7 +647,7 @@
             // Update stage bar based on current stage
             function updateStageBar(currentStage) {
                 var stages = document.querySelectorAll('.creatio-stage-bar .stage');
-                var stageOrder = ['Prospecting', 'Qualification', 'Needs Analysis', 'Proposal', 'Negotiation', 'Closed Won', 'Closed Lost'];
+                var stageOrder = ['Qualification', 'Discovery', 'Proposal', 'Negotiation', 'Closed Won', 'Closed Lost'];
                 var currentIndex = stageOrder.indexOf(currentStage);
                 
                 stages.forEach(function(stage, index) {

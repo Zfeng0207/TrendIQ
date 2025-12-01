@@ -43,18 +43,17 @@ module.exports = async function() {
         }
 
         // Validate stage transition
-        const validStages = ['Prospecting', 'Qualification', 'Needs Analysis', 'Proposal', 'Negotiation', 'Closed Won', 'Closed Lost'];
+        const validStages = ['Qualification', 'Discovery', 'Proposal', 'Negotiation', 'Closed Won', 'Closed Lost'];
         if (!validStages.includes(newStage)) {
             return req.error(400, `Invalid stage: ${newStage}`);
         }
 
         // Update probability based on stage
         const stageProbability = {
-            'Prospecting': 10,
-            'Qualification': 25,
-            'Needs Analysis': 40,
+            'Qualification': 20,
+            'Discovery': 40,
             'Proposal': 60,
-            'Negotiation': 75,
+            'Negotiation': 80,
             'Closed Won': 100,
             'Closed Lost': 0
         };
@@ -265,7 +264,7 @@ function calculateWinProbability(opportunity) {
     const stageBonus = {
         'Negotiation': 15,
         'Proposal': 10,
-        'Needs Analysis': 5
+        'Discovery': 5
     };
     score += stageBonus[opportunity.stage] || 0;
 

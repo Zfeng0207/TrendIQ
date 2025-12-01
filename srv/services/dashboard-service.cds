@@ -141,7 +141,7 @@ service DashboardService @(path: '/dashboard') {
         sentimentLabel,
         estimatedValue,
         createdAt
-    } where converted = false and status <> 'Lost'
+    } where converted = false and status <> 'Disqualified'
       order by aiScore desc;
 
     // Top Opportunities by Win Score

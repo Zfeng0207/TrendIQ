@@ -314,7 +314,7 @@ sap.ui.define([
             
             const oStage = oView.byId("opportunityStage");
             if (oStage) {
-                oStage.setSelectedKey("Prospecting");
+                oStage.setSelectedKey("Qualification");
             }
             
             const oProbability = oView.byId("opportunityProbability");
@@ -510,7 +510,7 @@ sap.ui.define([
             return {
                 name: oName ? oName.getValue() : "",
                 description: oDescription ? oDescription.getValue() : "",
-                stage: oStage ? oStage.getSelectedKey() : "Prospecting",
+                stage: oStage ? oStage.getSelectedKey() : "Qualification",
                 probability: oProbability ? parseInt(oProbability.getValue(), 10) : 50,
                 amount: oAmount ? parseFloat(oAmount.getValue()) || 0 : 0,
                 expectedRevenue: oExpectedRevenue ? parseFloat(oExpectedRevenue.getValue()) || 0 : 0,
@@ -749,7 +749,7 @@ sap.ui.define([
             
             const oOpportunityStage = oView.byId("convertOpportunityStage");
             if (oOpportunityStage) {
-                oOpportunityStage.setSelectedKey("Prospecting");
+                oOpportunityStage.setSelectedKey("Qualification");
             }
             
             const oOpportunityAmount = oView.byId("convertOpportunityAmount");
@@ -935,7 +935,7 @@ sap.ui.define([
                 // Opportunity data
                 opportunityName: oOpportunityName ? oOpportunityName.getValue() : "",
                 opportunityDescription: oOpportunityDescription ? oOpportunityDescription.getValue() : "",
-                opportunityStage: oOpportunityStage ? oOpportunityStage.getSelectedKey() : "Prospecting",
+                opportunityStage: oOpportunityStage ? oOpportunityStage.getSelectedKey() : "Qualification",
                 opportunityAmount: oOpportunityAmount ? parseFloat(oOpportunityAmount.getValue()) || 0 : 0,
                 opportunityProbability: oOpportunityProbability ? parseInt(oOpportunityProbability.getValue(), 10) : 50,
                 opportunityCloseDate: sCloseDate

@@ -448,12 +448,6 @@
     <!-- Creatio-style Account Lifecycle Bar -->
     <div id="creatioLifecycleBar" class="creatio-lifecycle-bar" style="display: none;">
         <div class="lifecycle-container">
-            <div class="lifecycle-stage completed" data-stage="Prospect">
-                <div class="lifecycle-content">
-                    <span class="lifecycle-icon">🔍</span>
-                    <span class="lifecycle-label">Prospect</span>
-                </div>
-            </div>
             <div class="lifecycle-stage completed" data-stage="Onboarding">
                 <div class="lifecycle-content">
                     <span class="lifecycle-icon">📝</span>
@@ -466,16 +460,22 @@
                     <span class="lifecycle-label">Active</span>
                 </div>
             </div>
-            <div class="lifecycle-stage at-risk" data-stage="At-Risk">
+            <div class="lifecycle-stage at-risk" data-stage="At Risk">
                 <div class="lifecycle-content">
                     <span class="lifecycle-icon">⚠️</span>
-                    <span class="lifecycle-label">At-Risk</span>
+                    <span class="lifecycle-label">At Risk</span>
                 </div>
             </div>
             <div class="lifecycle-stage churned" data-stage="Churned">
                 <div class="lifecycle-content">
                     <span class="lifecycle-icon">❌</span>
                     <span class="lifecycle-label">Churned</span>
+                </div>
+            </div>
+            <div class="lifecycle-stage inactive" data-stage="Inactive">
+                <div class="lifecycle-content">
+                    <span class="lifecycle-icon">⏸️</span>
+                    <span class="lifecycle-label">Inactive</span>
                 </div>
             </div>
         </div>
@@ -635,7 +635,7 @@
                 }
                 
                 // Update lifecycle bar based on visible status
-                var lifecycleValues = ['Prospect', 'Onboarding', 'Active', 'At-Risk', 'Churned'];
+                var lifecycleValues = ['Onboarding', 'Active', 'At Risk', 'Churned', 'Inactive'];
                 var foundLifecycle = null;
                 
                 // Look for lifecycle status
@@ -649,10 +649,12 @@
                 
                 // Fallback - default to Active for most accounts
                 if (!foundLifecycle) {
-                    if (allText.indexOf('At-Risk') >= 0 || allText.indexOf('At Risk') >= 0) {
-                        foundLifecycle = 'At-Risk';
+                    if (allText.indexOf('At Risk') >= 0 || allText.indexOf('At-Risk') >= 0) {
+                        foundLifecycle = 'At Risk';
                     } else if (allText.indexOf('Churned') >= 0) {
                         foundLifecycle = 'Churned';
+                    } else if (allText.indexOf('Inactive') >= 0) {
+                        foundLifecycle = 'Inactive';
                     } else if (allText.indexOf('Onboarding') >= 0) {
                         foundLifecycle = 'Onboarding';
                     } else {
@@ -681,7 +683,7 @@
             // Update lifecycle bar based on current stage
             function updateLifecycleBar(currentStage) {
                 var stages = document.querySelectorAll('.creatio-lifecycle-bar .lifecycle-stage');
-                var stageOrder = ['Prospect', 'Onboarding', 'Active', 'At-Risk', 'Churned'];
+                var stageOrder = ['Onboarding', 'Active', 'At Risk', 'Churned', 'Inactive'];
                 var currentIndex = stageOrder.indexOf(currentStage);
                 
                 stages.forEach(function(stage) {
@@ -690,12 +692,12 @@
                     
                     stage.classList.remove('active', 'completed');
                     
-                    if (stageStatus === 'At-Risk' || stageStatus === 'Churned') {
+                    if (stageStatus === 'At Risk' || stageStatus === 'Churned' || stageStatus === 'Inactive') {
                         // These are end states, only show as active if current
                         if (stageStatus === currentStage) {
                             stage.classList.add('active');
                         }
-                    } else if (stageIndex < currentIndex && currentStage !== 'At-Risk' && currentStage !== 'Churned') {
+                    } else if (stageIndex < currentIndex && currentStage !== 'At Risk' && currentStage !== 'Churned' && currentStage !== 'Inactive') {
                         stage.classList.add('completed');
                     } else if (stageIndex === currentIndex) {
                         stage.classList.add('active');

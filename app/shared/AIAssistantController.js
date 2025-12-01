@@ -291,7 +291,7 @@ sap.ui.define([
                         "• **Probability**: 72%\n" +
                         "• **Estimated Timeline**: 2-3 weeks\n" +
                         "• **Key Success Factors**: Strong brand fit, active engagement, decision-maker contact\n\n" +
-                        "Recommendation: Move to 'Negotiating' stage and prepare proposal.";
+                        "Recommendation: Move to 'Negotiation' stage and prepare proposal.";
                 } else {
                     sMessage = `This prospect "${oEntityData?.prospectName || 'Unknown'}" was discovered from ${oEntityData?.discoverySource || 'web'}. ` +
                         `They operate a ${oEntityData?.businessType || 'retail'} business. ` +
@@ -302,7 +302,7 @@ sap.ui.define([
                     const iWinScore = oEntityData?.aiWinScore || 65;
                     sMessage = `Win probability analysis:\n\n` +
                         `• **AI Win Score**: ${iWinScore}%\n` +
-                        `• **Current Stage**: ${oEntityData?.stage || 'Prospecting'}\n` +
+                        `• **Current Stage**: ${oEntityData?.stage || 'Qualification'}\n` +
                         `• **Deal Value**: RM ${(oEntityData?.amount || 0).toLocaleString()}\n\n` +
                         `${iWinScore >= 70 ? 'Strong deal with high close probability.' : 'Focus on addressing buyer concerns to improve win rate.'}`;
                 } else if (sLowerQuery.includes("competitor")) {

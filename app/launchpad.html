@@ -654,10 +654,10 @@
         <div class="stage-container">
             <div class="stage completed"><div class="stage-content"><span class="stage-label">NEW</span></div></div>
             <div class="stage completed"><div class="stage-content"><span class="stage-label">CONTACTED</span></div></div>
-            <div class="stage active"><div class="stage-content"><span class="stage-label">QUALIFIED</span></div></div>
-            <div class="stage"><div class="stage-content"><span class="stage-label">NURTURING</span></div></div>
+            <div class="stage active"><div class="stage-content"><span class="stage-label">ENGAGED</span></div></div>
+            <div class="stage"><div class="stage-content"><span class="stage-label">QUALIFIED</span></div></div>
             <div class="stage"><div class="stage-content"><span class="stage-label">CONVERTED</span></div></div>
-            <div class="stage"><div class="stage-content"><span class="stage-label">LOST</span></div></div>
+            <div class="stage"><div class="stage-content"><span class="stage-label">DISQUALIFIED</span></div></div>
         </div>
     </div>
     
@@ -855,8 +855,10 @@
     <script>
     (function(){
         // Stage configurations for different entity types
-        var LEAD_STAGES = ['NEW', 'CONTACTED', 'QUALIFIED', 'NURTURING', 'CONVERTED', 'LOST'];
-        var PROSPECT_STAGES = ['NEW', 'CONTACTED', 'QUALIFIED', 'NEGOTIATING', 'IN REVIEW', 'CONVERTED'];
+        var LEAD_STAGES = ['NEW', 'CONTACTED', 'ENGAGED', 'QUALIFIED', 'CONVERTED', 'DISQUALIFIED'];
+        var PROSPECT_STAGES = ['NEW', 'ENGAGED', 'DISCOVERY', 'PROPOSAL', 'NEGOTIATION', 'CONVERTED', 'LOST'];
+        var OPPORTUNITY_STAGES = ['QUALIFICATION', 'DISCOVERY', 'PROPOSAL', 'NEGOTIATION', 'CLOSED WON', 'CLOSED LOST'];
+        var ACCOUNT_STAGES = ['PROSPECT', 'ONBOARDING', 'ACTIVE', 'AT RISK', 'CHURNED'];
         
         function updateStageBar(stages, isLead) {
             var stageContainer = document.querySelector('#creatioStageBar .stage-container');
@@ -870,13 +872,13 @@
                 var stageDiv = document.createElement('div');
                 stageDiv.className = 'stage' + (index < 2 ? ' completed' : (index === 2 ? ' active' : ''));
                 
-                // Mark negative stage for Leads (LOST)
-                if (isLead && label === 'LOST') {
+                // Mark negative stages based on entity type
+                if (label === 'DISQUALIFIED' || label === 'LOST' || label === 'CLOSED LOST' || label === 'CHURNED' || label === 'AT RISK') {
                     stageDiv.classList.add('negative');
                 }
                 
-                // Make QUALIFIED stage green for Prospects when it's active
-                if (!isLead && label === 'QUALIFIED' && index === 2) {
+                // Make success stages green
+                if (label === 'CONVERTED' || label === 'CLOSED WON' || label === 'ACTIVE') {
                     stageDiv.classList.add('qualified-green');
                 }
                 
@@ -1004,6 +1006,12 @@
                     updateScoringLabel(true);
                 } else if (isProspectsObjectPage) {
                     updateStageBar(PROSPECT_STAGES, false);
+                    updateScoringLabel(false);
+                } else if (isOpportunitiesObjectPage) {
+                    updateStageBar(OPPORTUNITY_STAGES, false);
+                    updateScoringLabel(false);
+                } else if (isAccountsObjectPage) {
+                    updateStageBar(ACCOUNT_STAGES, false);
                     updateScoringLabel(false);
                 }
                 

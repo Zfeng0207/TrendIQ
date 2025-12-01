@@ -254,7 +254,7 @@ sap.ui.define([
 
             var oOpportunityStage = sap.ui.getCore().byId("convertOpportunityStage");
             if (oOpportunityStage) {
-                oOpportunityStage.setSelectedKey("Prospecting");
+                oOpportunityStage.setSelectedKey("Qualification");
             }
 
             var oOpportunityAmount = sap.ui.getCore().byId("convertOpportunityAmount");
@@ -428,7 +428,7 @@ sap.ui.define([
                 contactPhone: oContactPhone ? oContactPhone.getValue() : "",
                 opportunityName: oOpportunityName ? oOpportunityName.getValue() : "",
                 opportunityDescription: oOpportunityDescription ? oOpportunityDescription.getValue() : "",
-                opportunityStage: oOpportunityStage ? oOpportunityStage.getSelectedKey() : "Prospecting",
+                opportunityStage: oOpportunityStage ? oOpportunityStage.getSelectedKey() : "Qualification",
                 opportunityAmount: oOpportunityAmount ? parseFloat(oOpportunityAmount.getValue()) || 0 : 0,
                 opportunityProbability: oOpportunityProbability ? parseInt(oOpportunityProbability.getValue(), 10) : 50,
                 opportunityCloseDate: sCloseDate

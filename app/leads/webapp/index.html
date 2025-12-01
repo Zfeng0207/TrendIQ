@@ -435,16 +435,16 @@
                     <span class="stage-label">Contacted</span>
                 </div>
             </div>
+            <div class="stage" data-stage="Engaged">
+                <div class="stage-content">
+                    <span class="stage-icon">💬</span>
+                    <span class="stage-label">Engaged</span>
+                </div>
+            </div>
             <div class="stage active" data-stage="Qualified">
                 <div class="stage-content">
                     <span class="stage-icon">✅</span>
                     <span class="stage-label">Qualified</span>
-                </div>
-            </div>
-            <div class="stage" data-stage="Nurturing">
-                <div class="stage-content">
-                    <span class="stage-icon">🌱</span>
-                    <span class="stage-label">Nurturing</span>
                 </div>
             </div>
             <div class="stage success" data-stage="Converted">
@@ -453,10 +453,10 @@
                     <span class="stage-label">Converted</span>
                 </div>
             </div>
-            <div class="stage danger" data-stage="Lost">
+            <div class="stage danger" data-stage="Disqualified">
                 <div class="stage-content">
                     <span class="stage-icon">❌</span>
-                    <span class="stage-label">Lost</span>
+                    <span class="stage-label">Disqualified</span>
                 </div>
             </div>
         </div>
@@ -632,14 +632,14 @@
             function updateFromVisibleUI() {
                 // Look for status in the page by searching visible text
                 var allText = document.body.innerText;
-                var statusMatches = allText.match(/(New|Contacted|Qualified|Nurturing|Converted|Lost)/g);
+                var statusMatches = allText.match(/(New|Contacted|Engaged|Qualified|Converted|Disqualified)/g);
                 if (statusMatches && statusMatches.length > 0) {
                     // Find the most likely status (from the form, not header)
                     var formSections = document.querySelectorAll('.sapMPage, .sapUxAPObjectPageSection');
                     formSections.forEach(function(section) {
                         var sectionText = section.innerText;
                         if (sectionText.indexOf('Status:') >= 0 || sectionText.indexOf('status:') >= 0) {
-                            var statusMatch = sectionText.match(/Status:\s*(New|Contacted|Qualified|Nurturing|Converted|Lost)/i);
+                            var statusMatch = sectionText.match(/Status:\s*(New|Contacted|Engaged|Qualified|Converted|Disqualified)/i);
                             if (statusMatch) {
                                 updateStageBar(statusMatch[1]);
                             }
@@ -718,7 +718,7 @@
                 }
                 
                 // Update stage bar based on visible status
-                var statusValues = ['Qualified', 'Contacted', 'New', 'Nurturing', 'Converted', 'Lost'];
+                var statusValues = ['Qualified', 'Contacted', 'Engaged', 'New', 'Converted', 'Disqualified'];
                 var foundStatus = null;
                 
                 // First, check the header/title area for status
@@ -762,9 +762,9 @@
                 if (!foundStatus) {
                     if (allText.indexOf('Qualified') >= 0) foundStatus = 'Qualified';
                     else if (allText.indexOf('Contacted') >= 0) foundStatus = 'Contacted';
-                    else if (allText.indexOf('Nurturing') >= 0) foundStatus = 'Nurturing';
+                    else if (allText.indexOf('Engaged') >= 0) foundStatus = 'Engaged';
                     else if (allText.indexOf('Converted') >= 0) foundStatus = 'Converted';
-                    else if (allText.indexOf('Lost') >= 0) foundStatus = 'Lost';
+                    else if (allText.indexOf('Disqualified') >= 0) foundStatus = 'Disqualified';
                 }
                 
                 if (foundStatus) {
@@ -782,7 +782,7 @@
                     if (stageStatus === currentStatus) {
                         stage.classList.add('active');
                         found = true;
-                    } else if (!found && ['New', 'Contacted', 'Qualified', 'Nurturing'].indexOf(stageStatus) >= 0) {
+                    } else if (!found && ['New', 'Contacted', 'Engaged', 'Qualified'].indexOf(stageStatus) >= 0) {
                         stage.classList.add('completed');
                     }
                 });

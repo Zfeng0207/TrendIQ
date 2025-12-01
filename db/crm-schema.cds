@@ -64,8 +64,8 @@ entity Accounts : managed, cuid, aspects.Address, aspects.SocialMedia, aspects.C
     childAccounts : Composition of many Accounts on childAccounts.parentAccount = $self;
 
     // Account management
-    status         : String(20) @title: 'Status' default 'Active'
-                     @assert.enum: ['Active', 'Inactive', 'Prospect'];
+    status         : String(20) @title: 'Status' default 'Onboarding'
+                     @assert.enum: ['Onboarding', 'Active', 'At Risk', 'Churned', 'Inactive'];
     accountOwner   : Association to Users @title: 'Account Owner';
     accountManager : Association to Users @title: 'Account Manager';
     accountTier    : String(20) @title: 'Account Tier'
@@ -227,8 +227,8 @@ entity Opportunities : managed, cuid, aspects.Financial {
     primaryContact : Association to Contacts @title: 'Primary Contact';
 
     // Pipeline stage
-    stage       : String(50) @title: 'Stage' default 'Prospecting'
-                  @assert.enum: ['Prospecting', 'Qualification', 'Needs Analysis', 'Proposal', 'Negotiation', 'Closed Won', 'Closed Lost'];
+    stage       : String(50) @title: 'Stage' default 'Qualification'
+                  @assert.enum: ['Qualification', 'Discovery', 'Proposal', 'Negotiation', 'Closed Won', 'Closed Lost'];
     probability : Integer @title: 'Win Probability (%)' @assert.range: [0, 100];
 
     // Financial (inherits from Financial aspect: amount, currency, discountPercent, discountAmount)
@@ -380,7 +380,7 @@ entity Prospects : managed, cuid, aspects.Address {
     autoAssignedTo    : Association to Users @title: 'Auto Assigned To';
     discoveryMetadata : LargeString @title: 'Discovery Metadata'; // JSON string for raw scraped data
     status            : String(20) @title: 'Status' default 'New'
-                      @assert.enum: ['New', 'Contacted', 'Qualified', 'Negotiating', 'In Review', 'Converted'];
+                      @assert.enum: ['New', 'Engaged', 'Discovery', 'Proposal', 'Negotiation', 'Converted', 'Lost'];
     
     // Parsed contact information fields (populated from contactInfo JSON)
     contactName       : String(200) @title: 'Contact Name';

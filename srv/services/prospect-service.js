@@ -99,11 +99,12 @@ module.exports = async function() {
     function getStatusCriticality(status) {
         const criticalityMap = {
             'Converted': 3,    // Positive (Green)
-            'In Review': 3,    // Positive (Green)
-            'Negotiating': 2,  // Warning (Yellow)
-            'Qualified': 3,    // Positive (Green)
-            'Contacted': 2,    // Warning (Yellow)
-            'New': 2           // Warning (Yellow)
+            'Negotiation': 3,  // Positive (Green)
+            'Proposal': 2,     // Warning (Yellow)
+            'Discovery': 3,    // Positive (Green)
+            'Engaged': 2,      // Warning (Yellow)
+            'New': 2,          // Warning (Yellow)
+            'Lost': 1          // Negative (Red)
         };
         return criticalityMap[status] || 2;
     }
@@ -113,11 +114,12 @@ module.exports = async function() {
         // If status explicitly maps to a phase, use that
         const statusToPhase = {
             'Converted': 'Phase 3',
-            'In Review': 'Phase 3',
-            'Negotiating': 'Phase 2',
-            'Qualified': 'Phase 2',
-            'Contacted': 'Phase 1',
-            'New': 'Phase 1'
+            'Negotiation': 'Phase 3',
+            'Proposal': 'Phase 2',
+            'Discovery': 'Phase 2',
+            'Engaged': 'Phase 1',
+            'New': 'Phase 1',
+            'Lost': 'Lost'
         };
         
         // If status has explicit mapping, use it
@@ -290,7 +292,7 @@ module.exports = async function() {
         const { newStatus } = req.data;
 
         // Valid status transitions
-        const validStatuses = ['New', 'Contacted', 'Qualified', 'Negotiating', 'In Review', 'Converted'];
+        const validStatuses = ['New', 'Engaged', 'Discovery', 'Proposal', 'Negotiation', 'Converted', 'Lost'];
         
         if (!validStatuses.includes(newStatus)) {
             return req.error(400, `Invalid status: ${newStatus}. Valid values are: ${validStatuses.join(', ')}`);
@@ -532,7 +534,7 @@ module.exports = async function() {
             description: inputData.description || `Opportunity created from prospect: ${prospect.prospectName}`,
             sourceProspect_ID: prospectID,
             // Pipeline data
-            stage: inputData.stage || 'Prospecting',
+            stage: inputData.stage || 'Qualification',
             probability: inputData.probability ?? prospect.prospectScore ?? 50,
             // Financial data
             amount: inputData.amount ?? prospect.estimatedValue ?? 0,
@@ -673,7 +675,7 @@ module.exports = async function() {
                 primaryContact_ID: contactID,
                 sourceProspect_ID: prospectID,
                 // Pipeline data
-                stage: inputData.opportunityStage || 'Prospecting',
+                stage: inputData.opportunityStage || 'Qualification',
                 probability: inputData.opportunityProbability ?? prospect.prospectScore ?? 50,
                 // Financial data
                 amount: inputData.opportunityAmount ?? prospect.estimatedValue ?? 0,
@@ -988,17 +990,19 @@ module.exports = async function() {
         if (prospect.status) {
             let statusNote = `• Current Status: ${prospect.status}`;
             if (prospect.status === 'New') {
-                statusNote += ' - Awaiting qualification and assignment';
-            } else if (prospect.status === 'Contacted') {
+                statusNote += ' - Awaiting initial engagement';
+            } else if (prospect.status === 'Engaged') {
                 statusNote += ' - Initial contact made, follow-up required';
-            } else if (prospect.status === 'Qualified') {
-                statusNote += ' - Ready for opportunity creation';
-            } else if (prospect.status === 'Negotiating') {
+            } else if (prospect.status === 'Discovery') {
+                statusNote += ' - Understanding requirements and needs';
+            } else if (prospect.status === 'Proposal') {
+                statusNote += ' - Preparing or presenting proposal';
+            } else if (prospect.status === 'Negotiation') {
                 statusNote += ' - Currently in negotiation phase';
-            } else if (prospect.status === 'In Review') {
-                statusNote += ' - Under review for final approval';
             } else if (prospect.status === 'Converted') {
                 statusNote += ' - Successfully converted to opportunity';
+            } else if (prospect.status === 'Lost') {
+                statusNote += ' - Prospect was lost';
             }
             notes.push(statusNote);
         }

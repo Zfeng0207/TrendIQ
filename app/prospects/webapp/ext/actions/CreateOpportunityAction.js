@@ -180,7 +180,7 @@ sap.ui.define([
             // Reset other fields
             var oStage = sap.ui.getCore().byId("opportunityStage");
             if (oStage) {
-                oStage.setSelectedKey("Prospecting");
+                oStage.setSelectedKey("Qualification");
             }
 
             var oCompetitors = sap.ui.getCore().byId("opportunityCompetitors");
