@@ -339,6 +339,12 @@
                     additionalInformation: "SAPUI5.Component=beautyleads.campaigns",
                     applicationType: "SAPUI5",
                     url: "/campaigns/webapp"
+                },
+                "competitor-analytics-display": {
+                    title: "Competitor Analytics — L'Oréal",
+                    description: "Multi-brand and product analytics dashboard",
+                    applicationType: "URL",
+                    url: "/competitor-analytics/index.html"
                 }
             },
             groups: [
@@ -359,6 +365,18 @@
                                 info: "AI-Powered",
                                 icon: "sap-icon://business-objects-experience",
                                 targetURL: "#dashboard-display"
+                            }
+                        },
+                        {
+                            id: "competitor-analytics-tile",
+                            tileType: "sap.ushell.ui.tile.StaticTile",
+                            properties: {
+                                title: "Competitor Analytics",
+                                subtitle: "L'Oréal & competitors",
+                                infoState: "Neutral",
+                                info: "New",
+                                icon: "sap-icon://business-objects-experience",
+                                targetURL: "/competitor-analytics/index.html"
                             }
                         }
                     ]
@@ -468,7 +486,8 @@
         // Navigation apps configuration - using hash-only for in-shell navigation
         var crmNavApps = {
             dashboard: [
-                { id: 'dashboard-display', title: 'CRM Dashboard', desc: 'Analytics Overview', icon: '📊', hash: 'dashboard-display' }
+                { id: 'dashboard-display', title: 'CRM Dashboard', desc: 'Analytics Overview', icon: '📊', hash: 'dashboard-display' },
+                { id: 'competitor-analytics-display', title: 'Competitor Analytics', desc: 'L\'Oréal & competitors', icon: '📈', hash: '/competitor-analytics/index.html' }
             ],
             pipeline: [
                 { id: 'leads-manage', title: 'Leads', desc: 'Capture & Qualify', icon: '🎯', hash: 'leads-manage', badge: 'Step 1' },
@@ -588,15 +607,20 @@
                     }
                 });
                 
-                // Handle nav item clicks - use JavaScript hash navigation to stay in shell
+                // Handle nav item clicks - support both FLP intents (#...) and direct URLs (/...)
                 document.querySelectorAll('.crm-nav-item').forEach(function(item) {
                     item.addEventListener('click', function(e) {
                         e.preventDefault();
                         e.stopPropagation();
                         var targetHash = item.getAttribute('data-hash');
                         if (targetHash) {
-                            // Use hash-only navigation to stay within Fiori shell
-                            window.location.hash = targetHash;
+                            if (targetHash.charAt(0) === '/') {
+                                // Direct URL navigation for external/standalone apps
+                                window.location.href = targetHash;
+                            } else {
+                                // Use hash-only navigation to stay within Fiori shell
+                                window.location.hash = targetHash;
+                            }
                         }
                         navDropdown.classList.remove('open');
                     });

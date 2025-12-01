@@ -35,6 +35,12 @@
                 title: 'Marketing Campaigns',
                 url: '/launchpad.html#campaigns-manage',
                 icon: 'marketing-campaign'
+            },
+            {
+                id: 'competitor-analytics',
+                title: 'Competitor Analytics',
+                url: '/competitor-analytics/index.html',
+                icon: 'business-objects-experience'
             }
         ]
     };
@@ -47,6 +53,7 @@
         if (path.includes('accounts')) return 'accounts';
         if (path.includes('opportunities')) return 'opportunities';
         if (path.includes('campaigns')) return 'campaigns';
+        if (path.includes('competitor-analytics')) return 'competitor-analytics';
         return '';
     }
     
