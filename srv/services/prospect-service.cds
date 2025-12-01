@@ -24,9 +24,25 @@ service ProspectService @(path: '/prospect') {
         action generateAbout() returns Prospects; // AI-generated prospect about information
         action initiateAIMeeting() returns String; // AI Meeting Initiator - returns meeting script
         action changeStatus(newStatus: String) returns Prospects; // Change prospect status (Creatio chevron bar)
-        action createOpportunity() returns {
+        action createOpportunity(
+            // Opportunity fields from dialog
+            name: String,
+            description: String,
+            stage: String,
+            probability: Integer,
+            amount: Decimal,
+            expectedRevenue: Decimal,
+            closeDate: Date,
+            owner_ID: UUID,
+            competitors: String,
+            winStrategy: String,
+            notes: String
+        ) returns {
             message: String;
             opportunityID: UUID;
+            accountID: UUID;
+            contactID: UUID;
+            activityID: UUID;
         };
         // Convert Prospect to Account, Contact, and Opportunity
         action convertToAccount(
@@ -81,6 +97,7 @@ service ProspectService @(path: '/prospect') {
     // Entities needed for conversion
     entity Accounts as projection on crm.Accounts;
     entity Contacts as projection on crm.Contacts;
+    entity Activities as projection on crm.Activities;
 }
 
 

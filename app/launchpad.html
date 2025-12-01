@@ -831,24 +831,14 @@
         </div>
     </div>
     
-    <!-- Convert Button Container -->
+    <!-- Convert Button Container - for Leads (single button) or Prospects (dropdown) -->
     <div id="creatioConvertBtn" class="convert-btn-container" style="display:none">
         <div class="convert-btn-wrapper">
-            <button class="convert-btn convert-btn-primary" onclick="alert('Converting...')">
+            <!-- Default: Single convert button for Leads - will be replaced dynamically -->
+            <button class="convert-btn convert-btn-single" onclick="handleConvertToProspect()">
                 <span class="convert-icon">🔄</span>
                 <span class="convert-text">Convert to Prospect</span>
             </button>
-            <button class="convert-btn convert-btn-dropdown" onclick="toggleConvertDropdown(event)">
-                <span>▼</span>
-            </button>
-            <div class="convert-dropdown" id="convertDropdown">
-                <button class="convert-dropdown-item" onclick="handleConvertAction('account')">
-                    <span>🏢</span> Convert to Account
-                </button>
-                <button class="convert-dropdown-item" onclick="handleConvertAction('opportunity')">
-                    <span>💼</span> Create Opportunity
-                </button>
-            </div>
         </div>
     </div>
     
@@ -892,31 +882,250 @@
             if (!container) return;
             
             if (isLead) {
-                // Single button for Leads
-                container.innerHTML = '<button class="convert-btn convert-btn-single" onclick="alert(\'Converting lead to prospect...\')"><span class="convert-icon">🔄</span><span class="convert-text">Convert to Prospect</span></button>';
+                // Single button for Leads - calls real conversion function
+                container.innerHTML = '<button class="convert-btn convert-btn-single" onclick="handleConvertToProspect()"><span class="convert-icon">🔄</span><span class="convert-text">Convert to Prospect</span></button>';
             } else {
                 // Split button with dropdown for Prospects - Primary action is Create Opportunity (enterprise CRM workflow)
                 container.innerHTML = '<button class="convert-btn convert-btn-primary" onclick="handleConvertAction(\'opportunity\')"><span class="convert-icon">💼</span><span class="convert-text">Create Opportunity</span></button><button class="convert-btn convert-btn-dropdown" onclick="toggleConvertDropdown(event)"><span>▼</span></button><div class="convert-dropdown" id="convertDropdown"><button class="convert-dropdown-item" onclick="handleConvertAction(\'opportunity\')"><span>💼</span> Create Opportunity</button><button class="convert-dropdown-item" onclick="handleConvertAction(\'account\')"><span>🏢</span> Convert to Account</button></div>';
             }
         }
         
-        function toggleConvertDropdown(event) {
+        // Exposed globally for onclick handlers
+        window.toggleConvertDropdown = function(event) {
             event.stopPropagation();
             var dropdown = document.getElementById('convertDropdown');
             if (dropdown) {
                 dropdown.classList.toggle('show');
             }
+        };
+        
+        // Handle Convert Lead to Prospect - exposed globally for onclick handlers
+        window.handleConvertToProspect = function() {
+            console.log('[Launchpad] handleConvertToProspect called');
+            
+            // Get Lead ID from URL hash
+            var hash = window.location.hash;
+            console.log('[Launchpad] Current URL hash:', hash);
+            
+            var leadIdMatch = hash.match(/Leads\(ID=([^,]+),IsActiveEntity=(true|false)\)/);
+            if (!leadIdMatch) {
+                console.error('[Launchpad] Could not extract Lead ID from URL');
+                alert('Error: Could not determine Lead ID');
+                return;
+            }
+            
+            var leadId = leadIdMatch[1];
+            var isActiveEntity = leadIdMatch[2] === 'true';
+            console.log('[Launchpad] Lead ID:', leadId, 'IsActiveEntity:', isActiveEntity);
+            
+            // Use SAPUI5 MessageBox for confirmation (can be automated)
+            sap.ui.require(["sap/m/MessageBox"], function(MessageBox) {
+                MessageBox.confirm("Convert this lead to a Prospect? This will create a new prospect record.", {
+                    title: "Confirm Conversion",
+                    onClose: function(oAction) {
+                        console.log('[Launchpad] MessageBox closed with action:', oAction);
+                        if (oAction === MessageBox.Action.OK) {
+                            performConversion(leadId, isActiveEntity);
+                        } else {
+                            console.log('[Launchpad] Conversion cancelled by user');
+                        }
+                    }
+                });
+            });
+        };
+        
+        // Helper function to perform the actual conversion
+        function performConversion(leadId, isActiveEntity) {
+            console.log('[Launchpad] performConversion called with leadId:', leadId, 'isActiveEntity:', isActiveEntity);
+            
+            // Show loading state
+            var btn = document.querySelector('#creatioConvertBtn .convert-btn-single');
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<span class="convert-icon">⏳</span><span class="convert-text">Converting...</span>';
+            }
+            
+            // Call backend API
+            var url = '/lead/Leads(ID=' + leadId + ',IsActiveEntity=' + isActiveEntity + ')/LeadService.convertToProspect';
+            console.log('[Launchpad] Calling API:', url);
+            
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(function(response) {
+                console.log('[Launchpad] API response status:', response.status);
+                if (!response.ok) {
+                    return response.json().then(function(err) {
+                        console.error('[Launchpad] API error response:', err);
+                        throw new Error(err.error?.message || 'Conversion failed');
+                    });
+                }
+                return response.json();
+            })
+            .then(function(data) {
+                console.log('[Launchpad] Conversion successful:', data);
+                
+                // Update button to show success
+                if (btn) {
+                    btn.innerHTML = '<span class="convert-icon">✓</span><span class="convert-text">Converted!</span>';
+                    btn.style.backgroundColor = '#2e7d32';
+                }
+                
+                // Navigate to new Prospect page in launchpad
+                if (data.prospectID) {
+                    console.log('[Launchpad] Navigating to Prospect:', data.prospectID);
+                    setTimeout(function() {
+                        // Use hash-based navigation to stay in launchpad
+                        // Note: Prospects doesn't have draft support, so no IsActiveEntity needed
+                        window.location.hash = 'prospects-manage&/Prospects(ID=' + data.prospectID + ')';
+                    }, 1500);
+                } else {
+                    // Refresh current page if no prospect ID
+                    setTimeout(function() {
+                        window.location.reload();
+                    }, 1500);
+                }
+            })
+            .catch(function(error) {
+                console.error('[Launchpad] Conversion error:', error);
+                alert('Conversion failed: ' + error.message);
+                
+                // Reset button
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = '<span class="convert-icon">🔄</span><span class="convert-text">Convert to Prospect</span>';
+                }
+            });
         }
         
-        function handleConvertAction(action) {
+        // Exposed globally for onclick handlers
+        window.handleConvertAction = function(action) {
             var dropdown = document.getElementById('convertDropdown');
             if (dropdown) dropdown.classList.remove('show');
             
-            if (action === 'account') {
-                alert('Converting prospect to account...');
-            } else if (action === 'opportunity') {
-                alert('Creating opportunity from prospect...');
+            console.log('[Launchpad] handleConvertAction called with action:', action);
+            
+            // Get Prospect ID from URL hash
+            var hash = window.location.hash;
+            var prospectIdMatch = hash.match(/Prospects\(([^)]+)\)/);
+            
+            if (!prospectIdMatch) {
+                console.error('[Launchpad] Could not extract Prospect ID from URL');
+                alert('Error: Could not determine Prospect ID');
+                return;
             }
+            
+            var prospectId = prospectIdMatch[1];
+            console.log('[Launchpad] Prospect ID:', prospectId);
+            
+            if (action === 'account') {
+                console.log('[Launchpad] Converting prospect to account...');
+                // TODO: Implement real account conversion with full dialog
+                alert('Converting prospect to account... (Use "Create Opportunity" for full conversion)');
+            } else if (action === 'opportunity') {
+                console.log('[Launchpad] Creating opportunity from prospect...');
+                // Load and call the CreateOpportunityAction module
+                sap.ui.require([
+                    "beautyleads/prospects/ext/actions/CreateOpportunityAction"
+                ], function(CreateOpportunityAction) {
+                    if (CreateOpportunityAction && CreateOpportunityAction.onCreateOpportunity) {
+                        console.log('[Launchpad] Calling CreateOpportunityAction.onCreateOpportunity');
+                        CreateOpportunityAction.onCreateOpportunity();
+                    } else {
+                        console.error('[Launchpad] CreateOpportunityAction module not loaded correctly');
+                        // Fallback: Call the backend directly without dialog
+                        performCreateOpportunity(prospectId);
+                    }
+                }, function(error) {
+                    console.error('[Launchpad] Failed to load CreateOpportunityAction:', error);
+                    // Fallback: Call the backend directly without dialog
+                    performCreateOpportunity(prospectId);
+                });
+            }
+        };
+        
+        // Fallback function to create opportunity directly (without dialog)
+        function performCreateOpportunity(prospectId) {
+            console.log('[Launchpad] performCreateOpportunity called with prospectId:', prospectId);
+            
+            // Show loading state on button
+            var btn = document.querySelector('#creatioConvertBtn .convert-btn-primary');
+            var originalHtml = btn ? btn.innerHTML : '';
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<span class="convert-icon">⏳</span><span class="convert-text">Creating...</span>';
+            }
+            
+            // Call backend API
+            var url = '/prospect/Prospects(' + prospectId + ')/ProspectService.createOpportunity';
+            console.log('[Launchpad] Calling API:', url);
+            
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(function(response) {
+                console.log('[Launchpad] API response status:', response.status);
+                if (!response.ok) {
+                    return response.json().then(function(err) {
+                        console.error('[Launchpad] API error response:', err);
+                        throw new Error(err.error?.message || 'Failed to create opportunity');
+                    });
+                }
+                return response.json();
+            })
+            .then(function(data) {
+                console.log('[Launchpad] Opportunity created successfully:', data);
+                
+                // Update button to show success
+                if (btn) {
+                    btn.innerHTML = '<span class="convert-icon">✓</span><span class="convert-text">Created!</span>';
+                    btn.style.backgroundColor = '#2e7d32';
+                }
+                
+                // Show success message using SAPUI5 MessageBox
+                sap.ui.require(["sap/m/MessageBox"], function(MessageBox) {
+                    MessageBox.success(data.message || 'Opportunity created successfully!', {
+                        title: "Conversion Complete",
+                        actions: [MessageBox.Action.OK, "View Opportunity"],
+                        emphasizedAction: "View Opportunity",
+                        onClose: function(sAction) {
+                            if (sAction === "View Opportunity" && data.opportunityID) {
+                                // Navigate to opportunity within launchpad (draft-enabled entity requires ID= and IsActiveEntity)
+                                window.location.hash = 'opportunities-manage&/Opportunities(ID=' + data.opportunityID + ',IsActiveEntity=true)';
+                                // Force reload to ensure navigation happens
+                                setTimeout(function() {
+                                    window.location.reload();
+                                }, 100);
+                            } else {
+                                // Refresh current page
+                                window.location.reload();
+                            }
+                        }
+                    });
+                });
+            })
+            .catch(function(error) {
+                console.error('[Launchpad] Create opportunity error:', error);
+                
+                // Reset button
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = originalHtml || '<span class="convert-icon">💼</span><span class="convert-text">Create Opportunity</span>';
+                }
+                
+                // Show error using SAPUI5 MessageBox
+                sap.ui.require(["sap/m/MessageBox"], function(MessageBox) {
+                    MessageBox.error('Failed to create opportunity: ' + error.message);
+                });
+            });
         }
         
         // Close dropdown when clicking outside
@@ -1015,7 +1224,7 @@
                     updateScoringLabel(false);
                 }
                 
-                // Only show convert button for Leads and Prospects (not for Opportunities/Accounts)
+                // Show convert button for Leads and Prospects (not for Opportunities/Accounts)
                 if(c) {
                     c.style.display = (isLeadsObjectPage || isProspectsObjectPage) ? "block" : "none";
                     if (isLeadsObjectPage) {

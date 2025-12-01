@@ -34,6 +34,9 @@ sap.ui.define([
     "sap/m/ProgressIndicator",
     "sap/m/Link",
     "sap/m/CheckBox",
+    "sap/m/Dialog",
+    "sap/m/Input",
+    "sap/m/DateTimePicker",
     "sap/f/Avatar",
     "sap/f/Card",
     "sap/ui/core/Icon",
@@ -43,7 +46,8 @@ sap.ui.define([
     ControllerExtension, Fragment, JSONModel, MessageBox, MessageToast,
     VBox, HBox, FlexBox, Text, Title, Label, Button, ObjectNumber, ObjectStatus, 
     Panel, TextArea, ScrollContainer, List, StandardListItem, CustomListItem,
-    ProgressIndicator, Link, CheckBox, Avatar, Card, Icon, BusyIndicator, HTML
+    ProgressIndicator, Link, CheckBox, Dialog, Input, DateTimePicker,
+    Avatar, Card, Icon, BusyIndicator, HTML
 ) {
     "use strict";
     
@@ -1915,10 +1919,10 @@ sap.ui.define([
         _onActionButtonPress: function (sActionId) {
             switch (sActionId) {
                 case "call":
-                    this._onQuickCall();
+                    this._onQuickSchedule(); // Schedule a call task
                     break;
                 case "catalog":
-                    MessageToast.show("Opening catalog selector...");
+                    this._onSendCatalog();
                     break;
                 case "email":
                     this._onQuickEmail();
@@ -1927,6 +1931,132 @@ sap.ui.define([
                     this._onQuickWhatsApp();
                     break;
             }
+        },
+        
+        /**
+         * Send Catalog - Opens dialog to select products and compose email
+         * @private
+         */
+        _onSendCatalog: function () {
+            const that = this;
+            const sLeadName = this._oEntityData?.outletName || "Lead";
+            const sLeadEmail = this._oEntityData?.contactEmail || "";
+            
+            // Create product checkboxes from MOCK_PRODUCTS
+            const oProductList = new VBox();
+            oProductList.addStyleClass("sapUiSmallMargin");
+            
+            const aProductCheckboxes = [];
+            MOCK_PRODUCTS.forEach(function (oProduct) {
+                const oRow = new HBox({
+                    alignItems: "Center",
+                    justifyContent: "SpaceBetween"
+                });
+                oRow.addStyleClass("sapUiTinyMarginBottom");
+                
+                const oCheckBox = new CheckBox({
+                    text: oProduct.name,
+                    selected: true // Pre-select all products
+                });
+                oCheckBox.data("product", oProduct);
+                aProductCheckboxes.push(oCheckBox);
+                
+                const oPrice = new Text({
+                    text: oProduct.price
+                }).addStyleClass("sapUiTinyMarginBegin");
+                
+                const oBrand = new Text({
+                    text: oProduct.brand
+                }).addStyleClass("sapUiTinyMarginBegin sapThemeHighlight-asColor");
+                
+                oRow.addItem(oCheckBox);
+                oRow.addItem(oBrand);
+                oRow.addItem(oPrice);
+                oProductList.addItem(oRow);
+            });
+            
+            // Dialog content
+            const oDialogContent = new VBox({
+                items: [
+                    new Text({
+                        text: "Select products to include in the catalog email:"
+                    }).addStyleClass("sapUiSmallMarginBottom"),
+                    oProductList
+                ]
+            });
+            
+            // Create dialog
+            const oDialog = new Dialog({
+                title: "Send Product Catalog",
+                contentWidth: "450px",
+                content: oDialogContent,
+                beginButton: new Button({
+                    text: "Compose Email",
+                    type: "Emphasized",
+                    icon: "sap-icon://email",
+                    press: function () {
+                        // Get selected products
+                        const aSelectedProducts = [];
+                        aProductCheckboxes.forEach(function (oCheckBox) {
+                            if (oCheckBox.getSelected()) {
+                                aSelectedProducts.push(oCheckBox.data("product"));
+                            }
+                        });
+                        
+                        if (aSelectedProducts.length === 0) {
+                            MessageToast.show("Please select at least one product");
+                            return;
+                        }
+                        
+                        // Compose email
+                        that._composeProductCatalogEmail(sLeadEmail, sLeadName, aSelectedProducts);
+                        oDialog.close();
+                    }
+                }),
+                endButton: new Button({
+                    text: "Cancel",
+                    press: function () {
+                        oDialog.close();
+                    }
+                }),
+                afterClose: function () {
+                    oDialog.destroy();
+                }
+            });
+            
+            oDialog.open();
+        },
+        
+        /**
+         * Compose and open email with selected products
+         * @private
+         */
+        _composeProductCatalogEmail: function (sEmail, sLeadName, aProducts) {
+            // Build email subject
+            const sSubject = encodeURIComponent("Product Catalog for " + sLeadName);
+            
+            // Build email body with product list
+            let sBody = "Dear " + sLeadName + ",\n\n";
+            sBody += "Thank you for your interest in our products. Here are our recommended products for you:\n\n";
+            
+            aProducts.forEach(function (oProduct, iIndex) {
+                sBody += (iIndex + 1) + ". " + oProduct.name + "\n";
+                sBody += "   Brand: " + oProduct.brand + "\n";
+                sBody += "   Price: " + oProduct.price + "\n";
+                sBody += "   Trend Score: " + oProduct.trendScore + "%\n\n";
+            });
+            
+            sBody += "Please let me know if you would like more information about any of these products.\n\n";
+            sBody += "Best regards,\n";
+            sBody += "Your Beauty Sales Team";
+            
+            const sEncodedBody = encodeURIComponent(sBody);
+            
+            // Open email client
+            const sMailtoUrl = "mailto:" + (sEmail || "") + "?subject=" + sSubject + "&body=" + sEncodedBody;
+            window.location.href = sMailtoUrl;
+            
+            MessageToast.show("Email composer opened with " + aProducts.length + " product(s)");
         },
 
         /**
@@ -1971,11 +2101,152 @@ sap.ui.define([
         },
 
         /**
-         * Quick action: Schedule meeting
+         * Quick action: Schedule task/meeting - Opens dialog to create a task
          * @private
          */
         _onQuickSchedule: function () {
-            MessageToast.show("Opening meeting scheduler...");
+            const that = this;
+            const sLeadName = this._oEntityData?.outletName || "Lead";
+            
+            // Create dialog content
+            const oSubjectInput = new Input({
+                value: "Follow-up with " + sLeadName,
+                placeholder: "Enter task subject",
+                width: "100%"
+            });
+            
+            // Set default date to tomorrow at 10:00 AM
+            const oDefaultDate = new Date();
+            oDefaultDate.setDate(oDefaultDate.getDate() + 1);
+            oDefaultDate.setHours(10, 0, 0, 0);
+            
+            const oDateTimePicker = new DateTimePicker({
+                value: oDefaultDate.toISOString(),
+                width: "100%",
+                placeholder: "Select date and time"
+            });
+            
+            const oNotesInput = new TextArea({
+                placeholder: "Add notes (optional)",
+                width: "100%",
+                rows: 3
+            });
+            
+            const oDialogContent = new VBox({
+                items: [
+                    new VBox({
+                        items: [
+                            new Label({ text: "Subject", required: true }),
+                            oSubjectInput
+                        ]
+                    }).addStyleClass("sapUiSmallMarginBottom"),
+                    new VBox({
+                        items: [
+                            new Label({ text: "Due Date & Time", required: true }),
+                            oDateTimePicker
+                        ]
+                    }).addStyleClass("sapUiSmallMarginBottom"),
+                    new VBox({
+                        items: [
+                            new Label({ text: "Notes" }),
+                            oNotesInput
+                        ]
+                    })
+                ]
+            }).addStyleClass("sapUiSmallMargin");
+            
+            // Create dialog
+            const oDialog = new Dialog({
+                title: "Schedule Task",
+                contentWidth: "400px",
+                content: oDialogContent,
+                beginButton: new Button({
+                    text: "Create Task",
+                    type: "Emphasized",
+                    press: function () {
+                        const sSubject = oSubjectInput.getValue();
+                        const sDueDate = oDateTimePicker.getValue();
+                        const sNotes = oNotesInput.getValue();
+                        
+                        if (!sSubject) {
+                            MessageToast.show("Subject is required");
+                            return;
+                        }
+                        if (!sDueDate) {
+                            MessageToast.show("Due date is required");
+                            return;
+                        }
+                        
+                        // Call backend to create task
+                        that._executeScheduleTask(sSubject, sDueDate, sNotes);
+                        oDialog.close();
+                    }
+                }),
+                endButton: new Button({
+                    text: "Cancel",
+                    press: function () {
+                        oDialog.close();
+                    }
+                }),
+                afterClose: function () {
+                    oDialog.destroy();
+                }
+            });
+            
+            oDialog.open();
+        },
+        
+        /**
+         * Execute schedule task via backend
+         * @private
+         */
+        _executeScheduleTask: function (sSubject, sDueDate, sNotes) {
+            const that = this;
+            const oView = this.base.getView();
+            const oContext = oView && oView.getBindingContext();
+            
+            if (!oContext) {
+                MessageBox.error("No lead context available");
+                return;
+            }
+            
+            const sLeadID = oContext.getProperty("ID");
+            BusyIndicator.show(0);
+            
+            // Format date for backend
+            const oDate = new Date(sDueDate);
+            const sFormattedDate = oDate.toISOString();
+            
+            fetch("/lead/Leads(" + sLeadID + ")/LeadService.scheduleTask", {
+                method: "POST",
+                headers: {
+                    "Accept": "application/json",
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    subject: sSubject,
+                    dueDate: sFormattedDate,
+                    notes: sNotes || ""
+                })
+            })
+            .then(function (response) {
+                BusyIndicator.hide();
+                if (response.ok) {
+                    return response.json();
+                }
+                throw new Error("Failed to create task");
+            })
+            .then(function (oData) {
+                MessageToast.show("Task scheduled successfully!");
+                // Refresh the view to show updated data
+                if (oContext) {
+                    oContext.refresh();
+                }
+            })
+            .catch(function (error) {
+                BusyIndicator.hide();
+                MessageBox.error("Failed to schedule task: " + error.message);
+            });
         },
 
         /**
@@ -2014,6 +2285,7 @@ sap.ui.define([
          * @private
          */
         _executeConvertToProspect: function () {
+            const that = this;
             const oView = this.base.getView();
             const oContext = oView && oView.getBindingContext();
             const sLeadID = oContext.getProperty("ID");
@@ -2027,25 +2299,41 @@ sap.ui.define([
                     "Content-Type": "application/json"
                 }
             })
-            .then((response) => {
+            .then(function (response) {
                 BusyIndicator.hide();
                 if (response.ok) {
                     return response.json();
                 }
                 throw new Error("Failed to convert lead");
             })
-            .then((oData) => {
-                MessageToast.show("Lead converted to Prospect successfully!");
-                // Refresh the context
-                oContext.refresh();
+            .then(function (oData) {
                 // Update button state
-                if (this._oConvertButton) {
-                    this._oConvertButton.setText("Already Converted");
-                    this._oConvertButton.setEnabled(false);
-                    this._oConvertButton.setType("Default");
+                if (that._oConvertButton) {
+                    that._oConvertButton.setText("Already Converted");
+                    that._oConvertButton.setEnabled(false);
+                    that._oConvertButton.setType("Default");
+                }
+                
+                // Show success message and navigate to new Prospect page
+                MessageToast.show("Lead converted to Prospect successfully! Redirecting...", {
+                    duration: 1500
+                });
+                
+                // Navigate to the new Prospect detail page after a short delay
+                const sProspectID = oData.prospectID;
+                if (sProspectID) {
+                    setTimeout(function () {
+                        // Navigate to Prospect app with the new Prospect ID
+                        const sProspectUrl = "/beautyleads.prospects/index.html#/Prospects(" + sProspectID + ")";
+                        console.log("[LeadsCreatioExt] Navigating to Prospect:", sProspectUrl);
+                        window.location.href = sProspectUrl;
+                    }, 1500);
+                } else {
+                    // Fallback: refresh current context if no prospect ID returned
+                    oContext.refresh();
                 }
             })
-            .catch((error) => {
+            .catch(function (error) {
                 BusyIndicator.hide();
                 MessageBox.error("Failed to convert: " + error.message);
             });

@@ -307,6 +307,7 @@ entity Activities : managed, cuid {
     relatedAccount     : Association to Accounts @title: 'Related Account';
     relatedContact     : Association to Contacts @title: 'Related Contact';
     relatedOpportunity : Association to Opportunities @title: 'Related Opportunity';
+    relatedLead        : Association to leads.Leads @title: 'Related Lead';
 
     // Ownership
     assignedTo : Association to Users @title: 'Assigned To';

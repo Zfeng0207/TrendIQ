@@ -8,7 +8,7 @@ const fs = require('fs');
 const path = require('path');
 
 module.exports = async function() {
-    const { Prospects, Leads, Users, Opportunities, Accounts, Contacts } = this.entities;
+    const { Prospects, Leads, Users, Opportunities, Accounts, Contacts, Activities } = this.entities;
 
     // Handler for virtual fields: statusCriticality, phase, priorityScore, lastFollowUp, pendingItems, assignedTo
     this.on('READ', 'Prospects', async (req, next) => {
@@ -506,7 +506,8 @@ module.exports = async function() {
         return sections.join('\n');
     }
 
-    // Action: Create Opportunity from Prospect
+    // Action: Create Opportunity from Prospect (Full Conversion)
+    // Creates Account, Contact, Opportunity, and Activity in sequence
     this.on('createOpportunity', 'Prospects', async (req) => {
         const prospectID = req.params[0].ID;
         const prospect = await SELECT.one.from(Prospects).where({ ID: prospectID });
@@ -519,57 +520,174 @@ module.exports = async function() {
             return req.warn(409, 'This prospect has already been converted to an opportunity');
         }
 
+        if (prospect.status === 'Converted') {
+            return req.warn(409, 'This prospect has already been converted');
+        }
+
         // Get input data from request body (from custom dialog)
         let inputData = req.data || {};
         console.log('[Create Opportunity] Received data:', JSON.stringify(inputData));
 
-        // Generate UUID for the new opportunity
+        // Generate UUIDs for all new entities
+        const accountID = cds.utils.uuid();
+        const contactID = cds.utils.uuid();
         const opportunityID = cds.utils.uuid();
+        const activityID = cds.utils.uuid();
 
-        // Create new opportunity from dialog data + prospect data
-        const opportunityData = {
-            ID: opportunityID,
-            // Use dialog data if provided, otherwise generate from prospect
-            name: inputData.name || `${prospect.prospectName} - Opportunity`,
-            description: inputData.description || `Opportunity created from prospect: ${prospect.prospectName}`,
-            sourceProspect_ID: prospectID,
-            // Pipeline data
-            stage: inputData.stage || 'Qualification',
-            probability: inputData.probability ?? prospect.prospectScore ?? 50,
-            // Financial data
-            amount: inputData.amount ?? prospect.estimatedValue ?? 0,
-            currency: 'MYR',
-            expectedRevenue: inputData.expectedRevenue ?? prospect.estimatedValue ?? 0,
-            closeDate: inputData.closeDate || getExpectedCloseDate(),
-            // Assignment
-            owner_ID: inputData.owner_ID || prospect.autoAssignedTo_ID || null,
-            // Strategy & Competition
-            competitors: inputData.competitors || null,
-            winStrategy: inputData.winStrategy || null,
-            // Notes
-            notes: inputData.notes || null,
-            // AI Fields (can be calculated later)
-            aiWinScore: prospect.aiScore || null,
-            aiRecommendation: null
-        };
+        try {
+            // ============================================
+            // STEP 1: Create Account from Prospect data
+            // ============================================
+            const accountData = {
+                ID: accountID,
+                accountName: prospect.prospectName,
+                accountType: mapBusinessTypeToAccountType(prospect.businessType),
+                industry: 'Beauty & Wellness',
+                website: '',
+                status: 'Active',
+                // Address fields from prospect
+                address: prospect.address || prospect.location || '',
+                city: prospect.city || '',
+                state: prospect.state || '',
+                country: prospect.country || 'Malaysia',
+                postalCode: prospect.postalCode || '',
+                // Link to source prospect
+                sourceProspect_ID: prospectID,
+                // Default values
+                healthScore: prospect.prospectScore || 70,
+                riskLevel: 'Low',
+                dateCreated: new Date().toISOString().split('T')[0],
+                // Notes
+                description: `Account created from prospect: ${prospect.prospectName}`,
+                notes: prospect.about || ''
+            };
 
-        console.log('[Create Opportunity] Creating with data:', JSON.stringify(opportunityData, null, 2));
+            console.log('[Create Opportunity] Step 1: Creating Account:', accountData.accountName);
+            await INSERT.into(Accounts).entries(accountData);
 
-        await INSERT.into(Opportunities).entries(opportunityData);
+            // ============================================
+            // STEP 2: Create Contact from Prospect data
+            // ============================================
+            // Parse contact name into first/last name
+            const nameParts = parseContactName(null, null, prospect.contactName);
 
-        // Update prospect status and link to opportunity
-        await UPDATE(Prospects).set({
-            status: 'Converted',
-            convertedToOpportunity_ID: opportunityID
-        }).where({ ID: prospectID });
+            const contactData = {
+                ID: contactID,
+                firstName: nameParts.firstName,
+                lastName: nameParts.lastName,
+                fullName: prospect.contactName || `${nameParts.firstName} ${nameParts.lastName}`.trim() || 'Primary Contact',
+                title: 'Business Owner',
+                email: prospect.contactEmail || '',
+                phone: prospect.contactPhone || '',
+                // Link to the new account
+                account_ID: accountID,
+                isPrimary: true,
+                // Default values
+                status: 'Active',
+                preferredChannel: 'Email',
+                language: 'English',
+                engagementScore: prospect.prospectScore || 50,
+                sentimentScore: prospect.sentimentScore || 0,
+                sentimentLabel: 'Neutral'
+            };
 
-        console.log('[Create Opportunity] Success! Prospect ID:', prospectID);
-        console.log('[Create Opportunity] Opportunity ID:', opportunityID);
+            console.log('[Create Opportunity] Step 2: Creating Contact:', contactData.fullName);
+            await INSERT.into(Contacts).entries(contactData);
 
-        return { 
-            message: 'Opportunity created successfully', 
-            opportunityID: opportunityID
-        };
+            // ============================================
+            // STEP 3: Create Opportunity linked to Account/Contact
+            // ============================================
+            const opportunityData = {
+                ID: opportunityID,
+                // Use dialog data if provided, otherwise generate from prospect
+                name: inputData.name || `${prospect.prospectName} - Partnership Opportunity`,
+                description: inputData.description || `Opportunity created from prospect conversion: ${prospect.prospectName}`,
+                // Link to account, contact, and source prospect
+                account_ID: accountID,
+                primaryContact_ID: contactID,
+                sourceProspect_ID: prospectID,
+                // Pipeline data
+                stage: inputData.stage || 'Qualification',
+                probability: inputData.probability ?? prospect.prospectScore ?? 50,
+                // Financial data
+                amount: inputData.amount ?? prospect.estimatedValue ?? 0,
+                currency: 'MYR',
+                expectedRevenue: inputData.expectedRevenue ?? prospect.estimatedValue ?? 0,
+                closeDate: inputData.closeDate || getExpectedCloseDate(),
+                // Assignment - use dialog owner or prospect's assigned sales rep
+                owner_ID: inputData.owner_ID || prospect.autoAssignedTo_ID || null,
+                // Strategy & Competition
+                competitors: inputData.competitors || null,
+                winStrategy: inputData.winStrategy || null,
+                // Notes
+                notes: inputData.notes || null,
+                // AI predictions
+                aiWinScore: prospect.aiScore || prospect.prospectScore || 50,
+                aiRecommendation: `Based on prospect score of ${prospect.prospectScore || 50}%, this opportunity shows good potential.`
+            };
+
+            console.log('[Create Opportunity] Step 3: Creating Opportunity:', opportunityData.name);
+            await INSERT.into(Opportunities).entries(opportunityData);
+
+            // ============================================
+            // STEP 4: Create Activity (Note) for conversion
+            // ============================================
+            const activityData = {
+                ID: activityID,
+                subject: 'Prospect Converted to Opportunity',
+                description: `Prospect "${prospect.prospectName}" has been successfully converted.\n\n` +
+                    `• Account Created: ${accountData.accountName}\n` +
+                    `• Contact Created: ${contactData.fullName}\n` +
+                    `• Opportunity Created: ${opportunityData.name}\n` +
+                    `• Prospect Score: ${prospect.prospectScore || 'N/A'}%\n` +
+                    `• Business Type: ${prospect.businessType || 'N/A'}\n` +
+                    `• Location: ${prospect.city || prospect.location || 'N/A'}`,
+                activityType: 'Note',
+                status: 'Completed',
+                priority: 'Medium',
+                // Link to all related entities
+                relatedAccount_ID: accountID,
+                relatedContact_ID: contactID,
+                relatedOpportunity_ID: opportunityID,
+                // Assignment
+                assignedTo_ID: inputData.owner_ID || prospect.autoAssignedTo_ID || null,
+                owner_ID: inputData.owner_ID || prospect.autoAssignedTo_ID || null,
+                // Dates
+                startDateTime: new Date().toISOString(),
+                completedDate: new Date().toISOString(),
+                // Outcome
+                outcome: 'Prospect successfully converted to sales opportunity'
+            };
+
+            console.log('[Create Opportunity] Step 4: Creating Activity (Note)');
+            await INSERT.into(Activities).entries(activityData);
+
+            // ============================================
+            // STEP 5: Update Prospect Status
+            // ============================================
+            await UPDATE(Prospects).set({
+                status: 'Converted',
+                convertedToOpportunity_ID: opportunityID
+            }).where({ ID: prospectID });
+
+            console.log('[Create Opportunity] Conversion complete!');
+            console.log('  - Account ID:', accountID);
+            console.log('  - Contact ID:', contactID);
+            console.log('  - Opportunity ID:', opportunityID);
+            console.log('  - Activity ID:', activityID);
+
+            return {
+                message: `Prospect "${prospect.prospectName}" converted successfully! Account, Contact, Opportunity, and Activity have been created.`,
+                opportunityID: opportunityID,
+                accountID: accountID,
+                contactID: contactID,
+                activityID: activityID
+            };
+
+        } catch (error) {
+            console.error('[Create Opportunity] Error during conversion:', error);
+            return req.error(500, `Conversion failed: ${error.message}`);
+        }
     });
 
     // Action: Convert Prospect to Account, Contact, and Opportunity

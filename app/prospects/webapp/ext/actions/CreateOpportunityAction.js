@@ -308,22 +308,46 @@ sap.ui.define([
             })
             .then(function (oResult) {
                 console.log("[Create Opportunity] Success:", oResult);
+                console.log("[Create Opportunity] Account ID:", oResult.accountID);
+                console.log("[Create Opportunity] Contact ID:", oResult.contactID);
+                console.log("[Create Opportunity] Activity ID:", oResult.activityID);
                 
                 // Close dialog
                 oCreateOpportunityDialog.close();
 
+                // Build success message with full conversion details
+                var sMessage = oResult.message || "Conversion completed successfully!";
+                sMessage += "\n\n";
+                sMessage += "The following records have been created:\n";
+                sMessage += "• Account: " + oCurrentProspect.prospectName + "\n";
+                sMessage += "• Contact: " + (oCurrentProspect.contactName || "Primary Contact") + "\n";
+                sMessage += "• Opportunity: " + oOpportunityData.name + "\n";
+                sMessage += "• Activity: Conversion Note logged\n\n";
+                sMessage += "The prospect status has been updated to 'Converted'.";
+
                 // Show success message with option to navigate
                 MessageBox.success(
-                    "Opportunity '" + oOpportunityData.name + "' created successfully!\n\n" +
-                    "The prospect status has been updated to 'Converted'.",
+                    sMessage,
                     {
-                        title: "Opportunity Created",
-                        actions: [MessageBox.Action.OK, "View Opportunity"],
+                        title: "Prospect Converted Successfully",
+                        actions: [MessageBox.Action.OK, "View Opportunity", "View Account"],
                         emphasizedAction: "View Opportunity",
                         onClose: function (sAction) {
                             if (sAction === "View Opportunity" && oResult.opportunityID) {
-                                // Navigate to opportunity
-                                window.location.href = "/beautyleads.opportunities/index.html#/Opportunities(" + oResult.opportunityID + ")";
+                                // Navigate to opportunity within launchpad (draft-enabled entity requires ID= and IsActiveEntity)
+                                var sNewHash = "opportunities-manage&/Opportunities(ID=" + oResult.opportunityID + ",IsActiveEntity=true)";
+                                window.location.hash = sNewHash;
+                                // Force reload to ensure navigation happens
+                                setTimeout(function() {
+                                    window.location.reload();
+                                }, 100);
+                            } else if (sAction === "View Account" && oResult.accountID) {
+                                // Navigate to account within launchpad
+                                var sAccountHash = "accounts-manage&/Accounts(" + oResult.accountID + ")";
+                                window.location.hash = sAccountHash;
+                                setTimeout(function() {
+                                    window.location.reload();
+                                }, 100);
                             } else {
                                 // Refresh current page
                                 window.location.reload();

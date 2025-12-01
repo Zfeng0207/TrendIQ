@@ -44,19 +44,32 @@ module.exports = async function() {
         const leadID = req.params[0].ID;
         const isActiveEntity = req.params[0].IsActiveEntity;
         
+        console.log('[convertToProspect] Called with params:', { leadID, isActiveEntity });
+        console.log('[convertToProspect] Full req.params:', JSON.stringify(req.params));
+        
         // Get lead data from appropriate source
         const lead = await getLeadData(leadID, isActiveEntity);
+        console.log('[convertToProspect] Lead data retrieved:', lead ? { 
+            ID: lead.ID, 
+            outletName: lead.outletName, 
+            status: lead.status, 
+            converted: lead.converted 
+        } : 'NULL');
 
         if (!lead) {
+            console.error('[convertToProspect] Lead not found:', leadID);
             return req.error(404, `Lead ${leadID} not found`);
         }
 
         if (lead.converted) {
+            console.warn('[convertToProspect] Lead already converted:', leadID);
             return req.error(400, 'Lead has already been converted');
         }
 
         if (lead.status !== 'Qualified') {
-            return req.warn(409, 'Lead should be qualified before conversion');
+            console.warn('[convertToProspect] Lead status is not Qualified. Current status:', lead.status);
+            // Allow conversion but log a warning - users may want to convert early
+            console.log('[convertToProspect] Proceeding with conversion despite non-Qualified status');
         }
 
         // Generate new ID for Prospect
@@ -267,6 +280,51 @@ module.exports = async function() {
         // Return the updated entity
         const updatedLead = await getLeadData(leadID, isActiveEntity);
         return updatedLead;
+    });
+
+    // Action: Schedule Task (creates an Activity linked to the lead)
+    this.on('scheduleTask', async (req) => {
+        const leadID = req.params[0].ID;
+        const isActiveEntity = req.params[0].IsActiveEntity;
+        const { subject, dueDate, notes } = req.data;
+
+        // Validate required fields
+        if (!subject) {
+            return req.error(400, 'Subject is required');
+        }
+        if (!dueDate) {
+            return req.error(400, 'Due date is required');
+        }
+
+        // Get lead data to verify it exists and get lead name for activity
+        const lead = await getLeadData(leadID, isActiveEntity);
+        if (!lead) {
+            return req.error(404, `Lead ${leadID} not found`);
+        }
+
+        // Generate new ID for the activity
+        const activityID = cds.utils.uuid();
+
+        // Create Activity record linked to the lead
+        const { Activities } = cds.entities('beauty.crm');
+        await INSERT.into(Activities).entries({
+            ID: activityID,
+            subject: subject,
+            description: notes || '',
+            activityType: 'Task',
+            status: 'Planned',
+            priority: 'Medium',
+            dueDate: dueDate,
+            startDateTime: dueDate,
+            relatedLead_ID: leadID,
+            owner_ID: lead.owner_ID || null,
+            assignedTo_ID: lead.owner_ID || null,
+            notes: notes || ''
+        });
+
+        console.log(`Task created for lead ${lead.outletName}. Activity ID: ${activityID}`);
+        
+        return activityID;
     });
 
     // Before CREATE: Set defaults and validate

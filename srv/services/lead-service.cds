@@ -18,6 +18,11 @@ service LeadService @(path: '/lead') {
         action updateAIScore() returns Leads;
         action generateAISummary() returns String; // Generate AI Summary - returns summary text
         action changeStatus(newStatus: String) returns Leads; // Change lead status (Creatio chevron bar)
+        action scheduleTask(
+            subject: String,
+            dueDate: DateTime,
+            notes: String
+        ) returns UUID; // Create a task/reminder linked to this lead
     };
 
     // Read-only views for lead analytics
@@ -39,4 +44,7 @@ service LeadService @(path: '/lead') {
     // Associated CRM entities (read-only from lead context)
     @readonly entity Users as projection on crm.Users;
     @readonly entity Accounts as projection on crm.Accounts;
+    
+    // Activities entity for task creation
+    entity Activities as projection on crm.Activities;
 }
