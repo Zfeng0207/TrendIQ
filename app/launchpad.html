@@ -288,38 +288,44 @@
                 "dashboard-display": {
                     title: "CRM Dashboard",
                     description: "Unified analytics dashboard for sales reps",
-                    applicationType: "URL",
-                    url: "/beautyleads.dashboard/index.html"
+                    additionalInformation: "SAPUI5.Component=beautyleads.dashboard",
+                    applicationType: "SAPUI5",
+                    url: "/dashboard/webapp"
                 },
                 "leads-manage": {
                     title: "Leads",
                     description: "Capture and qualify potential customers",
-                    applicationType: "URL",
-                    url: "/beautyleads.leads/index.html"
+                    additionalInformation: "SAPUI5.Component=beautyleads.leads",
+                    applicationType: "SAPUI5",
+                    url: "/leads/webapp"
                 },
                 "prospects-manage": {
                     title: "Prospects",
                     description: "Manage qualified prospects in the sales pipeline",
-                    applicationType: "URL",
-                    url: "/beautyleads.prospects/index.html"
+                    additionalInformation: "SAPUI5.Component=beautyleads.prospects",
+                    applicationType: "SAPUI5",
+                    url: "/prospects/webapp"
                 },
                 "opportunities-manage": {
                     title: "Opportunities",
                     description: "Track sales pipeline and deals",
-                    applicationType: "URL",
-                    url: "/beautyleads.opportunities/index.html"
+                    additionalInformation: "SAPUI5.Component=beautyleads.opportunities",
+                    applicationType: "SAPUI5",
+                    url: "/opportunities/webapp"
                 },
                 "accounts-manage": {
                     title: "Accounts",
                     description: "Manage customer companies and retailers",
-                    applicationType: "URL",
-                    url: "/beautyleads.accounts/index.html"
+                    additionalInformation: "SAPUI5.Component=beautyleads.accounts",
+                    applicationType: "SAPUI5",
+                    url: "/accounts/webapp"
                 },
                 "campaigns-manage": {
                     title: "Marketing Campaigns",
                     description: "Trend-driven marketing campaign automation",
-                    applicationType: "URL",
-                    url: "/beautyleads.campaigns/index.html"
+                    additionalInformation: "SAPUI5.Component=beautyleads.campaigns",
+                    applicationType: "SAPUI5",
+                    url: "/campaigns/webapp"
                 }
             },
             groups: [
@@ -446,19 +452,19 @@
         data-sap-ui-flexibilityServices='[{"connector": "LocalStorageConnector"}]'>
     </script>
     <script>
-        // Navigation apps configuration
+        // Navigation apps configuration - using hash-only for in-shell navigation
         var crmNavApps = {
             dashboard: [
-                { id: 'dashboard-display', title: 'CRM Dashboard', desc: 'Analytics Overview', icon: '📊', hash: '#dashboard-display' }
+                { id: 'dashboard-display', title: 'CRM Dashboard', desc: 'Analytics Overview', icon: '📊', hash: 'dashboard-display' }
             ],
             pipeline: [
-                { id: 'leads-manage', title: 'Leads', desc: 'Capture & Qualify', icon: '🎯', hash: '#leads-manage', badge: 'Step 1' },
-                { id: 'prospects-manage', title: 'Prospects', desc: 'Qualified Pipeline', icon: '👤', hash: '#prospects-manage', badge: 'Step 2' },
-                { id: 'opportunities-manage', title: 'Opportunities', desc: 'Deals & Proposals', icon: '💼', hash: '#opportunities-manage', badge: 'Step 3' },
-                { id: 'accounts-manage', title: 'Accounts', desc: 'Customer Management', icon: '🏢', hash: '#accounts-manage', badge: 'Step 4' }
+                { id: 'leads-manage', title: 'Leads', desc: 'Capture & Qualify', icon: '🎯', hash: 'leads-manage', badge: 'Step 1' },
+                { id: 'prospects-manage', title: 'Prospects', desc: 'Qualified Pipeline', icon: '👤', hash: 'prospects-manage', badge: 'Step 2' },
+                { id: 'opportunities-manage', title: 'Opportunities', desc: 'Deals & Proposals', icon: '💼', hash: 'opportunities-manage', badge: 'Step 3' },
+                { id: 'accounts-manage', title: 'Accounts', desc: 'Customer Management', icon: '🏢', hash: 'accounts-manage', badge: 'Step 4' }
             ],
             marketing: [
-                { id: 'campaigns-manage', title: 'Marketing Campaigns', desc: 'Trend-Driven Automation', icon: '📣', hash: '#campaigns-manage' }
+                { id: 'campaigns-manage', title: 'Marketing Campaigns', desc: 'Trend-Driven Automation', icon: '📣', hash: 'campaigns-manage' }
             ]
         };
         
@@ -487,12 +493,12 @@
                 '<div class="crm-nav-section-title">Dashboard</div>';
             crmNavApps.dashboard.forEach(function(app) {
                 var isActive = currentHash.includes(app.id) ? ' active' : '';
-                html += '<a href="' + app.hash + '" class="crm-nav-item' + isActive + '">' +
+                html += '<div class="crm-nav-item' + isActive + '" data-hash="' + app.hash + '">' +
                     '<div class="crm-nav-item-icon dashboard">' + app.icon + '</div>' +
                     '<div class="crm-nav-item-content">' +
                     '<div class="crm-nav-item-title">' + app.title + '</div>' +
                     '<div class="crm-nav-item-desc">' + app.desc + '</div>' +
-                    '</div></a>';
+                    '</div></div>';
             });
             html += '</div>';
             
@@ -502,14 +508,14 @@
             crmNavApps.pipeline.forEach(function(app) {
                 var isActive = currentHash.includes(app.id) ? ' active' : '';
                 var iconClass = app.id.replace('-manage', '');
-                html += '<a href="' + app.hash + '" class="crm-nav-item' + isActive + '">' +
+                html += '<div class="crm-nav-item' + isActive + '" data-hash="' + app.hash + '">' +
                     '<div class="crm-nav-item-icon ' + iconClass + '">' + app.icon + '</div>' +
                     '<div class="crm-nav-item-content">' +
                     '<div class="crm-nav-item-title">' + app.title + '</div>' +
                     '<div class="crm-nav-item-desc">' + app.desc + '</div>' +
                     '</div>' +
                     (app.badge ? '<div class="crm-nav-item-badge">' + app.badge + '</div>' : '') +
-                    '</a>';
+                    '</div>';
             });
             html += '</div>';
             
@@ -518,12 +524,12 @@
                 '<div class="crm-nav-section-title">Marketing</div>';
             crmNavApps.marketing.forEach(function(app) {
                 var isActive = currentHash.includes(app.id) ? ' active' : '';
-                html += '<a href="' + app.hash + '" class="crm-nav-item' + isActive + '">' +
+                html += '<div class="crm-nav-item' + isActive + '" data-hash="' + app.hash + '">' +
                     '<div class="crm-nav-item-icon campaigns">' + app.icon + '</div>' +
                     '<div class="crm-nav-item-content">' +
                     '<div class="crm-nav-item-title">' + app.title + '</div>' +
                     '<div class="crm-nav-item-desc">' + app.desc + '</div>' +
-                    '</div></a>';
+                    '</div></div>';
             });
             html += '</div>';
             
@@ -569,9 +575,16 @@
                     }
                 });
                 
-                // Close dropdown when clicking on nav items
+                // Handle nav item clicks - use JavaScript hash navigation to stay in shell
                 document.querySelectorAll('.crm-nav-item').forEach(function(item) {
-                    item.addEventListener('click', function() {
+                    item.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        var targetHash = item.getAttribute('data-hash');
+                        if (targetHash) {
+                            // Use hash-only navigation to stay within Fiori shell
+                            window.location.hash = targetHash;
+                        }
                         navDropdown.classList.remove('open');
                     });
                 });
@@ -582,10 +595,11 @@
         
         // Update active states based on current hash
         function updateActiveStates() {
+            var currentHash = window.location.hash.replace('#', '');
             document.querySelectorAll('.crm-nav-item').forEach(function(item) {
                 item.classList.remove('active');
-                var href = item.getAttribute('href');
-                if (href && window.location.hash.includes(href.replace('#', ''))) {
+                var itemHash = item.getAttribute('data-hash');
+                if (itemHash && currentHash.includes(itemHash)) {
                     item.classList.add('active');
                 }
             });

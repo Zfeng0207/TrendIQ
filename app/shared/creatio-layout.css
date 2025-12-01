@@ -2050,3 +2050,158 @@ body.creatio-active [id*="action"] {
     text-decoration: underline;
 }
 
+/* ============================================================================
+   Account Lifecycle Stage Bar - Different from Sales Pipeline Chevron
+   Circular/rounded lifecycle stages for account management
+   ============================================================================ */
+.creatio-lifecycle-container {
+    background: linear-gradient(180deg, #37474F 0%, #263238 100%);
+    border-radius: 0;
+    padding: 0.5rem 1rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    position: relative;
+    z-index: 9500;
+}
+
+.creatio-lifecycle-bar {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    overflow-x: auto;
+    gap: 0;
+    padding: 4px 0;
+}
+
+.creatio-lifecycle-stage {
+    position: relative;
+    flex: 1;
+    min-width: 110px;
+    height: 40px;
+    padding: 0 0.875rem;
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.6);
+    border-radius: 20px;
+    margin: 0 2px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.creatio-lifecycle-stage:first-child {
+    margin-left: 0;
+}
+
+.creatio-lifecycle-stage:last-child {
+    margin-right: 0;
+}
+
+/* Lifecycle Stage States */
+.creatio-lifecycle-stage.creatio-stage-completed {
+    background: linear-gradient(180deg, #4CAF50 0%, #388E3C 100%);
+    color: white;
+}
+
+.creatio-lifecycle-stage.creatio-stage-current {
+    background: linear-gradient(180deg, #2196F3 0%, #1976D2 100%);
+    color: white;
+    box-shadow: 0 2px 8px rgba(33, 150, 243, 0.4);
+    z-index: 1;
+}
+
+.creatio-lifecycle-stage.creatio-stage-future {
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* Warning state for At-Risk */
+.creatio-lifecycle-stage.creatio-stage-warning,
+.creatio-lifecycle-stage.creatio-stage-current.creatio-stage-warning {
+    background: linear-gradient(180deg, #FF9800 0%, #F57C00 100%) !important;
+    color: white !important;
+    box-shadow: 0 2px 8px rgba(255, 152, 0, 0.4);
+}
+
+/* Negative state for Churned */
+.creatio-lifecycle-stage.creatio-stage-negative,
+.creatio-lifecycle-stage.creatio-stage-current.creatio-stage-negative {
+    background: linear-gradient(180deg, #F44336 0%, #D32F2F 100%) !important;
+    color: white !important;
+    box-shadow: 0 2px 8px rgba(244, 67, 54, 0.4);
+}
+
+/* Lifecycle stage hover effect */
+.creatio-lifecycle-stage:hover:not(.creatio-stage-current) {
+    background: rgba(255, 255, 255, 0.15);
+    color: rgba(255, 255, 255, 0.85);
+}
+
+/* Lifecycle stage icon and label */
+.creatio-lifecycle-stage .creatio-stage-icon {
+    color: inherit !important;
+    margin-right: 0.375rem;
+    font-size: 0.875rem;
+}
+
+.creatio-lifecycle-stage .creatio-stage-label {
+    font-size: 0.625rem;
+    font-weight: 600;
+    letter-spacing: 0.4px;
+    color: inherit;
+    text-transform: uppercase;
+}
+
+/* ============================================================================
+   Risk Indicators Section Styling
+   ============================================================================ */
+.creatio-risk-avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.creatio-risk-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--creatio-kpi-orange-bg);
+    color: var(--creatio-kpi-orange);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem;
+}
+
+.creatio-no-data {
+    font-size: var(--creatio-font-size-sm);
+    color: var(--creatio-text-tertiary);
+    text-align: center;
+    padding: 1rem;
+    font-style: italic;
+}
+
+/* ============================================================================
+   Additional Responsive Adjustments for Lifecycle Bar
+   ============================================================================ */
+@media (max-width: 768px) {
+    .creatio-lifecycle-stage {
+        min-width: 90px;
+        padding: 0 0.5rem;
+    }
+    
+    .creatio-lifecycle-stage .creatio-stage-label {
+        font-size: 0.5625rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .creatio-lifecycle-stage {
+        min-width: 70px;
+    }
+    
+    .creatio-lifecycle-stage .creatio-stage-icon {
+        display: none;
+    }
+}
+
