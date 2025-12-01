@@ -13,7 +13,8 @@
                                 (window.location.href.indexOf('launchpad') >= 0) ||
                                 (document.referrer.indexOf('launchpad') >= 0) ||
                                 (window.frameElement !== null);
-            var hasSAPShell = typeof window['sap-ushell-config'] !== 'undefined';
+            var hasSAPShell = typeof window['sap-ushell-config'] !== 'undefined' || 
+                             document.querySelector('[data-sap-ui-xx-placeholder]') !== null;
             
             if (!isInLaunchpad && !hasSAPShell && window.location.pathname.indexOf('/beautyleads.accounts/') >= 0) {
                 window.location.href = '/launchpad.html#accounts-manage';
@@ -23,9 +24,23 @@
             }
         })();
     </script>
+    
+    <!-- Hide standalone UI when in launchpad -->
     <style>
-        html.in-launchpad .beauty-nav-bar { display: none !important; }
-        html.in-launchpad body { padding-top: 0 !important; }
+        html.in-launchpad .beauty-nav-bar,
+        html.in-launchpad #creatioLifecycleBar,
+        html.in-launchpad #creatioAIPanel {
+            display: none !important;
+        }
+        html.in-launchpad body {
+            padding-top: 0 !important;
+        }
+        html.in-launchpad body.creatio-active {
+            padding-top: 0 !important;
+        }
+        html.in-launchpad body.creatio-active #container {
+            margin-right: 0 !important;
+        }
     </style>
     
     <link rel="stylesheet" type="text/css" href="css/custom.css">
@@ -112,6 +127,283 @@
         body {
             padding-top: 48px !important;
         }
+        
+        /* Creatio-style Account Lifecycle Bar - Purple theme for Accounts */
+        .creatio-lifecycle-bar {
+            position: fixed;
+            top: 48px;
+            left: 0;
+            right: 320px;
+            height: 56px;
+            background: linear-gradient(135deg, #4a148c 0%, #6a1b9a 100%);
+            z-index: 9000;
+            padding: 6px 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            display: none; /* Hidden by default, shown by JS on Object Page */
+        }
+        .creatio-lifecycle-bar.visible {
+            display: block;
+        }
+        .lifecycle-container {
+            display: flex;
+            height: 100%;
+            align-items: center;
+            gap: 4px;
+        }
+        .lifecycle-stage {
+            flex: 1;
+            height: 44px;
+            background: rgba(255,255,255,0.15);
+            clip-path: polygon(0 0, calc(100% - 15px) 0, 100% 50%, calc(100% - 15px) 100%, 0 100%, 15px 50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        .lifecycle-stage:first-child {
+            clip-path: polygon(0 0, calc(100% - 15px) 0, 100% 50%, calc(100% - 15px) 100%, 0 100%);
+        }
+        .lifecycle-stage.active {
+            background: linear-gradient(135deg, #ab47bc 0%, #8e24aa 100%);
+            box-shadow: 0 2px 8px rgba(171, 71, 188, 0.4);
+        }
+        .lifecycle-stage.completed {
+            background: linear-gradient(135deg, #66bb6a 0%, #43a047 100%);
+        }
+        .lifecycle-stage.at-risk {
+            background: linear-gradient(135deg, #ffa726 0%, #f57c00 100%);
+        }
+        .lifecycle-stage.churned {
+            background: linear-gradient(135deg, #ef5350 0%, #c62828 100%);
+        }
+        .lifecycle-stage:hover:not(.active) {
+            background: rgba(255,255,255,0.25);
+        }
+        .lifecycle-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            color: white;
+            padding-left: 10px;
+        }
+        .lifecycle-icon {
+            font-size: 16px;
+        }
+        .lifecycle-label {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        /* Creatio-style AI Panel */
+        .creatio-ai-panel {
+            position: fixed;
+            top: 48px;
+            right: 0;
+            width: 320px;
+            height: calc(100vh - 48px);
+            background: linear-gradient(180deg, #fafafa 0%, #f5f5f5 100%);
+            z-index: 9001;
+            box-shadow: -2px 0 12px rgba(0,0,0,0.1);
+            display: none; /* Hidden by default, shown by JS on Object Page */
+            flex-direction: column;
+            border-left: 1px solid #e0e0e0;
+        }
+        .creatio-ai-panel.visible {
+            display: flex;
+        }
+        .ai-panel-header {
+            background: linear-gradient(135deg, #6a1b9a 0%, #4a148c 100%);
+            color: white;
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .ai-panel-title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+        .ai-panel-toggle {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .ai-panel-toggle:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        .ai-panel-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+        }
+        .ai-insights {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .insight-section {
+            background: white;
+            padding: 16px;
+            border-radius: 12px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+        }
+        .insight-section h4 {
+            margin: 0 0 8px 0;
+            font-size: 14px;
+            color: #333;
+        }
+        .insight-section p {
+            margin: 0;
+            font-size: 13px;
+            color: #666;
+            line-height: 1.5;
+        }
+        .insight-section ul {
+            margin: 0;
+            padding-left: 20px;
+            font-size: 13px;
+            color: #666;
+            line-height: 1.8;
+        }
+        .ai-chat-input {
+            padding: 16px;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            gap: 8px;
+            background: white;
+        }
+        .ai-chat-input input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        .ai-chat-input input:focus {
+            outline: none;
+            border-color: #6a1b9a;
+        }
+        .ai-chat-input button {
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #6a1b9a 0%, #4a148c 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .ai-chat-input button:hover {
+            opacity: 0.9;
+        }
+        
+        /* Adjust main content when Creatio elements are visible */
+        body.creatio-active {
+            padding-top: 104px !important;
+        }
+        body.creatio-active #container {
+            margin-right: 320px;
+        }
+        body.creatio-active .sapUxAPObjectPageWrapper,
+        body.creatio-active .sapMPage {
+            margin-right: 0;
+        }
+        
+        /* Quick Actions */
+        .quick-actions {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        .quick-action-btn {
+            flex: 1;
+            padding: 10px 8px;
+            border: 1px solid #e0e0e0;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.2s;
+        }
+        .quick-action-btn:hover {
+            border-color: #6a1b9a;
+            background: #f3e5f5;
+        }
+        .quick-action-btn .icon {
+            font-size: 18px;
+        }
+        .quick-action-btn .label {
+            font-size: 10px;
+            color: #666;
+        }
+        
+        /* Health Score Card */
+        .health-card {
+            background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            margin-bottom: 16px;
+        }
+        .health-value {
+            font-size: 36px;
+            font-weight: 700;
+            color: #6a1b9a;
+        }
+        .health-label {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+        }
+        .health-indicator {
+            display: flex;
+            justify-content: center;
+            gap: 4px;
+            margin-top: 8px;
+        }
+        .health-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #e0e0e0;
+        }
+        .health-dot.active {
+            background: #6a1b9a;
+        }
+        
+        /* Revenue Card */
+        .revenue-card {
+            background: white;
+            border: 2px solid #6a1b9a;
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin-bottom: 16px;
+        }
+        .revenue-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #6a1b9a;
+        }
+        .revenue-label {
+            font-size: 11px;
+            color: #666;
+            text-transform: uppercase;
+        }
     </style>
     <script
         id="sap-ui-bootstrap"
@@ -139,8 +431,8 @@
             <div class="beauty-nav-menu" id="navMenu">
                 <a href="/launchpad.html#leads-manage" class="beauty-nav-item">Leads</a>
                 <a href="/launchpad.html#prospects-manage" class="beauty-nav-item">Prospects</a>
-                <a href="/launchpad.html#accounts-manage" class="beauty-nav-item active">Accounts</a>
                 <a href="/launchpad.html#opportunities-manage" class="beauty-nav-item">Opportunities</a>
+                <a href="/launchpad.html#accounts-manage" class="beauty-nav-item active">Accounts</a>
                 <a href="/launchpad.html#campaigns-manage" class="beauty-nav-item">Marketing Campaigns</a>
             </div>
         </div>
@@ -152,7 +444,128 @@
         data-settings='{"id" : "beautyleads.accounts"}'
         data-handle-validation="true"
     ></div>
+    
+    <!-- Creatio-style Account Lifecycle Bar -->
+    <div id="creatioLifecycleBar" class="creatio-lifecycle-bar" style="display: none;">
+        <div class="lifecycle-container">
+            <div class="lifecycle-stage completed" data-stage="Prospect">
+                <div class="lifecycle-content">
+                    <span class="lifecycle-icon">🔍</span>
+                    <span class="lifecycle-label">Prospect</span>
+                </div>
+            </div>
+            <div class="lifecycle-stage completed" data-stage="Onboarding">
+                <div class="lifecycle-content">
+                    <span class="lifecycle-icon">📝</span>
+                    <span class="lifecycle-label">Onboarding</span>
+                </div>
+            </div>
+            <div class="lifecycle-stage active" data-stage="Active">
+                <div class="lifecycle-content">
+                    <span class="lifecycle-icon">✅</span>
+                    <span class="lifecycle-label">Active</span>
+                </div>
+            </div>
+            <div class="lifecycle-stage at-risk" data-stage="At-Risk">
+                <div class="lifecycle-content">
+                    <span class="lifecycle-icon">⚠️</span>
+                    <span class="lifecycle-label">At-Risk</span>
+                </div>
+            </div>
+            <div class="lifecycle-stage churned" data-stage="Churned">
+                <div class="lifecycle-content">
+                    <span class="lifecycle-icon">❌</span>
+                    <span class="lifecycle-label">Churned</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Creatio-style AI Assistant Panel for Accounts -->
+    <div id="creatioAIPanel" class="creatio-ai-panel" style="display: none;">
+        <div class="ai-panel-header">
+            <span class="ai-panel-title">🤖 Account Intelligence</span>
+            <button class="ai-panel-toggle" onclick="toggleAIPanel()">−</button>
+        </div>
+        <div class="ai-panel-content" id="aiPanelContent">
+            <!-- Quick Actions -->
+            <div class="quick-actions">
+                <button class="quick-action-btn" onclick="quickAction('review')">
+                    <span class="icon">📅</span>
+                    <span class="label">Review</span>
+                </button>
+                <button class="quick-action-btn" onclick="quickAction('opportunity')">
+                    <span class="icon">💼</span>
+                    <span class="label">New Opp</span>
+                </button>
+                <button class="quick-action-btn" onclick="quickAction('email')">
+                    <span class="icon">📧</span>
+                    <span class="label">Email</span>
+                </button>
+                <button class="quick-action-btn" onclick="quickAction('call')">
+                    <span class="icon">📞</span>
+                    <span class="label">Call</span>
+                </button>
+            </div>
+            
+            <!-- Health Score Card -->
+            <div class="health-card">
+                <div class="health-value" id="healthScore">85%</div>
+                <div class="health-label">Account Health Score</div>
+                <div class="health-indicator">
+                    <div class="health-dot active"></div>
+                    <div class="health-dot active"></div>
+                    <div class="health-dot active"></div>
+                    <div class="health-dot active"></div>
+                    <div class="health-dot"></div>
+                </div>
+            </div>
+            
+            <!-- Revenue Card -->
+            <div class="revenue-card">
+                <div class="revenue-value" id="totalRevenue">RM 250,000</div>
+                <div class="revenue-label">Total Revenue (YTD)</div>
+            </div>
+            
+            <div class="ai-insights">
+                <div class="insight-section">
+                    <h4>📊 Account Health Analysis</h4>
+                    <p id="aiInsight1">Strong engagement pattern. Regular orders and responsive to communications. Consider for upsell opportunities.</p>
+                </div>
+                <div class="insight-section">
+                    <h4>🎯 Growth Recommendations</h4>
+                    <ul id="aiRecommendations">
+                        <li>Introduce premium product line</li>
+                        <li>Schedule quarterly business review</li>
+                        <li>Offer volume discount program</li>
+                    </ul>
+                </div>
+                <div class="insight-section">
+                    <h4>📈 Account Metrics</h4>
+                    <ul>
+                        <li>12 orders this year</li>
+                        <li>Avg order value: RM 20,833</li>
+                        <li>Last order: 5 days ago</li>
+                    </ul>
+                </div>
+                <div class="insight-section">
+                    <h4>⚠️ Risk Indicators</h4>
+                    <ul>
+                        <li style="color: #43a047;">✓ No overdue payments</li>
+                        <li style="color: #43a047;">✓ Regular order pattern</li>
+                        <li style="color: #43a047;">✓ High engagement score</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="ai-chat-input">
+            <input type="text" placeholder="Ask AI about this account..." id="aiChatInput">
+            <button onclick="sendAIQuery()">Send</button>
+        </div>
+    </div>
+    
     <script>
+        // Navigation menu
         (function() {
             var menuButton = document.getElementById('navMenuButton');
             var menu = document.getElementById('navMenu');
@@ -167,7 +580,181 @@
                     }
                 });
             }
+            
+            // Creatio Layout Elements
+            var lifecycleBar = document.getElementById('creatioLifecycleBar');
+            var aiPanel = document.getElementById('creatioAIPanel');
+            
+            // Function to show/hide Creatio elements based on page
+            function updateCreatioLayout() {
+                var currentHash = window.location.hash;
+                var isObjectPage = currentHash.indexOf('Accounts(') >= 0;
+                
+                if (isObjectPage) {
+                    // Show Creatio elements
+                    if (lifecycleBar) lifecycleBar.classList.add('visible');
+                    if (aiPanel) aiPanel.classList.add('visible');
+                    document.body.classList.add('creatio-active');
+                    
+                    // Update from data
+                    setTimeout(updateAccountData, 500);
+                    setTimeout(updateAccountData, 2000);
+                    setTimeout(updateAccountData, 4000);
+                } else {
+                    // Hide Creatio elements
+                    if (lifecycleBar) lifecycleBar.classList.remove('visible');
+                    if (aiPanel) aiPanel.classList.remove('visible');
+                    document.body.classList.remove('creatio-active');
+                }
+            }
+            
+            // Function to update account data in Creatio elements
+            function updateAccountData() {
+                try {
+                    updateFromVisibleUI();
+                } catch (e) {
+                    console.log('Error updating account data:', e);
+                }
+            }
+            
+            // Update UI from visible elements
+            function updateFromVisibleUI() {
+                var allText = document.body.innerText;
+                
+                // Extract Health Score
+                var healthMatch = allText.match(/(?:Health Score|Account Health)[:\s]*(\d+)\s*%?/i);
+                if (healthMatch) {
+                    document.getElementById('healthScore').textContent = healthMatch[1] + '%';
+                    updateHealthIndicator(parseInt(healthMatch[1]));
+                }
+                
+                // Extract Total Revenue
+                var revenueMatch = allText.match(/(?:Total Revenue|Revenue)[:\s]*(?:RM\s*)?([0-9,]+)/i);
+                if (revenueMatch) {
+                    document.getElementById('totalRevenue').textContent = 'RM ' + revenueMatch[1];
+                }
+                
+                // Update lifecycle bar based on visible status
+                var lifecycleValues = ['Prospect', 'Onboarding', 'Active', 'At-Risk', 'Churned'];
+                var foundLifecycle = null;
+                
+                // Look for lifecycle status
+                for (var i = 0; i < lifecycleValues.length; i++) {
+                    var pattern = new RegExp('(?:Status|Lifecycle|Stage)[:\\s]*' + lifecycleValues[i], 'i');
+                    if (pattern.test(allText)) {
+                        foundLifecycle = lifecycleValues[i];
+                        break;
+                    }
+                }
+                
+                // Fallback - default to Active for most accounts
+                if (!foundLifecycle) {
+                    if (allText.indexOf('At-Risk') >= 0 || allText.indexOf('At Risk') >= 0) {
+                        foundLifecycle = 'At-Risk';
+                    } else if (allText.indexOf('Churned') >= 0) {
+                        foundLifecycle = 'Churned';
+                    } else if (allText.indexOf('Onboarding') >= 0) {
+                        foundLifecycle = 'Onboarding';
+                    } else {
+                        foundLifecycle = 'Active';
+                    }
+                }
+                
+                if (foundLifecycle) {
+                    updateLifecycleBar(foundLifecycle);
+                }
+            }
+            
+            // Update health indicator dots
+            function updateHealthIndicator(score) {
+                var dots = document.querySelectorAll('.health-dot');
+                var activeDots = Math.round(score / 20); // 5 dots, 20% each
+                dots.forEach(function(dot, index) {
+                    if (index < activeDots) {
+                        dot.classList.add('active');
+                    } else {
+                        dot.classList.remove('active');
+                    }
+                });
+            }
+            
+            // Update lifecycle bar based on current stage
+            function updateLifecycleBar(currentStage) {
+                var stages = document.querySelectorAll('.creatio-lifecycle-bar .lifecycle-stage');
+                var stageOrder = ['Prospect', 'Onboarding', 'Active', 'At-Risk', 'Churned'];
+                var currentIndex = stageOrder.indexOf(currentStage);
+                
+                stages.forEach(function(stage) {
+                    var stageStatus = stage.getAttribute('data-stage');
+                    var stageIndex = stageOrder.indexOf(stageStatus);
+                    
+                    stage.classList.remove('active', 'completed');
+                    
+                    if (stageStatus === 'At-Risk' || stageStatus === 'Churned') {
+                        // These are end states, only show as active if current
+                        if (stageStatus === currentStage) {
+                            stage.classList.add('active');
+                        }
+                    } else if (stageIndex < currentIndex && currentStage !== 'At-Risk' && currentStage !== 'Churned') {
+                        stage.classList.add('completed');
+                    } else if (stageIndex === currentIndex) {
+                        stage.classList.add('active');
+                    }
+                });
+            }
+            
+            // Stage click handler
+            document.querySelectorAll('.creatio-lifecycle-bar .lifecycle-stage').forEach(function(stage) {
+                stage.addEventListener('click', function() {
+                    var targetStage = this.getAttribute('data-stage');
+                    if (typeof sap !== 'undefined' && sap.m && sap.m.MessageToast) {
+                        sap.m.MessageToast.show('Account lifecycle: ' + targetStage);
+                    }
+                    updateLifecycleBar(targetStage);
+                });
+            });
+            
+            // Initialize on page load and hash change
+            updateCreatioLayout();
+            window.addEventListener('hashchange', updateCreatioLayout);
+            setInterval(updateCreatioLayout, 2000);
         })();
+        
+        // AI Panel functions
+        function toggleAIPanel() {
+            var content = document.getElementById('aiPanelContent');
+            var toggle = document.querySelector('.ai-panel-toggle');
+            if (content.style.display === 'none') {
+                content.style.display = 'block';
+                toggle.textContent = '−';
+            } else {
+                content.style.display = 'none';
+                toggle.textContent = '+';
+            }
+        }
+        
+        function sendAIQuery() {
+            var input = document.getElementById('aiChatInput');
+            var query = input.value.trim();
+            if (query) {
+                if (typeof sap !== 'undefined' && sap.m && sap.m.MessageToast) {
+                    sap.m.MessageToast.show('AI is analyzing: "' + query + '"');
+                }
+                input.value = '';
+            }
+        }
+        
+        function quickAction(type) {
+            var messages = {
+                'review': 'Opening business review scheduler...',
+                'opportunity': 'Creating new opportunity...',
+                'email': 'Opening email composer...',
+                'call': 'Initiating call...'
+            };
+            if (typeof sap !== 'undefined' && sap.m && sap.m.MessageToast) {
+                sap.m.MessageToast.show(messages[type] || 'Action: ' + type);
+            }
+        }
     </script>
 </body>
 </html>

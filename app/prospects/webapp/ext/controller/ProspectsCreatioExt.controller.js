@@ -9,6 +9,7 @@
  * - Convert to Account button
  * - Visual Score Indicators with progress rings
  */
+console.log("[ProspectsCreatioExt] Module file is being loaded at:", new Date().toISOString());
 sap.ui.define([
     "sap/ui/core/mvc/ControllerExtension",
     "sap/ui/core/Fragment",
@@ -93,6 +94,7 @@ sap.ui.define([
         _oAIPanel: null,
         _oProfileSidebar: null,
         _oConvertButton: null,
+        _oOpportunityButton: null,
 
         /**
          * Lifecycle: Controller initialization
@@ -202,8 +204,8 @@ sap.ui.define([
                 // Check if critical DOM elements exist
                 const oObjectPage = this.base.getView().byId("fe::ObjectPage");
                 if (oObjectPage && oObjectPage.getDomRef()) {
-                    this._initializeCreatioComponents();
-                    this._setupBindingContextListener();
+                this._initializeCreatioComponents();
+                this._setupBindingContextListener();
                     return true;
                 }
                 return false;
@@ -218,7 +220,7 @@ sap.ui.define([
                     if (fnInit() || attempts > 10) {
                         clearInterval(interval);
                     }
-                }, 500);
+            }, 500);
             }
         },
 
@@ -1371,7 +1373,7 @@ sap.ui.define([
 
                 // Product details
                 const oDetails = new VBox({
-                    items: [
+                items: [
                         new Text({ text: oProduct.name }).addStyleClass("creatio-product-name"),
                         new Text({ text: oProduct.brand + " • " + oProduct.price }).addStyleClass("creatio-product-meta")
                     ]
@@ -1507,18 +1509,28 @@ sap.ui.define([
         },
 
         /**
-         * Render Convert to Account button
+         * Render Convert to Account and Create Opportunity buttons
          * @private
          */
         _renderConvertButton: function () {
             const that = this;
             
-            // Remove existing button if any
+            // Remove existing buttons if any
             if (this._oConvertButton) {
                 this._oConvertButton.destroy();
             }
+            if (this._oOpportunityButton) {
+                this._oOpportunityButton.destroy();
+            }
             
-            // Create floating action button
+            // Create button container using HBox for proper layout
+            const oButtonRow = new HBox({
+                justifyContent: "Center",
+                alignItems: "Center"
+            });
+            oButtonRow.addStyleClass("creatio-convert-btn-row");
+            
+            // Primary: Convert to Account button
             const oConvertBtn = new Button({
                 text: "Convert to Account",
                 icon: "sap-icon://customer",
@@ -1527,22 +1539,37 @@ sap.ui.define([
                     that._onConvertToAccount();
                 }
             });
-            oConvertBtn.addStyleClass("creatio-convert-btn");
+            oConvertBtn.addStyleClass("creatio-convert-btn creatio-convert-primary");
+            
+            // Secondary: Create Opportunity button
+            const oOpportunityBtn = new Button({
+                text: "Create Opportunity",
+                icon: "sap-icon://opportunity",
+                type: "Default",
+                press: function () {
+                    that._onCreateOpportunity();
+                }
+            });
+            oOpportunityBtn.addStyleClass("creatio-convert-btn creatio-convert-secondary");
+            
+            oButtonRow.addItem(oConvertBtn);
+            oButtonRow.addItem(oOpportunityBtn);
             
             // Create a container div for proper positioning
             let oContainer = document.getElementById("creatioConvertBtnContainer");
             if (!oContainer) {
                 oContainer = document.createElement("div");
                 oContainer.id = "creatioConvertBtnContainer";
-                oContainer.style.cssText = "position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:9999;";
+                oContainer.style.cssText = "position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:9999;display:flex;gap:0.75rem;";
                 document.body.appendChild(oContainer);
             }
             
-            // Place button in container
-            oConvertBtn.placeAt(oContainer);
+            // Place button row in container
+            oButtonRow.placeAt(oContainer);
             this._oConvertButton = oConvertBtn;
+            this._oOpportunityButton = oOpportunityBtn;
             
-            console.log("[ProspectsCreatioExt] Convert button rendered");
+            console.log("[ProspectsCreatioExt] Convert and Opportunity buttons rendered");
         },
 
         /**
@@ -1566,11 +1593,11 @@ sap.ui.define([
                 // Try multiple injection points
                 const oObjectPage = oView.byId("fe::ObjectPage");
                 if (oObjectPage) {
-                    const oDomRef = oObjectPage.getDomRef();
-                    if (oDomRef) {
-                        const oHeaderContent = oDomRef.querySelector(".sapUxAPObjectPageHeaderContent");
-                        if (oHeaderContent) {
-                            oContainer.placeAt(oHeaderContent, "first");
+                        const oDomRef = oObjectPage.getDomRef();
+                        if (oDomRef) {
+                            const oHeaderContent = oDomRef.querySelector(".sapUxAPObjectPageHeaderContent");
+                            if (oHeaderContent) {
+                                oContainer.placeAt(oHeaderContent, "first");
                             return oContainer;
                         }
                         
@@ -1705,14 +1732,20 @@ sap.ui.define([
          * @private
          */
         _updateConvertButtonState: function (oData) {
+            const bConverted = oData.status === "Converted";
+            
             if (this._oConvertButton) {
-                const bEnabled = oData.status !== "Converted";
-                this._oConvertButton.setEnabled(bEnabled);
+                this._oConvertButton.setEnabled(!bConverted);
                 
-                if (oData.status === "Converted") {
+                if (bConverted) {
                     this._oConvertButton.setText("Already Converted");
                     this._oConvertButton.setType("Default");
                 }
+            }
+            
+            // Opportunity button is always enabled unless already converted
+            if (this._oOpportunityButton) {
+                this._oOpportunityButton.setEnabled(!bConverted);
             }
         },
 
@@ -1923,10 +1956,95 @@ sap.ui.define([
                     this._oConvertButton.setEnabled(false);
                     this._oConvertButton.setType("Default");
                 }
+                if (this._oOpportunityButton) {
+                    this._oOpportunityButton.setEnabled(false);
+                }
             })
             .catch((error) => {
                 BusyIndicator.hide();
                 MessageBox.error("Failed to convert: " + error.message);
+            });
+        },
+
+        /**
+         * Handle create opportunity
+         * @private
+         */
+        _onCreateOpportunity: function () {
+            const that = this;
+            const oView = this.base.getView();
+            const oContext = oView && oView.getBindingContext();
+            
+            if (!oContext) {
+                MessageBox.error("No prospect context available");
+                return;
+            }
+
+            const sProspectName = this._oEntityData?.prospectName || "this prospect";
+            
+            MessageBox.confirm(
+                "Create an Opportunity from '" + sProspectName + "'? This will create a new opportunity record linked to this prospect.",
+                {
+                    title: "Create Opportunity",
+                    actions: [MessageBox.Action.OK, MessageBox.Action.CANCEL],
+                    emphasizedAction: MessageBox.Action.OK,
+                    onClose: function (sAction) {
+                        if (sAction === MessageBox.Action.OK) {
+                            that._executeCreateOpportunity();
+                        }
+                    }
+                }
+            );
+        },
+
+        /**
+         * Execute create opportunity action
+         * @private
+         */
+        _executeCreateOpportunity: function () {
+            const oView = this.base.getView();
+            const oContext = oView && oView.getBindingContext();
+            const sProspectID = oContext.getProperty("ID");
+            
+            BusyIndicator.show(0);
+            
+            fetch("/prospect/Prospects(" + sProspectID + ")/ProspectService.createOpportunity", {
+                method: "POST",
+                headers: {
+                    "Accept": "application/json",
+                    "Content-Type": "application/json"
+                }
+            })
+            .then((response) => {
+                BusyIndicator.hide();
+                if (response.ok) {
+                    return response.json();
+                }
+                throw new Error("Failed to create opportunity");
+            })
+            .then((oData) => {
+                MessageToast.show("Opportunity created successfully!");
+                oContext.refresh();
+                // Optionally navigate to the new opportunity
+                if (oData && oData.ID) {
+                    MessageBox.information(
+                        "Opportunity '" + (oData.name || "New Opportunity") + "' has been created. Would you like to view it?",
+                        {
+                            title: "Opportunity Created",
+                            actions: [MessageBox.Action.YES, MessageBox.Action.NO],
+                            onClose: function (sAction) {
+                                if (sAction === MessageBox.Action.YES) {
+                                    // Navigate to opportunity - adjust path as needed
+                                    window.location.hash = "#/Opportunities(" + oData.ID + ")";
+                                }
+                            }
+                        }
+                    );
+                }
+            })
+            .catch((error) => {
+                BusyIndicator.hide();
+                MessageBox.error("Failed to create opportunity: " + error.message);
             });
         },
 
@@ -2066,6 +2184,9 @@ sap.ui.define([
             }
             if (this._oConvertButton) {
                 this._oConvertButton.destroy();
+            }
+            if (this._oOpportunityButton) {
+                this._oOpportunityButton.destroy();
             }
             if (this._oProfileSidebar) {
                 this._oProfileSidebar.destroy();

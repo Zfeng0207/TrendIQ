@@ -9,6 +9,7 @@
  * - Convert to Prospect button
  * - Visual Score Indicators with progress rings
  */
+console.log("[LeadsCreatioExt] Module file is being loaded at:", new Date().toISOString());
 sap.ui.define([
     "sap/ui/core/mvc/ControllerExtension",
     "sap/ui/core/Fragment",

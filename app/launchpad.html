@@ -174,6 +174,7 @@
         .stage:last-child{clip-path:polygon(0 0,100% 0,100% 100%,0 100%,16px 50%);border-radius:0 4px 4px 0}
         .stage:hover{background:rgba(255,255,255,0.15)}
         .stage.active{background:linear-gradient(180deg,#2196F3,#1976D2);box-shadow:0 2px 6px rgba(33,150,243,0.4)}
+        .stage.active.qualified-green{background:linear-gradient(180deg,#4CAF50,#388E3C);box-shadow:0 2px 6px rgba(76,175,80,0.4)}
         .stage.completed{background:linear-gradient(180deg,#4CAF50,#388E3C)}
         .stage-content{display:flex;align-items:center;color:rgba(255,255,255,0.7);padding-left:10px}
         .stage.active .stage-content,.stage.completed .stage-content{color:white}
@@ -248,13 +249,25 @@
         
         /* Convert Button */
         .convert-btn-container{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:9999}
-        .convert-btn{background:linear-gradient(135deg,#0F75BC,#1565C0);color:white;border:none;border-radius:28px;padding:12px 32px;font-size:15px;font-weight:600;cursor:pointer;box-shadow:0 4px 16px rgba(15,117,188,0.3);transition:all 0.2s ease;display:flex;align-items:center;gap:8px}
+        .convert-btn-wrapper{display:flex;align-items:stretch;position:relative}
+        .convert-btn{background:linear-gradient(135deg,#0F75BC,#1565C0);color:white;border:none;font-size:15px;font-weight:600;cursor:pointer;box-shadow:0 4px 16px rgba(15,117,188,0.3);transition:all 0.2s ease;display:flex;align-items:center;gap:8px}
+        .convert-btn-primary{border-radius:28px 0 0 28px;padding:12px 24px 12px 32px}
+        .convert-btn-dropdown{border-radius:0 28px 28px 0;padding:12px 16px;border-left:1px solid rgba(255,255,255,0.3)}
+        .convert-btn-single{border-radius:28px;padding:12px 32px}
         .convert-btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(15,117,188,0.4)}
+        .convert-dropdown{position:absolute;bottom:100%;left:0;right:0;background:white;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.15);margin-bottom:8px;display:none;overflow:hidden}
+        .convert-dropdown.show{display:block}
+        .convert-dropdown-item{display:flex;align-items:center;gap:10px;width:100%;padding:12px 16px;border:none;background:white;font-size:14px;font-weight:500;color:#333;cursor:pointer;text-align:left;transition:background 0.15s}
+        .convert-dropdown-item:hover{background:#f5f5f5}
+        .convert-dropdown-item:first-child{border-bottom:1px solid #eee}
         
         /* Overall Rating */
         .rating-box{background:linear-gradient(135deg,#e8f5e9,#c8e6c9);border-radius:8px;padding:16px;text-align:center;margin-top:12px}
         .rating-label{font-size:10px;color:#757575;text-transform:uppercase;letter-spacing:0.5px}
         .rating-badge{display:inline-flex;align-items:center;gap:6px;background:#2e7d32;color:white;padding:6px 16px;border-radius:16px;font-size:13px;font-weight:700;margin-top:8px}
+        .rating-badge.hot-prospect{background:#2e7d32}
+        .rating-badge.warm-prospect{background:#f57c00}
+        .rating-badge.cold-prospect{background:#757575}
         
         body.creatio-active #content{margin-right:380px}
 
@@ -818,26 +831,191 @@
         </div>
     </div>
     
-    <!-- Convert to Prospect Button -->
+    <!-- Convert Button Container -->
     <div id="creatioConvertBtn" class="convert-btn-container" style="display:none">
-        <button class="convert-btn" onclick="alert('Converting lead to prospect...')">
-            <span>🔄</span>
-            <span>Convert to Prospect</span>
-        </button>
+        <div class="convert-btn-wrapper">
+            <button class="convert-btn convert-btn-primary" onclick="alert('Converting...')">
+                <span class="convert-icon">🔄</span>
+                <span class="convert-text">Convert to Prospect</span>
+            </button>
+            <button class="convert-btn convert-btn-dropdown" onclick="toggleConvertDropdown(event)">
+                <span>▼</span>
+            </button>
+            <div class="convert-dropdown" id="convertDropdown">
+                <button class="convert-dropdown-item" onclick="handleConvertAction('account')">
+                    <span>🏢</span> Convert to Account
+                </button>
+                <button class="convert-dropdown-item" onclick="handleConvertAction('opportunity')">
+                    <span>💼</span> Create Opportunity
+                </button>
+            </div>
+        </div>
     </div>
     
     <script>
     (function(){
+        // Stage configurations for different entity types
+        var LEAD_STAGES = ['NEW', 'CONTACTED', 'QUALIFIED', 'NURTURING', 'CONVERTED', 'LOST'];
+        var PROSPECT_STAGES = ['NEW', 'CONTACTED', 'QUALIFIED', 'NEGOTIATING', 'IN REVIEW', 'CONVERTED'];
+        
+        function updateStageBar(stages, isLead) {
+            var stageContainer = document.querySelector('#creatioStageBar .stage-container');
+            if (!stageContainer) return;
+            
+            // Clear existing stages
+            stageContainer.innerHTML = '';
+            
+            // Create stages based on entity type
+            stages.forEach(function(label, index) {
+                var stageDiv = document.createElement('div');
+                stageDiv.className = 'stage' + (index < 2 ? ' completed' : (index === 2 ? ' active' : ''));
+                
+                // Mark negative stage for Leads (LOST)
+                if (isLead && label === 'LOST') {
+                    stageDiv.classList.add('negative');
+                }
+                
+                // Make QUALIFIED stage green for Prospects when it's active
+                if (!isLead && label === 'QUALIFIED' && index === 2) {
+                    stageDiv.classList.add('qualified-green');
+                }
+                
+                stageDiv.innerHTML = '<div class="stage-content"><span class="stage-label">' + label + '</span></div>';
+                stageContainer.appendChild(stageDiv);
+            });
+        }
+        
+        function updateConvertButton(isLead) {
+            var container = document.querySelector('#creatioConvertBtn .convert-btn-wrapper');
+            if (!container) return;
+            
+            if (isLead) {
+                // Single button for Leads
+                container.innerHTML = '<button class="convert-btn convert-btn-single" onclick="alert(\'Converting lead to prospect...\')"><span class="convert-icon">🔄</span><span class="convert-text">Convert to Prospect</span></button>';
+            } else {
+                // Split button with dropdown for Prospects - Primary action is Create Opportunity (enterprise CRM workflow)
+                container.innerHTML = '<button class="convert-btn convert-btn-primary" onclick="handleConvertAction(\'opportunity\')"><span class="convert-icon">💼</span><span class="convert-text">Create Opportunity</span></button><button class="convert-btn convert-btn-dropdown" onclick="toggleConvertDropdown(event)"><span>▼</span></button><div class="convert-dropdown" id="convertDropdown"><button class="convert-dropdown-item" onclick="handleConvertAction(\'opportunity\')"><span>💼</span> Create Opportunity</button><button class="convert-dropdown-item" onclick="handleConvertAction(\'account\')"><span>🏢</span> Convert to Account</button></div>';
+            }
+        }
+        
+        function toggleConvertDropdown(event) {
+            event.stopPropagation();
+            var dropdown = document.getElementById('convertDropdown');
+            if (dropdown) {
+                dropdown.classList.toggle('show');
+            }
+        }
+        
+        function handleConvertAction(action) {
+            var dropdown = document.getElementById('convertDropdown');
+            if (dropdown) dropdown.classList.remove('show');
+            
+            if (action === 'account') {
+                alert('Converting prospect to account...');
+            } else if (action === 'opportunity') {
+                alert('Creating opportunity from prospect...');
+            }
+        }
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            var dropdown = document.getElementById('convertDropdown');
+            if (dropdown && !e.target.closest('.convert-btn-wrapper')) {
+                dropdown.classList.remove('show');
+            }
+        });
+        
+        function updateScoringLabel(isLead) {
+            var header = document.querySelector('#creatioAIPanel .ai-section:nth-child(2) h4');
+            if (!header) return;
+            header.textContent = isLead ? 'Lead Scoring' : 'Prospect Scoring';
+            
+            // Update both score card labels and descriptions
+            var scoreCards = document.querySelectorAll('#creatioAIPanel .ai-section:nth-child(2) .score-card');
+            if (scoreCards.length >= 2) {
+                // First score card: AI Score / Engagement Score
+                var label1 = scoreCards[0].querySelector('.score-label');
+                var desc1 = scoreCards[0].querySelector('.score-desc');
+                if (label1) label1.textContent = isLead ? 'AI Score' : 'Engagement Score';
+                if (desc1) desc1.textContent = isLead 
+                    ? 'High engagement potential based on social activity and brand fit'
+                    : 'Based on interactions, meetings, and response rate';
+                
+                // Second score card: Trend Score / Estimated Value
+                var label2 = scoreCards[1].querySelector('.score-label');
+                var desc2 = scoreCards[1].querySelector('.score-desc');
+                var ringText2 = scoreCards[1].querySelector('.score-ring-text');
+                if (label2) label2.textContent = isLead ? 'Trend Score' : 'Estimated Value';
+                if (desc2) desc2.textContent = isLead 
+                    ? 'K-Beauty products are trending strongly on TikTok'
+                    : 'Projected annual business value';
+                if (ringText2) ringText2.textContent = isLead ? '95' : 'RM 50K';
+            }
+            
+            // Update the rating badge
+            var ratingLabel = document.querySelector('#creatioAIPanel .rating-label');
+            var ratingBadge = document.querySelector('#creatioAIPanel .rating-badge');
+            if (ratingLabel) {
+                ratingLabel.textContent = isLead ? 'Overall Engagement Rating' : 'Prospect Rating';
+            }
+            if (ratingBadge) {
+                if (isLead) {
+                    ratingBadge.textContent = 'HOT LEAD';
+                    ratingBadge.className = 'rating-badge';
+                } else {
+                    // Determine prospect rating based on score (mock: use 85 as example)
+                    var prospectScore = 85; // Would come from actual data
+                    if (prospectScore >= 80) {
+                        ratingBadge.textContent = 'HOT PROSPECT';
+                        ratingBadge.className = 'rating-badge hot-prospect';
+                    } else if (prospectScore >= 50) {
+                        ratingBadge.textContent = 'WARM PROSPECT';
+                        ratingBadge.className = 'rating-badge warm-prospect';
+                    } else {
+                        ratingBadge.textContent = 'COLD PROSPECT';
+                        ratingBadge.className = 'rating-badge cold-prospect';
+                    }
+                }
+            }
+        }
+        
         function updateCreatioUI(){
             var h=location.hash;
             var s=document.getElementById("creatioStageBar");
             var a=document.getElementById("creatioAIPanel");
             var c=document.getElementById("creatioConvertBtn");
-            if(h.indexOf("leads-manage")>=0 && h.indexOf("Leads(")>=0){
+            
+            // Check if we're on any Object Page (Leads, Prospects, Opportunities, or Accounts)
+            var isLeadsObjectPage = h.indexOf("leads-manage")>=0 && h.indexOf("Leads(")>=0;
+            var isProspectsObjectPage = h.indexOf("prospects-manage")>=0 && h.indexOf("Prospects(")>=0;
+            var isOpportunitiesObjectPage = h.indexOf("opportunities-manage")>=0 && h.indexOf("Opportunities(")>=0;
+            var isAccountsObjectPage = h.indexOf("accounts-manage")>=0 && h.indexOf("Accounts(")>=0;
+            
+            var isAnyObjectPage = isLeadsObjectPage || isProspectsObjectPage || isOpportunitiesObjectPage || isAccountsObjectPage;
+            
+            if(isAnyObjectPage){
                 if(s) s.style.display="block";
                 if(a) a.style.display="flex";
-                if(c) c.style.display="block";
                 document.body.classList.add("creatio-active");
+                
+                // Update stage bar based on entity type
+                if (isLeadsObjectPage) {
+                    updateStageBar(LEAD_STAGES, true);
+                    updateScoringLabel(true);
+                } else if (isProspectsObjectPage) {
+                    updateStageBar(PROSPECT_STAGES, false);
+                    updateScoringLabel(false);
+                }
+                
+                // Only show convert button for Leads and Prospects (not for Opportunities/Accounts)
+                if(c) {
+                    c.style.display = (isLeadsObjectPage || isProspectsObjectPage) ? "block" : "none";
+                    if (isLeadsObjectPage) {
+                        updateConvertButton(true);
+                    } else if (isProspectsObjectPage) {
+                        updateConvertButton(false);
+                    }
+                }
             } else {
                 if(s) s.style.display="none";
                 if(a) a.style.display="none";

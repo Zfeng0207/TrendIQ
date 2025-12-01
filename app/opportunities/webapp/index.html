@@ -13,7 +13,8 @@
                                 (window.location.href.indexOf('launchpad') >= 0) ||
                                 (document.referrer.indexOf('launchpad') >= 0) ||
                                 (window.frameElement !== null);
-            var hasSAPShell = typeof window['sap-ushell-config'] !== 'undefined';
+            var hasSAPShell = typeof window['sap-ushell-config'] !== 'undefined' || 
+                             document.querySelector('[data-sap-ui-xx-placeholder]') !== null;
             
             if (!isInLaunchpad && !hasSAPShell && window.location.pathname.indexOf('/beautyleads.opportunities/') >= 0) {
                 window.location.href = '/launchpad.html#opportunities-manage';
@@ -23,9 +24,23 @@
             }
         })();
     </script>
+    
+    <!-- Hide standalone UI when in launchpad -->
     <style>
-        html.in-launchpad .beauty-nav-bar { display: none !important; }
-        html.in-launchpad body { padding-top: 0 !important; }
+        html.in-launchpad .beauty-nav-bar,
+        html.in-launchpad #creatioStageBar,
+        html.in-launchpad #creatioAIPanel {
+            display: none !important;
+        }
+        html.in-launchpad body {
+            padding-top: 0 !important;
+        }
+        html.in-launchpad body.creatio-active {
+            padding-top: 0 !important;
+        }
+        html.in-launchpad body.creatio-active #container {
+            margin-right: 0 !important;
+        }
     </style>
     
     <link rel="stylesheet" type="text/css" href="css/custom.css">
@@ -112,6 +127,268 @@
         body {
             padding-top: 48px !important;
         }
+        
+        /* Creatio-style Stage Progress Bar - Green/Teal theme for Opportunities */
+        .creatio-stage-bar {
+            position: fixed;
+            top: 48px;
+            left: 0;
+            right: 320px;
+            height: 56px;
+            background: linear-gradient(135deg, #004d40 0%, #00695c 100%);
+            z-index: 9000;
+            padding: 6px 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            display: none; /* Hidden by default, shown by JS on Object Page */
+        }
+        .creatio-stage-bar.visible {
+            display: block;
+        }
+        .stage-container {
+            display: flex;
+            height: 100%;
+            align-items: center;
+            gap: 4px;
+        }
+        .stage {
+            flex: 1;
+            height: 44px;
+            background: rgba(255,255,255,0.15);
+            clip-path: polygon(0 0, calc(100% - 15px) 0, 100% 50%, calc(100% - 15px) 100%, 0 100%, 15px 50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        .stage:first-child {
+            clip-path: polygon(0 0, calc(100% - 15px) 0, 100% 50%, calc(100% - 15px) 100%, 0 100%);
+        }
+        .stage.active {
+            background: linear-gradient(135deg, #26a69a 0%, #00897b 100%);
+            box-shadow: 0 2px 8px rgba(38, 166, 154, 0.4);
+        }
+        .stage.completed {
+            background: linear-gradient(135deg, #66bb6a 0%, #43a047 100%);
+        }
+        .stage.won {
+            background: linear-gradient(135deg, #66bb6a 0%, #2e7d32 100%);
+        }
+        .stage.lost {
+            background: linear-gradient(135deg, #ef5350 0%, #c62828 100%);
+        }
+        .stage:hover:not(.active) {
+            background: rgba(255,255,255,0.25);
+        }
+        .stage-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            color: white;
+            padding-left: 10px;
+        }
+        .stage-icon {
+            font-size: 16px;
+        }
+        .stage-label {
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        
+        /* Creatio-style AI Panel */
+        .creatio-ai-panel {
+            position: fixed;
+            top: 48px;
+            right: 0;
+            width: 320px;
+            height: calc(100vh - 48px);
+            background: linear-gradient(180deg, #fafafa 0%, #f5f5f5 100%);
+            z-index: 9001;
+            box-shadow: -2px 0 12px rgba(0,0,0,0.1);
+            display: none; /* Hidden by default, shown by JS on Object Page */
+            flex-direction: column;
+            border-left: 1px solid #e0e0e0;
+        }
+        .creatio-ai-panel.visible {
+            display: flex;
+        }
+        .ai-panel-header {
+            background: linear-gradient(135deg, #00695c 0%, #004d40 100%);
+            color: white;
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .ai-panel-title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+        .ai-panel-toggle {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .ai-panel-toggle:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        .ai-panel-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+        }
+        .ai-insights {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .insight-section {
+            background: white;
+            padding: 16px;
+            border-radius: 12px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+        }
+        .insight-section h4 {
+            margin: 0 0 8px 0;
+            font-size: 14px;
+            color: #333;
+        }
+        .insight-section p {
+            margin: 0;
+            font-size: 13px;
+            color: #666;
+            line-height: 1.5;
+        }
+        .insight-section ul {
+            margin: 0;
+            padding-left: 20px;
+            font-size: 13px;
+            color: #666;
+            line-height: 1.8;
+        }
+        .ai-chat-input {
+            padding: 16px;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            gap: 8px;
+            background: white;
+        }
+        .ai-chat-input input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        .ai-chat-input input:focus {
+            outline: none;
+            border-color: #00695c;
+        }
+        .ai-chat-input button {
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #00695c 0%, #004d40 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .ai-chat-input button:hover {
+            opacity: 0.9;
+        }
+        
+        /* Adjust main content when Creatio elements are visible */
+        body.creatio-active {
+            padding-top: 104px !important;
+        }
+        body.creatio-active #container {
+            margin-right: 320px;
+        }
+        body.creatio-active .sapUxAPObjectPageWrapper,
+        body.creatio-active .sapMPage {
+            margin-right: 0;
+        }
+        
+        /* Quick Actions */
+        .quick-actions {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        .quick-action-btn {
+            flex: 1;
+            padding: 10px 8px;
+            border: 1px solid #e0e0e0;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.2s;
+        }
+        .quick-action-btn:hover {
+            border-color: #00695c;
+            background: #e0f2f1;
+        }
+        .quick-action-btn .icon {
+            font-size: 18px;
+        }
+        .quick-action-btn .label {
+            font-size: 10px;
+            color: #666;
+        }
+        
+        /* Win Probability Card */
+        .win-card {
+            background: linear-gradient(135deg, #e0f2f1 0%, #b2dfdb 100%);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            margin-bottom: 16px;
+        }
+        .win-value {
+            font-size: 36px;
+            font-weight: 700;
+            color: #00695c;
+        }
+        .win-label {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+        }
+        
+        /* Deal Amount Card */
+        .amount-card {
+            background: white;
+            border: 2px solid #00695c;
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin-bottom: 16px;
+        }
+        .amount-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #00695c;
+        }
+        .amount-label {
+            font-size: 11px;
+            color: #666;
+            text-transform: uppercase;
+        }
     </style>
     <script
         id="sap-ui-bootstrap"
@@ -139,8 +416,8 @@
             <div class="beauty-nav-menu" id="navMenu">
                 <a href="/launchpad.html#leads-manage" class="beauty-nav-item">Leads</a>
                 <a href="/launchpad.html#prospects-manage" class="beauty-nav-item">Prospects</a>
-                <a href="/launchpad.html#accounts-manage" class="beauty-nav-item">Accounts</a>
                 <a href="/launchpad.html#opportunities-manage" class="beauty-nav-item active">Opportunities</a>
+                <a href="/launchpad.html#accounts-manage" class="beauty-nav-item">Accounts</a>
                 <a href="/launchpad.html#campaigns-manage" class="beauty-nav-item">Marketing Campaigns</a>
             </div>
         </div>
@@ -152,7 +429,132 @@
         data-settings='{"id" : "beautyleads.opportunities"}'
         data-handle-validation="true"
     ></div>
+    
+    <!-- Creatio-style Stage Progress Bar for Opportunities -->
+    <div id="creatioStageBar" class="creatio-stage-bar" style="display: none;">
+        <div class="stage-container">
+            <div class="stage completed" data-stage="Prospecting">
+                <div class="stage-content">
+                    <span class="stage-icon">🔍</span>
+                    <span class="stage-label">Prospecting</span>
+                </div>
+            </div>
+            <div class="stage completed" data-stage="Qualification">
+                <div class="stage-content">
+                    <span class="stage-icon">✓</span>
+                    <span class="stage-label">Qualification</span>
+                </div>
+            </div>
+            <div class="stage active" data-stage="Needs Analysis">
+                <div class="stage-content">
+                    <span class="stage-icon">📊</span>
+                    <span class="stage-label">Needs Analysis</span>
+                </div>
+            </div>
+            <div class="stage" data-stage="Proposal">
+                <div class="stage-content">
+                    <span class="stage-icon">📄</span>
+                    <span class="stage-label">Proposal</span>
+                </div>
+            </div>
+            <div class="stage" data-stage="Negotiation">
+                <div class="stage-content">
+                    <span class="stage-icon">🤝</span>
+                    <span class="stage-label">Negotiation</span>
+                </div>
+            </div>
+            <div class="stage won" data-stage="Closed Won">
+                <div class="stage-content">
+                    <span class="stage-icon">🏆</span>
+                    <span class="stage-label">Closed Won</span>
+                </div>
+            </div>
+            <div class="stage lost" data-stage="Closed Lost">
+                <div class="stage-content">
+                    <span class="stage-icon">❌</span>
+                    <span class="stage-label">Closed Lost</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Creatio-style AI Assistant Panel for Opportunities -->
+    <div id="creatioAIPanel" class="creatio-ai-panel" style="display: none;">
+        <div class="ai-panel-header">
+            <span class="ai-panel-title">🤖 Deal Intelligence</span>
+            <button class="ai-panel-toggle" onclick="toggleAIPanel()">−</button>
+        </div>
+        <div class="ai-panel-content" id="aiPanelContent">
+            <!-- Quick Actions -->
+            <div class="quick-actions">
+                <button class="quick-action-btn" onclick="quickAction('meeting')">
+                    <span class="icon">📅</span>
+                    <span class="label">Meeting</span>
+                </button>
+                <button class="quick-action-btn" onclick="quickAction('proposal')">
+                    <span class="icon">📄</span>
+                    <span class="label">Proposal</span>
+                </button>
+                <button class="quick-action-btn" onclick="quickAction('email')">
+                    <span class="icon">📧</span>
+                    <span class="label">Email</span>
+                </button>
+                <button class="quick-action-btn" onclick="quickAction('update')">
+                    <span class="icon">✏️</span>
+                    <span class="label">Update</span>
+                </button>
+            </div>
+            
+            <!-- Win Probability Card -->
+            <div class="win-card">
+                <div class="win-value" id="winProbability">72%</div>
+                <div class="win-label">Win Probability</div>
+            </div>
+            
+            <!-- Deal Amount Card -->
+            <div class="amount-card">
+                <div class="amount-value" id="dealAmount">RM 150,000</div>
+                <div class="amount-label">Deal Amount</div>
+            </div>
+            
+            <div class="ai-insights">
+                <div class="insight-section">
+                    <h4>📊 Win Probability Analysis</h4>
+                    <p id="aiInsight1">Strong engagement signals. Decision maker is actively involved. Recommend scheduling demo to push to next stage.</p>
+                </div>
+                <div class="insight-section">
+                    <h4>🎯 Recommended Next Steps</h4>
+                    <ul id="aiRecommendations">
+                        <li>Schedule product demo with stakeholders</li>
+                        <li>Send updated pricing proposal</li>
+                        <li>Address competitive concerns</li>
+                    </ul>
+                </div>
+                <div class="insight-section">
+                    <h4>⚠️ Risk Factors</h4>
+                    <ul>
+                        <li>Competitor mentioned in last call</li>
+                        <li>Budget approval pending</li>
+                    </ul>
+                </div>
+                <div class="insight-section">
+                    <h4>📈 Deal Timeline</h4>
+                    <ul>
+                        <li>Created: 15 days ago</li>
+                        <li>Expected Close: Dec 20, 2025</li>
+                        <li>Days in Stage: 3</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="ai-chat-input">
+            <input type="text" placeholder="Ask AI about this deal..." id="aiChatInput">
+            <button onclick="sendAIQuery()">Send</button>
+        </div>
+    </div>
+    
     <script>
+        // Navigation menu
         (function() {
             var menuButton = document.getElementById('navMenuButton');
             var menu = document.getElementById('navMenu');
@@ -167,7 +569,164 @@
                     }
                 });
             }
+            
+            // Creatio Layout Elements
+            var stageBar = document.getElementById('creatioStageBar');
+            var aiPanel = document.getElementById('creatioAIPanel');
+            
+            // Function to show/hide Creatio elements based on page
+            function updateCreatioLayout() {
+                var currentHash = window.location.hash;
+                var isObjectPage = currentHash.indexOf('Opportunities(') >= 0;
+                
+                if (isObjectPage) {
+                    // Show Creatio elements
+                    if (stageBar) stageBar.classList.add('visible');
+                    if (aiPanel) aiPanel.classList.add('visible');
+                    document.body.classList.add('creatio-active');
+                    
+                    // Update from data
+                    setTimeout(updateOpportunityData, 500);
+                    setTimeout(updateOpportunityData, 2000);
+                    setTimeout(updateOpportunityData, 4000);
+                } else {
+                    // Hide Creatio elements
+                    if (stageBar) stageBar.classList.remove('visible');
+                    if (aiPanel) aiPanel.classList.remove('visible');
+                    document.body.classList.remove('creatio-active');
+                }
+            }
+            
+            // Function to update opportunity data in Creatio elements
+            function updateOpportunityData() {
+                try {
+                    updateFromVisibleUI();
+                } catch (e) {
+                    console.log('Error updating opportunity data:', e);
+                }
+            }
+            
+            // Update UI from visible elements
+            function updateFromVisibleUI() {
+                var allText = document.body.innerText;
+                
+                // Extract Amount
+                var amountMatch = allText.match(/(?:Amount|Deal Value|Expected Revenue)[:\s]*(?:RM\s*)?([0-9,]+)/i);
+                if (amountMatch) {
+                    document.getElementById('dealAmount').textContent = 'RM ' + amountMatch[1];
+                }
+                
+                // Extract Win Probability (Probability field)
+                var probMatch = allText.match(/(?:Probability|Win)[:\s]*(\d+)\s*%/i);
+                if (probMatch) {
+                    document.getElementById('winProbability').textContent = probMatch[1] + '%';
+                }
+                
+                // Update stage bar based on visible status/stage
+                var stageValues = ['Prospecting', 'Qualification', 'Needs Analysis', 'Proposal', 'Negotiation', 'Closed Won', 'Closed Lost'];
+                var foundStage = null;
+                
+                // Look for stage in visible content
+                for (var i = 0; i < stageValues.length; i++) {
+                    var stagePattern = new RegExp('(?:Stage|Phase)[:\\s]*' + stageValues[i], 'i');
+                    if (stagePattern.test(allText)) {
+                        foundStage = stageValues[i];
+                        break;
+                    }
+                }
+                
+                // Fallback search
+                if (!foundStage) {
+                    for (var i = stageValues.length - 1; i >= 0; i--) {
+                        if (allText.indexOf(stageValues[i]) >= 0) {
+                            foundStage = stageValues[i];
+                            break;
+                        }
+                    }
+                }
+                
+                if (foundStage) {
+                    updateStageBar(foundStage);
+                }
+            }
+            
+            // Update stage bar based on current stage
+            function updateStageBar(currentStage) {
+                var stages = document.querySelectorAll('.creatio-stage-bar .stage');
+                var stageOrder = ['Prospecting', 'Qualification', 'Needs Analysis', 'Proposal', 'Negotiation', 'Closed Won', 'Closed Lost'];
+                var currentIndex = stageOrder.indexOf(currentStage);
+                
+                stages.forEach(function(stage, index) {
+                    var stageStatus = stage.getAttribute('data-stage');
+                    var stageIndex = stageOrder.indexOf(stageStatus);
+                    
+                    stage.classList.remove('active', 'completed');
+                    
+                    // Special handling for Closed stages
+                    if (currentStage === 'Closed Won' && stageStatus === 'Closed Won') {
+                        stage.classList.add('active');
+                    } else if (currentStage === 'Closed Lost' && stageStatus === 'Closed Lost') {
+                        stage.classList.add('active');
+                    } else if (stageIndex < currentIndex && stageStatus !== 'Closed Won' && stageStatus !== 'Closed Lost') {
+                        stage.classList.add('completed');
+                    } else if (stageIndex === currentIndex) {
+                        stage.classList.add('active');
+                    }
+                });
+            }
+            
+            // Stage click handler
+            document.querySelectorAll('.creatio-stage-bar .stage').forEach(function(stage) {
+                stage.addEventListener('click', function() {
+                    var targetStage = this.getAttribute('data-stage');
+                    if (typeof sap !== 'undefined' && sap.m && sap.m.MessageToast) {
+                        sap.m.MessageToast.show('Moving to stage: ' + targetStage);
+                    }
+                    updateStageBar(targetStage);
+                });
+            });
+            
+            // Initialize on page load and hash change
+            updateCreatioLayout();
+            window.addEventListener('hashchange', updateCreatioLayout);
+            setInterval(updateCreatioLayout, 2000);
         })();
+        
+        // AI Panel functions
+        function toggleAIPanel() {
+            var content = document.getElementById('aiPanelContent');
+            var toggle = document.querySelector('.ai-panel-toggle');
+            if (content.style.display === 'none') {
+                content.style.display = 'block';
+                toggle.textContent = '−';
+            } else {
+                content.style.display = 'none';
+                toggle.textContent = '+';
+            }
+        }
+        
+        function sendAIQuery() {
+            var input = document.getElementById('aiChatInput');
+            var query = input.value.trim();
+            if (query) {
+                if (typeof sap !== 'undefined' && sap.m && sap.m.MessageToast) {
+                    sap.m.MessageToast.show('AI is analyzing: "' + query + '"');
+                }
+                input.value = '';
+            }
+        }
+        
+        function quickAction(type) {
+            var messages = {
+                'meeting': 'Opening meeting scheduler...',
+                'proposal': 'Opening proposal generator...',
+                'email': 'Opening email composer...',
+                'update': 'Opening stage update dialog...'
+            };
+            if (typeof sap !== 'undefined' && sap.m && sap.m.MessageToast) {
+                sap.m.MessageToast.show(messages[type] || 'Action: ' + type);
+            }
+        }
     </script>
 </body>
 </html>
