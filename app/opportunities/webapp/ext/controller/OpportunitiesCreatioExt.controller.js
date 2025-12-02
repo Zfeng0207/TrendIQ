@@ -47,6 +47,11 @@ sap.ui.define([
 ) {
     "use strict";
 
+    // Stage order for pipeline progression (mirrors backend)
+    const STAGE_ORDER = ["Qualification", "Discovery", "Proposal", "Negotiation", "Closed Won", "Closed Lost"];
+    const OPEN_STAGES = ["Qualification", "Discovery", "Proposal", "Negotiation"];
+    const CLOSED_STAGES = ["Closed Won", "Closed Lost"];
+
     // Mock data for competitors
     const MOCK_COMPETITORS = [
         { id: "1", name: "CompetitorA Beauty", strength: "Price", threat: 75, status: "Active" },
@@ -93,6 +98,10 @@ sap.ui.define([
         // Fragment references
         _oAIPanel: null,
         _oProfileSidebar: null,
+        
+        // Stage navigation buttons
+        _oAdvanceStageButton: null,
+        _oPreviousStageButton: null,
 
         /**
          * Lifecycle: Controller initialization
@@ -267,6 +276,425 @@ sap.ui.define([
             this._renderDashboardWidgets();
             this._renderProfileSidebar();
             this._renderEnhancedAIPanel();
+            this._createStageNavigationButtons();
+        },
+
+        /**
+         * Create Advance Stage and Previous Stage buttons below the chevron bar
+         * @private
+         */
+        _createStageNavigationButtons: function () {
+            const that = this;
+
+            // Remove existing container if present
+            let oButtonContainer = document.getElementById("creatioStageNavButtons");
+            if (oButtonContainer) {
+                oButtonContainer.remove();
+            }
+
+            // Create new container with inline styles for maximum visibility
+            oButtonContainer = document.createElement("div");
+            oButtonContainer.id = "creatioStageNavButtons";
+            oButtonContainer.style.position = "fixed";
+            oButtonContainer.style.bottom = "24px";
+            oButtonContainer.style.left = "50%";
+            oButtonContainer.style.transform = "translateX(calc(-50% - 180px))"; // Offset for AI panel
+            oButtonContainer.style.zIndex = "99999";
+            oButtonContainer.style.display = "flex";
+            oButtonContainer.style.gap = "12px";
+            oButtonContainer.style.padding = "12px 24px";
+            oButtonContainer.style.background = "linear-gradient(135deg, #ffffff 0%, #f5f5f5 100%)";
+            oButtonContainer.style.borderRadius = "16px";
+            oButtonContainer.style.boxShadow = "0 8px 32px rgba(0,0,0,0.2)";
+            oButtonContainer.style.border = "1px solid #e0e0e0";
+            document.body.appendChild(oButtonContainer);
+
+            // Create Previous Stage Button
+            this._oPreviousStageButton = new Button({
+                text: "Previous Stage",
+                icon: "sap-icon://arrow-left",
+                type: "Default",
+                visible: true,
+                press: function () {
+                    that._onPreviousStagePress();
+                }
+            });
+
+            // Create Advance Stage Button
+            this._oAdvanceStageButton = new Button({
+                text: "Advance Stage",
+                icon: "sap-icon://arrow-right",
+                iconFirst: false,
+                type: "Emphasized",
+                visible: true,
+                press: function () {
+                    that._onAdvanceStagePress();
+                }
+            });
+
+            // Create Mark as Won Button
+            this._oMarkWonButton = new Button({
+                text: "Mark Won",
+                icon: "sap-icon://accept",
+                type: "Accept",
+                press: function () {
+                    that._onMarkAsWon();
+                }
+            });
+
+            // Create Mark as Lost Button
+            this._oMarkLostButton = new Button({
+                text: "Mark Lost",
+                icon: "sap-icon://decline",
+                type: "Reject",
+                press: function () {
+                    that._onMarkAsLost();
+                }
+            });
+
+            // Place buttons in container
+            this._oPreviousStageButton.placeAt(oButtonContainer);
+            this._oAdvanceStageButton.placeAt(oButtonContainer);
+            this._oMarkWonButton.placeAt(oButtonContainer);
+            this._oMarkLostButton.placeAt(oButtonContainer);
+
+            // Initial state based on current context
+            const oView = this.base.getView();
+            const oContext = oView && oView.getBindingContext();
+            if (oContext) {
+                oContext.requestObject().then((oData) => {
+                    this._updateStageButtonsState(oData.stage);
+                });
+            }
+
+            console.log("[OpportunitiesCreatioExt] Stage navigation buttons created at bottom of screen");
+        },
+
+        /**
+         * Get the next stage in the pipeline
+         * @private
+         */
+        _getNextStage: function (sCurrentStage) {
+            const iCurrentIndex = OPEN_STAGES.indexOf(sCurrentStage);
+            if (iCurrentIndex === -1 || iCurrentIndex >= OPEN_STAGES.length - 1) {
+                return null; // No next stage available
+            }
+            return OPEN_STAGES[iCurrentIndex + 1];
+        },
+
+        /**
+         * Get the previous stage in the pipeline
+         * @private
+         */
+        _getPreviousStage: function (sCurrentStage) {
+            const iCurrentIndex = OPEN_STAGES.indexOf(sCurrentStage);
+            if (iCurrentIndex <= 0) {
+                return null; // No previous stage available
+            }
+            return OPEN_STAGES[iCurrentIndex - 1];
+        },
+
+        /**
+         * Check if stage can be advanced
+         * @private
+         */
+        _canAdvance: function (sStage) {
+            const iIndex = OPEN_STAGES.indexOf(sStage);
+            // Can advance only if we are before Negotiation (last open stage)
+            return iIndex > -1 && iIndex < OPEN_STAGES.length - 1;
+        },
+
+        /**
+         * Check if stage can be reverted
+         * @private
+         */
+        _canRevert: function (sStage) {
+            // Cannot revert from closed states
+            if (CLOSED_STAGES.includes(sStage)) {
+                return false;
+            }
+            // Cannot revert from first stage
+            if (sStage === "Qualification") {
+                return false;
+            }
+            return OPEN_STAGES.indexOf(sStage) > 0;
+        },
+
+        /**
+         * Update stage buttons visibility and enablement
+         * @private
+         */
+        _updateStageButtonsState: function (sStage) {
+            if (!this._oAdvanceStageButton || !this._oPreviousStageButton) return;
+
+            const bCanAdvance = this._canAdvance(sStage);
+            const bCanRevert = this._canRevert(sStage);
+            const bIsClosed = CLOSED_STAGES.includes(sStage);
+
+            // Show/hide navigation buttons
+            this._oAdvanceStageButton.setVisible(bCanAdvance);
+            this._oAdvanceStageButton.setEnabled(bCanAdvance);
+
+            this._oPreviousStageButton.setVisible(bCanRevert);
+            this._oPreviousStageButton.setEnabled(bCanRevert);
+
+            // Show/hide Mark Won/Lost buttons (hide when already closed)
+            if (this._oMarkWonButton) {
+                this._oMarkWonButton.setVisible(!bIsClosed);
+                this._oMarkWonButton.setEnabled(!bIsClosed);
+            }
+            if (this._oMarkLostButton) {
+                this._oMarkLostButton.setVisible(!bIsClosed);
+                this._oMarkLostButton.setEnabled(!bIsClosed);
+            }
+
+            console.log("[OpportunitiesCreatioExt] Stage buttons updated - Advance:", bCanAdvance, "Previous:", bCanRevert, "Closed:", bIsClosed);
+        },
+
+        /**
+         * Handle Advance Stage button press
+         * @private
+         */
+        _onAdvanceStagePress: function () {
+            const oView = this.base.getView();
+            const oContext = oView.getBindingContext();
+            if (!oContext) {
+                MessageToast.show("No opportunity context available");
+                return;
+            }
+
+            const that = this;
+
+            oContext.requestObject().then(function (oData) {
+                const sCurrentStage = oData.stage;
+                const sNextStage = that._getNextStage(sCurrentStage);
+
+                if (!sNextStage) {
+                    MessageToast.show("No further stage available. Use 'Mark as Won' or 'Mark as Lost' to close the deal.");
+                    return;
+                }
+
+                const sMessage = `Advance opportunity from "${sCurrentStage}" to "${sNextStage}"?`;
+                
+                MessageBox.confirm(sMessage, {
+                    title: "Confirm Stage Change",
+                    icon: MessageBox.Icon.QUESTION,
+                    actions: [MessageBox.Action.OK, MessageBox.Action.CANCEL],
+                    emphasizedAction: MessageBox.Action.OK,
+                    onClose: function (sAction) {
+                        if (sAction === MessageBox.Action.OK) {
+                            that._invokeStageChange(oContext, sNextStage, "advanced");
+                        }
+                    }
+                });
+            }).catch(function (oError) {
+                MessageBox.error("Failed to get opportunity data: " + oError.message);
+            });
+        },
+
+        /**
+         * Handle Previous Stage button press
+         * @private
+         */
+        _onPreviousStagePress: function () {
+            const oView = this.base.getView();
+            const oContext = oView.getBindingContext();
+            if (!oContext) {
+                MessageToast.show("No opportunity context available");
+                return;
+            }
+
+            const that = this;
+
+            oContext.requestObject().then(function (oData) {
+                const sCurrentStage = oData.stage;
+                const sPrevStage = that._getPreviousStage(sCurrentStage);
+
+                if (!sPrevStage) {
+                    MessageToast.show("Cannot move to previous stage.");
+                    return;
+                }
+
+                // Enhanced warning for moving back from Negotiation
+                const bFromNegotiation = sCurrentStage === "Negotiation";
+                const sMessage = bFromNegotiation
+                    ? `Move opportunity back from "${sCurrentStage}" to "${sPrevStage}"?\n\nWarning: This may indicate the deal is not ready to close.`
+                    : `Move opportunity back from "${sCurrentStage}" to "${sPrevStage}"?`;
+
+                MessageBox.confirm(sMessage, {
+                    title: "Confirm Stage Reversion",
+                    icon: bFromNegotiation ? MessageBox.Icon.WARNING : MessageBox.Icon.QUESTION,
+                    actions: [MessageBox.Action.OK, MessageBox.Action.CANCEL],
+                    emphasizedAction: MessageBox.Action.OK,
+                    onClose: function (sAction) {
+                        if (sAction === MessageBox.Action.OK) {
+                            that._invokeStageChange(oContext, sPrevStage, "reverted");
+                        }
+                    }
+                });
+            }).catch(function (oError) {
+                MessageBox.error("Failed to get opportunity data: " + oError.message);
+            });
+        },
+
+        /**
+         * Handle Mark as Won button press
+         * @private
+         */
+        _onMarkAsWon: function () {
+            const oView = this.base.getView();
+            const oContext = oView.getBindingContext();
+            if (!oContext) {
+                MessageToast.show("No opportunity context available");
+                return;
+            }
+
+            const that = this;
+
+            MessageBox.confirm("Mark this opportunity as Won?\n\nThis will close the deal as successful.", {
+                title: "Confirm Close as Won",
+                icon: MessageBox.Icon.SUCCESS,
+                actions: [MessageBox.Action.OK, MessageBox.Action.CANCEL],
+                emphasizedAction: MessageBox.Action.OK,
+                onClose: function (sAction) {
+                    if (sAction === MessageBox.Action.OK) {
+                        that._invokeMarkAction(oContext, "markAsWon", "Closed Won");
+                    }
+                }
+            });
+        },
+
+        /**
+         * Handle Mark as Lost button press
+         * @private
+         */
+        _onMarkAsLost: function () {
+            const oView = this.base.getView();
+            const oContext = oView.getBindingContext();
+            if (!oContext) {
+                MessageToast.show("No opportunity context available");
+                return;
+            }
+
+            const that = this;
+
+            MessageBox.confirm("Mark this opportunity as Lost?\n\nThis will close the deal as unsuccessful.", {
+                title: "Confirm Close as Lost",
+                icon: MessageBox.Icon.WARNING,
+                actions: [MessageBox.Action.OK, MessageBox.Action.CANCEL],
+                emphasizedAction: MessageBox.Action.CANCEL,
+                onClose: function (sAction) {
+                    if (sAction === MessageBox.Action.OK) {
+                        that._invokeMarkAction(oContext, "markAsLost", "Closed Lost");
+                    }
+                }
+            });
+        },
+
+        /**
+         * Invoke mark as won/lost action
+         * @private
+         */
+        _invokeMarkAction: function (oContext, sActionName, sNewStage) {
+            const that = this;
+
+            BusyIndicator.show(0);
+
+            const oExtensionAPI = this.base.getExtensionAPI();
+            if (!oExtensionAPI || !oExtensionAPI.getEditFlow) {
+                BusyIndicator.hide();
+                MessageBox.error("EditFlow not available");
+                return;
+            }
+
+            const oEditFlow = oExtensionAPI.getEditFlow();
+
+            oEditFlow.invokeAction("OpportunityService." + sActionName, {
+                contexts: [oContext],
+                label: sActionName === "markAsWon" ? "Mark as Won" : "Mark as Lost",
+                skipParameterDialog: true
+            }).then(function () {
+                BusyIndicator.hide();
+                MessageToast.show(`Opportunity marked as "${sNewStage}"`);
+                that._updateStageButtonsState(sNewStage);
+                that._updateChevronState(sNewStage);
+            }).catch(function (oError) {
+                BusyIndicator.hide();
+                const sErrorMsg = oError.message || oError.error?.message || "Action failed";
+                MessageBox.error(sErrorMsg);
+            });
+        },
+
+        /**
+         * Invoke stage change via CAP action using EditFlow
+         * @private
+         */
+        _invokeStageChange: function (oContext, sNewStage, sDirection) {
+            const that = this;
+            
+            BusyIndicator.show(0);
+
+            // Get the EditFlow from the extension API
+            const oExtensionAPI = this.base.getExtensionAPI();
+            if (!oExtensionAPI || !oExtensionAPI.getEditFlow) {
+                // Fallback to direct fetch if EditFlow not available
+                this._invokeStageChangeViaFetch(oContext, sNewStage, sDirection);
+                return;
+            }
+
+            const oEditFlow = oExtensionAPI.getEditFlow();
+            
+            oEditFlow.invokeAction("OpportunityService.moveToStage", {
+                contexts: [oContext],
+                parameterValues: [{ name: "newStage", value: sNewStage }],
+                label: "Change Stage",
+                skipParameterDialog: true
+            }).then(function () {
+                BusyIndicator.hide();
+                MessageToast.show(`Stage ${sDirection} to "${sNewStage}"`);
+                // Update button states after successful change
+                that._updateStageButtonsState(sNewStage);
+                that._updateChevronState(sNewStage);
+            }).catch(function (oError) {
+                BusyIndicator.hide();
+                const sErrorMsg = oError.message || oError.error?.message || "Stage change failed";
+                MessageBox.error(sErrorMsg);
+            });
+        },
+
+        /**
+         * Fallback: Invoke stage change via direct fetch
+         * @private
+         */
+        _invokeStageChangeViaFetch: function (oContext, sNewStage, sDirection) {
+            const that = this;
+            const sOpportunityID = oContext.getProperty("ID");
+
+            fetch(`/opportunity/Opportunities(${sOpportunityID})/OpportunityService.moveToStage`, {
+                method: "POST",
+                headers: {
+                    "Accept": "application/json",
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ newStage: sNewStage })
+            })
+            .then(function (response) {
+                BusyIndicator.hide();
+                if (response.ok) {
+                    MessageToast.show(`Stage ${sDirection} to "${sNewStage}"`);
+                    oContext.refresh();
+                    that._updateStageButtonsState(sNewStage);
+                    that._updateChevronState(sNewStage);
+                } else {
+                    return response.json().then(function (data) {
+                        throw new Error(data.error?.message || "Stage change failed");
+                    });
+                }
+            })
+            .catch(function (oError) {
+                BusyIndicator.hide();
+                MessageBox.error(oError.message || "Stage change failed");
+            });
         },
 
         /**
@@ -985,6 +1413,7 @@ sap.ui.define([
             console.log("[OpportunitiesCreatioExt] Updating from entity data:", oData.name);
             
             this._updateChevronState(oData.stage);
+            this._updateStageButtonsState(oData.stage);
             this._updateProfileModel(oData);
             this._updateKPIModel(oData);
         },
@@ -1346,6 +1775,14 @@ sap.ui.define([
                 this._oProfileSidebar.destroy();
             }
             
+            // Destroy stage navigation buttons
+            if (this._oAdvanceStageButton) {
+                this._oAdvanceStageButton.destroy();
+            }
+            if (this._oPreviousStageButton) {
+                this._oPreviousStageButton.destroy();
+            }
+            
             // Remove DOM elements
             const oTagContainer = document.getElementById("creatioTagChipsContainer");
             if (oTagContainer) {
@@ -1358,6 +1795,10 @@ sap.ui.define([
             const oDashContainer = document.getElementById("creatioDashboardContainer");
             if (oDashContainer) {
                 oDashContainer.remove();
+            }
+            const oStageNavContainer = document.getElementById("creatioStageNavButtons");
+            if (oStageNavContainer) {
+                oStageNavContainer.remove();
             }
             
             document.body.classList.remove("creatio-with-profile-sidebar");

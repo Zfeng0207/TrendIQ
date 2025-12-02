@@ -156,11 +156,11 @@
         }
 
         /* Hide old Fiori header elements when Creatio layout is active */
+        /* NOTE: .sapUxAPObjectPageHeaderAction kept visible for action buttons */
         body.creatio-active .sapUshellShellHeadItm,
         body.creatio-active .sapUshellShellHeadAction,
         body.creatio-active [id*="shellHeadEndItemsOverflow"],
         body.creatio-active .sapUshellHeadEndContainer,
-        body.creatio-active .sapUxAPObjectPageHeaderAction,
         body.creatio-active .sapUxAPHierarchicalSelectFirstLevel,
         body.creatio-active .sapUxAPObjectPageHeaderNavigation {
             visibility: hidden !important;

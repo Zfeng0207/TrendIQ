@@ -15,6 +15,8 @@ service OpportunityService @(path: '/opportunity') {
         virtual null as stageCriticality : Integer
     } actions {
         action moveToStage(newStage: String) returns Opportunities;
+        action advanceStage() returns Opportunities;
+        action previousStage() returns Opportunities;
         action requestApproval(reason: String, discountPercent: Decimal);
         action markAsWon() returns Opportunities;
         action markAsLost(reason: String) returns Opportunities;

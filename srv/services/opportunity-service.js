@@ -5,6 +5,11 @@
 
 const cds = require('@sap/cds');
 
+// Stage order for pipeline progression
+const STAGE_ORDER = ['Qualification', 'Discovery', 'Proposal', 'Negotiation', 'Closed Won', 'Closed Lost'];
+const OPEN_STAGES = ['Qualification', 'Discovery', 'Proposal', 'Negotiation'];
+const CLOSED_STAGES = ['Closed Won', 'Closed Lost'];
+
 module.exports = async function() {
     const { Opportunities, Approvals } = this.entities;
 
@@ -31,7 +36,69 @@ module.exports = async function() {
         }
     });
 
-    // Action: Move Opportunity to Stage
+    // Action: Advance Stage (move to next stage in pipeline)
+    this.on('advanceStage', 'Opportunities', async (req) => {
+        const oppID = req.params[0].ID;
+        const opportunity = await SELECT.one.from(Opportunities).where({ ID: oppID });
+
+        if (!opportunity) {
+            return req.error(404, `Opportunity ${oppID} not found`);
+        }
+
+        const currentStage = opportunity.stage;
+
+        // Cannot advance from closed stages
+        if (CLOSED_STAGES.includes(currentStage)) {
+            return req.error(400, 'Cannot advance a closed opportunity. The deal is final.');
+        }
+
+        const currentIndex = OPEN_STAGES.indexOf(currentStage);
+        if (currentIndex === -1 || currentIndex >= OPEN_STAGES.length - 1) {
+            return req.error(400, 'No further stage available. Use "Mark as Won" or "Mark as Lost" to close the deal.');
+        }
+
+        const newStage = OPEN_STAGES[currentIndex + 1];
+
+        await UPDATE(Opportunities).set({
+            stage: newStage
+        }).where({ ID: oppID });
+
+        const updatedOpp = await SELECT.one.from(Opportunities).where({ ID: oppID });
+        return updatedOpp;
+    });
+
+    // Action: Previous Stage (move to previous stage in pipeline)
+    this.on('previousStage', 'Opportunities', async (req) => {
+        const oppID = req.params[0].ID;
+        const opportunity = await SELECT.one.from(Opportunities).where({ ID: oppID });
+
+        if (!opportunity) {
+            return req.error(404, `Opportunity ${oppID} not found`);
+        }
+
+        const currentStage = opportunity.stage;
+
+        // Cannot move back from closed stages
+        if (CLOSED_STAGES.includes(currentStage)) {
+            return req.error(400, 'Cannot change stage of a closed opportunity.');
+        }
+
+        const currentIndex = OPEN_STAGES.indexOf(currentStage);
+        if (currentIndex <= 0) {
+            return req.error(400, 'Already at the first stage. Cannot move to previous stage.');
+        }
+
+        const newStage = OPEN_STAGES[currentIndex - 1];
+
+        await UPDATE(Opportunities).set({
+            stage: newStage
+        }).where({ ID: oppID });
+
+        const updatedOpp = await SELECT.one.from(Opportunities).where({ ID: oppID });
+        return updatedOpp;
+    });
+
+    // Action: Move Opportunity to Stage (with sequential validation)
     this.on('moveToStage', 'Opportunities', async (req) => {
         const oppID = req.params[0].ID;
         const { newStage } = req.data;
@@ -42,25 +109,45 @@ module.exports = async function() {
             return req.error(404, `Opportunity ${oppID} not found`);
         }
 
-        // Validate stage transition
-        const validStages = ['Qualification', 'Discovery', 'Proposal', 'Negotiation', 'Closed Won', 'Closed Lost'];
-        if (!validStages.includes(newStage)) {
+        const currentStage = opportunity.stage;
+
+        // Validate target stage is a known stage
+        if (!STAGE_ORDER.includes(newStage)) {
             return req.error(400, `Invalid stage: ${newStage}`);
         }
 
-        // Update probability based on stage
-        const stageProbability = {
-            'Qualification': 20,
-            'Discovery': 40,
-            'Proposal': 60,
-            'Negotiation': 80,
-            'Closed Won': 100,
-            'Closed Lost': 0
-        };
+        // Rule 1: Cannot change stage once opportunity is closed
+        if (CLOSED_STAGES.includes(currentStage)) {
+            return req.error(400, 'Cannot change stage once opportunity is closed. Closed deals are final.');
+        }
 
+        // Rule 2: Cannot enter closed stages via moveToStage - must use markAsWon/markAsLost
+        if (CLOSED_STAGES.includes(newStage)) {
+            return req.error(400, `Use "Mark as Won" or "Mark as Lost" actions to close the opportunity.`);
+        }
+
+        // Rule 3: No change needed if same stage
+        if (newStage === currentStage) {
+            return opportunity;
+        }
+
+        // Rule 4: Only allow sequential stage transitions (no skipping)
+        const fromIndex = OPEN_STAGES.indexOf(currentStage);
+        const toIndex = OPEN_STAGES.indexOf(newStage);
+
+        if (fromIndex === -1 || toIndex === -1) {
+            return req.error(400, `Invalid stage transition from ${currentStage} to ${newStage}`);
+        }
+
+        const stepDifference = Math.abs(toIndex - fromIndex);
+        if (stepDifference !== 1) {
+            const direction = toIndex > fromIndex ? 'forward' : 'backward';
+            return req.error(400, `Cannot skip stages. Move ${direction} one step at a time.`);
+        }
+
+        // Update ONLY the stage - probability is now manual (per user requirement)
         await UPDATE(Opportunities).set({
-            stage: newStage,
-            probability: stageProbability[newStage] || opportunity.probability
+            stage: newStage
         }).where({ ID: oppID });
 
         const updatedOpp = await SELECT.one.from(Opportunities).where({ ID: oppID });

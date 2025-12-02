@@ -1,6 +1,26 @@
 /* Import shared Creatio layout styles */
 @import "../../../shared/creatio-layout.css";
 
+/* ============================================================================
+   Object Page Header Actions - Hide default, use custom buttons instead
+   ============================================================================ */
+
+/* Hide the default header actions - we'll create custom positioned buttons */
+.sapUxAPObjectPageHeaderAction {
+    display: none !important;
+}
+
+/* Style the action buttons */
+.sapUxAPObjectPageHeaderAction .sapMBtn {
+    min-width: auto !important;
+}
+
+/* Emphasized button (Advance Stage) styling */
+.sapUxAPObjectPageHeaderAction .sapMBtnEmphasized {
+    background: linear-gradient(135deg, #1565C0 0%, #0D47A1 100%) !important;
+    border: none !important;
+}
+
 /* Custom styles for Opportunities table - larger text and spacing */
 
 /* Increase table row height and spacing */

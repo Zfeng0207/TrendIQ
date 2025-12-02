@@ -70,12 +70,7 @@ annotate OpportunityService.Opportunities with @(
                 Inline: true,
                 IconUrl: 'sap-icon://refresh'
             },
-            {
-                $Type: 'UI.DataFieldForAction',
-                Action: 'OpportunityService.moveToStage',
-                Label: 'Move Stage',
-                Inline: true
-            },
+            // Note: Generic "Move Stage" removed - using dedicated Advance/Previous Stage buttons in header instead
             {
                 $Type: 'UI.DataFieldForAction',
                 Action: 'OpportunityService.markAsWon',
@@ -227,8 +222,14 @@ annotate OpportunityService.Opportunities with @(
         Identification: [
             {
                 $Type: 'UI.DataFieldForAction',
-                Action: 'OpportunityService.moveToStage',
-                Label: 'Move to Stage'
+                Action: 'OpportunityService.advanceStage',
+                Label: 'Advance Stage',
+                ![@UI.Importance]: #High
+            },
+            {
+                $Type: 'UI.DataFieldForAction',
+                Action: 'OpportunityService.previousStage',
+                Label: 'Previous Stage'
             },
             {
                 $Type: 'UI.DataFieldForAction',
@@ -514,8 +515,18 @@ annotate OpportunityService.Opportunities actions {
     );
     moveToStage @(
         Common.SideEffects: {
-            // Note: stageCriticality is a virtual field computed in after READ handler - not included to avoid polling loops
-            TargetProperties: ['stage', 'probability']
+            // Note: probability is now manual per user request (not auto-updated)
+            TargetProperties: ['stage']
+        }
+    );
+    advanceStage @(
+        Common.SideEffects: {
+            TargetProperties: ['stage']
+        }
+    );
+    previousStage @(
+        Common.SideEffects: {
+            TargetProperties: ['stage']
         }
     );
 }
