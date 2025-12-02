@@ -2,13 +2,20 @@
 @import "../../../shared/creatio-layout.css";
 
 /* ============================================================================
-   Object Page Header Actions - Hide default, use custom floating button instead
-   (Same pattern as Opportunities page)
+   Object Page Header Layout Fix - Ensure content is visible below chevron bar
    ============================================================================ */
 
-/* Hide the default header actions - we use custom positioned button at bottom */
-.sapUxAPObjectPageHeaderAction {
-    display: none !important;
+/* Ensure header content has proper spacing below chevron bar */
+.sapUxAPObjectPageLayout .sapUxAPObjectPageHeaderTitle {
+    margin-top: 12px !important;
+    position: relative !important;
+    z-index: 1 !important;
+}
+
+/* Make sure the header content wrapper doesn't overlap with chevron */
+.sapUxAPObjectPageHeaderContent {
+    position: relative !important;
+    z-index: 1 !important;
 }
 
 /* Custom styles for Accounts table - larger text and spacing */

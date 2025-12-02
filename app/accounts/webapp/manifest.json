@@ -79,6 +79,13 @@
         }
       }
     },
+    "resources": {
+      "css": [
+        {
+          "uri": "css/custom.css"
+        }
+      ]
+    },
     "routing": {
       "routes": [
         {

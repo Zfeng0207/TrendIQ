@@ -133,7 +133,13 @@ body.creatio-ai-active .creatio-header-stage-section {
 
 /* Push Object Page content down to make room for chevron bar */
 .sapUxAPObjectPageLayout {
-    padding-top: 52px !important;
+    padding-top: 60px !important;
+}
+
+/* Ensure Object Page header content is not hidden behind chevron bar */
+.sapUxAPObjectPageLayout .sapUxAPObjectPageHeaderTitle,
+.sapUxAPObjectPageLayout .sapUxAPObjectPageDynamicHeaderTitle {
+    margin-top: 8px !important;
 }
 
 /* ============================================================================
