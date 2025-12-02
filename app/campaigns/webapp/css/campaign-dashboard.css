@@ -1,0 +1,807 @@
+/**
+ * Campaign Dashboard - Enterprise CRM Styling
+ * Professional marketing analytics dashboard inspired by Creatio, Salesforce, HubSpot
+ */
+
+/* ============================================================================
+   CSS VARIABLES - SAP Fiori Theme Integration
+   ============================================================================ */
+:root {
+    /* Primary Palette - with Fiori theme fallbacks */
+    --dash-blue: var(--sapIndicationColor_5, #1976D2);
+    --dash-blue-dark: #0D47A1;
+    --dash-teal: var(--sapIndicationColor_6, #00897B);
+    --dash-teal-dark: #00695C;
+    --dash-green: var(--sapIndicationColor_8, #43A047);
+    --dash-green-dark: #2E7D32;
+    --dash-orange: var(--sapIndicationColor_2, #FB8C00);
+    --dash-orange-dark: #EF6C00;
+    --dash-purple: var(--sapIndicationColor_7, #7E57C2);
+    --dash-purple-dark: #5E35B1;
+    --dash-red: var(--sapIndicationColor_1, #E53935);
+    --dash-dark: #37474F;
+
+    /* Neutral Palette - with Fiori theme fallbacks */
+    --dash-bg: var(--sapBackgroundColor, #F5F7FA);
+    --dash-card-bg: var(--sapTile_Background, #FFFFFF);
+    --dash-border: var(--sapGroup_ContentBorderColor, #E0E0E0);
+    --dash-border-light: #EEEEEE;
+    --dash-text-primary: var(--sapTextColor, #212121);
+    --dash-text-secondary: var(--sapContent_LabelColor, #757575);
+    --dash-text-tertiary: #9E9E9E;
+
+    /* Shadows - with Fiori theme fallbacks */
+    --dash-shadow-sm: var(--sapContent_Shadow0, 0 1px 3px rgba(0, 0, 0, 0.08));
+    --dash-shadow-md: var(--sapContent_Shadow1, 0 2px 8px rgba(0, 0, 0, 0.1));
+    --dash-shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.12);
+
+    /* Spacing */
+    --dash-space-xs: 0.25rem;
+    --dash-space-sm: 0.5rem;
+    --dash-space-md: 1rem;
+    --dash-space-lg: 1.5rem;
+    --dash-space-xl: 2rem;
+
+    /* Border Radius */
+    --dash-radius-sm: 6px;
+    --dash-radius-md: 8px;
+    --dash-radius-lg: 12px;
+}
+
+/* ============================================================================
+   MAIN DASHBOARD CONTAINER
+   ============================================================================ */
+.campaignDashboard {
+    background: var(--dash-bg);
+    padding: var(--dash-space-lg);
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* ============================================================================
+   FIORI ELEMENTS OBJECT PAGE INTEGRATION
+   ============================================================================ */
+
+/* Custom Section Container - Remove excessive padding from FE wrapper */
+.sapUxAPObjectPageSubSection .sapUxAPBlockContainer .campaignDashboard {
+    margin: 0;
+    padding: var(--dash-space-md);
+}
+
+/* Ensure section fills available width */
+[id*="CustomSubSection"][id*="CampaignDashboard"] .sapUxAPBlockContainer {
+    padding: 0 !important;
+}
+
+/* Prevent Object Page section styles from interfering */
+.sapUxAPObjectPageSection .campaignDashboard {
+    background: var(--dash-bg);
+}
+
+/* Chart placeholder for loading state */
+.chartPlaceholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 200px;
+    background: var(--dash-bg);
+    border-radius: var(--dash-radius-md);
+    color: var(--dash-text-tertiary);
+    font-size: 0.875rem;
+}
+
+/* ============================================================================
+   KPI SECTION - Top Metrics Cards
+   ============================================================================ */
+.kpiSection {
+    margin-bottom: var(--dash-space-lg);
+}
+
+.kpiCardsRow {
+    gap: var(--dash-space-md);
+}
+
+.kpiCardsRow > .sapMFlexItem {
+    flex: 1 1 160px !important;
+    max-width: 200px;
+    min-width: 150px;
+}
+
+/* KPI Card Base */
+.kpiCard {
+    background: var(--dash-blue-dark);
+    border-radius: var(--dash-radius-md);
+    padding: var(--dash-space-md) var(--dash-space-lg);
+    min-width: 150px;
+    flex: 1;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.kpiCard:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--dash-shadow-lg);
+}
+
+/* KPI Card Color Variants */
+.kpiCardBlue { background: linear-gradient(135deg, #1976D2 0%, #0D47A1 100%); }
+.kpiCardTeal { background: linear-gradient(135deg, #00897B 0%, #00695C 100%); }
+.kpiCardGreen { background: linear-gradient(135deg, #43A047 0%, #2E7D32 100%); }
+.kpiCardOrange { background: linear-gradient(135deg, #FB8C00 0%, #EF6C00 100%); }
+.kpiCardPurple { background: linear-gradient(135deg, #7E57C2 0%, #5E35B1 100%); }
+.kpiCardDark { background: linear-gradient(135deg, #455A64 0%, #263238 100%); }
+
+/* Highlighted KPI Card */
+.kpiCardHighlight {
+    box-shadow: 0 4px 20px rgba(251, 140, 0, 0.35);
+}
+
+.kpiCardHighlight::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.5);
+}
+
+/* KPI Card Typography */
+.kpiCardLabel {
+    font-size: 0.75rem !important;
+    color: rgba(255, 255, 255, 0.85) !important;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 500 !important;
+    margin-bottom: 0.25rem !important;
+}
+
+.kpiCardValue {
+    font-size: 2rem !important;
+    font-weight: 300 !important;
+    color: #FFFFFF !important;
+    line-height: 1.1 !important;
+    letter-spacing: -0.5px;
+}
+
+.kpiCardValueAccent {
+    color: #4CAF50 !important;
+}
+
+.kpiCardValuePositive {
+    color: #69F0AE !important;
+}
+
+.kpiCardValueNegative {
+    color: #FF8A80 !important;
+}
+
+.kpiCardSecondary {
+    font-size: 0.75rem !important;
+    color: rgba(255, 255, 255, 0.7) !important;
+    margin-left: 0.5rem !important;
+    align-self: flex-end;
+    padding-bottom: 0.25rem;
+}
+
+.kpiCardSubtitle {
+    font-size: 0.6875rem !important;
+    color: rgba(255, 255, 255, 0.65) !important;
+    margin-top: 0.25rem !important;
+}
+
+/* ============================================================================
+   CHARTS SECTION - Trend Chart & Funnel
+   ============================================================================ */
+.chartsSection {
+    display: flex;
+    flex-direction: row;
+    gap: var(--dash-space-lg);
+    margin-bottom: var(--dash-space-lg);
+}
+
+.chartsSection > .sapMFlexItem:first-child {
+    flex: 2 1 0;
+    min-width: 0; /* Allow shrinking */
+}
+
+.chartsSection > .sapMFlexItem:last-child {
+    flex: 1 1 0;
+    min-width: 280px;
+}
+
+/* Chart Card Base */
+.chartCard {
+    background: var(--dash-card-bg);
+    border-radius: var(--dash-radius-lg);
+    box-shadow: var(--dash-shadow-sm);
+    border: 1px solid var(--dash-border-light);
+    padding: var(--dash-space-lg);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.chartCardMain {
+    min-height: 400px;
+    flex: 2 1 0;
+    min-width: 0;
+}
+
+.chartCardFunnel {
+    min-height: 400px;
+    flex: 1 1 280px;
+}
+
+/* Chart Header */
+.chartCardHeader {
+    margin-bottom: var(--dash-space-md);
+    padding-bottom: var(--dash-space-sm);
+    border-bottom: 1px solid var(--dash-border-light);
+}
+
+.chartCardTitle {
+    font-size: 0.9375rem !important;
+    font-weight: 600 !important;
+    color: var(--dash-text-primary) !important;
+}
+
+.chartMenuBtn {
+    opacity: 0.6;
+}
+
+.chartMenuBtn:hover {
+    opacity: 1;
+}
+
+/* Chart Legend */
+.chartLegend {
+    gap: var(--dash-space-md);
+}
+
+.legendItem {
+    align-items: center;
+    gap: 0.375rem;
+}
+
+.legendDot {
+    font-size: 0.5rem !important;
+}
+
+.legendDotBlue { color: #1976D2 !important; }
+.legendDotGreen { color: #43A047 !important; }
+.legendDotOrange { color: #FB8C00 !important; }
+.legendDotGray { color: #9E9E9E !important; }
+
+.legendText {
+    font-size: 0.75rem !important;
+    color: var(--dash-text-secondary) !important;
+}
+
+/* Chart Area */
+.chartArea {
+    flex: 1;
+    min-height: 280px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--dash-space-sm) 0;
+}
+
+.chartArea .sapUiHtmlControl {
+    width: 100%;
+}
+
+/* Chart Tabs */
+.chartTabs {
+    margin-top: var(--dash-space-md);
+    padding-top: var(--dash-space-sm);
+    border-top: 1px solid var(--dash-border-light);
+    gap: 0;
+}
+
+.chartTab,
+.chartTabActive {
+    font-size: 0.6875rem !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.3px;
+    padding: 0.5rem 1rem !important;
+    min-width: auto !important;
+}
+
+.chartTab .sapMBtnContent {
+    color: var(--dash-text-secondary) !important;
+}
+
+.chartTabActive {
+    position: relative;
+}
+
+.chartTabActive .sapMBtnContent {
+    color: var(--dash-blue) !important;
+}
+
+.chartTabActive::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 1rem;
+    right: 1rem;
+    height: 2px;
+    background: var(--dash-blue);
+    border-radius: 1px;
+}
+
+/* Funnel Container */
+.funnelContainer {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--dash-space-md) 0;
+}
+
+.funnelContainer .sapUiHtmlControl {
+    width: 100%;
+}
+
+/* ============================================================================
+   METRICS TABLE SECTION
+   ============================================================================ */
+.metricsTableSection {
+    background: var(--dash-card-bg);
+    border-radius: var(--dash-radius-lg);
+    box-shadow: var(--dash-shadow-sm);
+    border: 1px solid var(--dash-border-light);
+    padding: var(--dash-space-lg);
+}
+
+.tableHeader {
+    margin-bottom: var(--dash-space-lg);
+}
+
+.tableTitle {
+    font-size: 0.9375rem !important;
+    font-weight: 600 !important;
+    color: var(--dash-text-primary) !important;
+}
+
+.tableActions {
+    gap: var(--dash-space-xs);
+}
+
+.tableActions .sapMBtn {
+    opacity: 0.6;
+}
+
+.tableActions .sapMBtn:hover {
+    opacity: 1;
+}
+
+/* Metrics Grid */
+.metricsGrid {
+    margin: 0 -0.5rem;
+}
+
+.metricGroupCard {
+    background: var(--dash-bg);
+    border-radius: var(--dash-radius-md);
+    padding: var(--dash-space-md);
+    border: 1px solid var(--dash-border-light);
+}
+
+.metricGroupLabel {
+    font-size: 0.625rem !important;
+    font-weight: 700 !important;
+    color: var(--dash-text-tertiary) !important;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: var(--dash-space-sm) !important;
+}
+
+.metricGroupContent {
+    gap: var(--dash-space-sm);
+}
+
+.metricRow {
+    padding: var(--dash-space-xs) 0;
+    border-bottom: 1px solid var(--dash-border-light);
+}
+
+.metricRow:last-child {
+    border-bottom: none;
+}
+
+.metricRowLabel {
+    font-size: 0.8125rem !important;
+    color: var(--dash-text-secondary) !important;
+}
+
+.metricRowValue {
+    font-size: 0.875rem !important;
+    font-weight: 600 !important;
+    color: var(--dash-text-primary) !important;
+}
+
+.metricValuePositive {
+    color: var(--dash-green) !important;
+}
+
+.metricValueNegative {
+    color: var(--dash-red) !important;
+}
+
+/* ============================================================================
+   SVG CHART STYLING
+   ============================================================================ */
+.campaignTrendChart {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.campaignFunnelChart {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.campaignFunnelChart .funnelStage {
+    transition: transform 0.2s ease;
+}
+
+.campaignFunnelChart .funnelStage:hover {
+    transform: translateY(-2px);
+}
+
+.campaignFunnelChart .funnelStage:hover path:not([fill="rgba(0,0,0,0.1)"]) {
+    filter: brightness(1.15) drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+
+/* ============================================================================
+   RESPONSIVE ADJUSTMENTS - Progressive Enhancement
+   ============================================================================ */
+
+/* Large screens (>1200px) - default layout is side-by-side charts, 6 KPIs in row */
+
+/* Medium screens - 1200px and below */
+@media (max-width: 1200px) {
+    .chartsSection {
+        flex-direction: column !important;
+    }
+
+    .chartsSection > .sapMFlexItem,
+    .chartCardMain,
+    .chartCardFunnel {
+        flex: none !important;
+        width: 100% !important;
+    }
+
+    .chartCardFunnel {
+        min-height: 320px;
+    }
+
+    .kpiCardsRow > .sapMFlexItem {
+        flex: 1 1 calc(33.333% - var(--dash-space-md)) !important;
+        max-width: calc(33.333% - var(--dash-space-md));
+        min-width: 160px;
+    }
+}
+
+/* Tablet - 768px and below */
+@media (max-width: 768px) {
+    .campaignDashboard {
+        padding: var(--dash-space-md);
+    }
+
+    .kpiCardsRow {
+        gap: var(--dash-space-sm);
+    }
+
+    .kpiCardsRow > .sapMFlexItem {
+        flex: 1 1 calc(50% - var(--dash-space-sm)) !important;
+        max-width: calc(50% - var(--dash-space-sm));
+        min-width: 140px;
+    }
+
+    .kpiCardValue {
+        font-size: 1.5rem !important;
+    }
+
+    .chartTabs {
+        flex-wrap: wrap;
+    }
+
+    /* Metrics grid: 2 columns */
+    .metricsGrid .metricGroupCard {
+        flex: 1 1 calc(50% - var(--dash-space-sm));
+    }
+
+    .metricsGrid .sapUiRespGridSpanL3 {
+        grid-column: span 6 !important;
+    }
+
+    /* Simplify chart legend on tablet */
+    .chartLegend {
+        gap: var(--dash-space-sm);
+    }
+
+    .legendText {
+        font-size: 0.6875rem !important;
+    }
+}
+
+/* Phone - 480px and below */
+@media (max-width: 480px) {
+    .campaignDashboard {
+        padding: var(--dash-space-sm);
+    }
+
+    .kpiCardsRow > .sapMFlexItem {
+        flex: 1 1 100% !important;
+        max-width: 100%;
+    }
+
+    .kpiCardValue {
+        font-size: 1.25rem !important;
+    }
+
+    /* Metrics grid: 1 column */
+    .metricsGrid .metricGroupCard {
+        flex: 1 1 100%;
+    }
+
+    .metricsGrid .sapUiRespGridSpanL3 {
+        grid-column: span 12 !important;
+    }
+
+    /* Hide chart legend on mobile - save space */
+    .chartLegend {
+        display: none;
+    }
+
+    /* Reduce chart heights on mobile */
+    .chartCardMain,
+    .chartCardFunnel {
+        min-height: 280px;
+    }
+
+    /* Simplify headers */
+    .chartCardTitle {
+        font-size: 0.875rem !important;
+    }
+
+    .tableTitle {
+        font-size: 0.875rem !important;
+    }
+}
+
+/* Container Query Support (Progressive Enhancement) */
+@supports (container-type: inline-size) {
+    .campaignDashboard {
+        container-type: inline-size;
+        container-name: dashboard;
+    }
+
+    @container dashboard (max-width: 800px) {
+        .chartsSection {
+            flex-direction: column !important;
+        }
+    }
+
+    @container dashboard (max-width: 600px) {
+        .kpiCardsRow > .sapMFlexItem {
+            flex: 1 1 calc(50% - var(--dash-space-sm)) !important;
+        }
+    }
+
+    @container dashboard (max-width: 400px) {
+        .kpiCardsRow > .sapMFlexItem {
+            flex: 1 1 100% !important;
+        }
+    }
+}
+
+/* ============================================================================
+   ANIMATION & TRANSITIONS
+   ============================================================================ */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.kpiCard {
+    animation: fadeInUp 0.3s ease forwards;
+}
+
+.kpiCard:nth-child(1) { animation-delay: 0.05s; }
+.kpiCard:nth-child(2) { animation-delay: 0.1s; }
+.kpiCard:nth-child(3) { animation-delay: 0.15s; }
+.kpiCard:nth-child(4) { animation-delay: 0.2s; }
+.kpiCard:nth-child(5) { animation-delay: 0.25s; }
+.kpiCard:nth-child(6) { animation-delay: 0.3s; }
+
+.chartCard {
+    animation: fadeInUp 0.4s ease forwards;
+    animation-delay: 0.35s;
+}
+
+.metricsTableSection {
+    animation: fadeInUp 0.4s ease forwards;
+    animation-delay: 0.45s;
+}
+
+.metricGroupCard {
+    animation: fadeInUp 0.3s ease forwards;
+}
+
+.metricGroupCard:nth-child(1) { animation-delay: 0.5s; }
+.metricGroupCard:nth-child(2) { animation-delay: 0.55s; }
+.metricGroupCard:nth-child(3) { animation-delay: 0.6s; }
+.metricGroupCard:nth-child(4) { animation-delay: 0.65s; }
+
+/* Reduced Motion Support - ensure elements are visible without animation */
+@media (prefers-reduced-motion: reduce) {
+    .kpiCard,
+    .chartCard,
+    .metricsTableSection,
+    .metricGroupCard {
+        animation: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+    }
+}
+
+/* ============================================================================
+   CAMPAIGN DATA TABLE SECTION
+   ============================================================================ */
+.campaignTableSection {
+    background: var(--dash-card-bg);
+    border-radius: var(--dash-radius-lg);
+    box-shadow: var(--dash-shadow-sm);
+    border: 1px solid var(--dash-border-light);
+    padding: var(--dash-space-lg);
+    margin-top: var(--dash-space-lg);
+}
+
+.campaignTableSection .tableHeader {
+    margin-bottom: var(--dash-space-md);
+    padding-bottom: var(--dash-space-sm);
+    border-bottom: 1px solid var(--dash-border-light);
+}
+
+.campaignDataTable {
+    margin-top: var(--dash-space-md);
+}
+
+.campaignDataTable .sapMListTblHeader {
+    background: var(--dash-bg);
+    border-bottom: 2px solid var(--dash-border);
+}
+
+.campaignDataTable .sapMListTblHeaderCell {
+    font-size: 0.75rem !important;
+    font-weight: 600 !important;
+    color: var(--dash-text-secondary) !important;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: var(--dash-space-sm) var(--dash-space-md) !important;
+}
+
+.campaignDataTable .sapMListTblCell {
+    padding: var(--dash-space-md) !important;
+    border-bottom: 1px solid var(--dash-border-light);
+}
+
+.campaignDataTable .sapMListTblRow {
+    transition: background-color 0.2s ease;
+}
+
+.campaignDataTable .sapMListTblRow:hover {
+    background-color: var(--dash-bg) !important;
+}
+
+.campaignTableName {
+    font-size: 0.875rem !important;
+    font-weight: 500 !important;
+    color: var(--dash-text-primary) !important;
+    margin-left: var(--dash-space-sm) !important;
+}
+
+.campaignTableNumber {
+    font-size: 0.875rem !important;
+    font-weight: 500 !important;
+    color: var(--dash-text-primary) !important;
+    font-variant-numeric: tabular-nums;
+}
+
+.campaignTableAmount {
+    font-weight: 600 !important;
+    color: var(--dash-text-primary) !important;
+}
+
+.campaignDataTable .sapMObjStatus {
+    font-size: 0.8125rem !important;
+    font-weight: 500 !important;
+}
+
+/* Improve spacing and typography throughout */
+.kpiCardValue {
+    font-size: 2rem !important;
+    font-weight: 300 !important;
+    line-height: 1.2 !important;
+    letter-spacing: -0.5px;
+}
+
+.kpiCardLabel {
+    font-size: 0.75rem !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.8px;
+}
+
+.chartCardTitle {
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    letter-spacing: -0.2px;
+}
+
+.tableTitle {
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    letter-spacing: -0.2px;
+}
+
+/* Enhanced card shadows */
+.kpiCard {
+    box-shadow: var(--dash-shadow-md);
+}
+
+.chartCard,
+.metricsTableSection,
+.campaignTableSection {
+    box-shadow: var(--dash-shadow-sm);
+    transition: box-shadow 0.2s ease;
+}
+
+.chartCard:hover,
+.metricsTableSection:hover,
+.campaignTableSection:hover {
+    box-shadow: var(--dash-shadow-md);
+}
+
+/* Better spacing between sections */
+.metricsTableSection {
+    margin-top: var(--dash-space-lg);
+}
+
+/* ============================================================================
+   PRINT STYLES
+   ============================================================================ */
+@media print {
+    .campaignDashboard {
+        background: white;
+        padding: 0;
+    }
+    
+    .kpiCard {
+        box-shadow: none;
+        border: 1px solid #ccc;
+    }
+    
+    .chartCard,
+    .metricsTableSection {
+        box-shadow: none;
+        border: 1px solid #ccc;
+        page-break-inside: avoid;
+    }
+    
+    .chartTabs,
+    .tableActions,
+    .chartMenuBtn {
+        display: none !important;
+    }
+}

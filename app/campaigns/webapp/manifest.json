@@ -98,6 +98,9 @@
       "css": [
         {
           "uri": "css/custom.css"
+        },
+        {
+          "uri": "css/campaign-dashboard.css"
         }
       ]
     },
@@ -165,15 +168,19 @@
               "editableHeaderContent": true,
               "contextPath": "/MarketingCampaigns",
               "content": {
+                "header": {
+                  "visible": true,
+                  "anchorBarVisible": true
+                },
                 "body": {
                   "sections": {
-                    "PerformanceSection": {
-                      "template": "beautyleads.campaigns.ext.fragments.PerformanceMetrics",
+                    "CampaignDashboard": {
+                      "template": "beautyleads.campaigns.ext.fragments.CampaignDashboard",
                       "position": {
-                        "placement": "After",
-                        "anchor": "CampaignBrief"
+                        "placement": "Before",
+                        "anchor": "CampaignDetails"
                       },
-                      "title": "Performance Metrics"
+                      "title": "Campaign Analytics"
                     }
                   }
                 }

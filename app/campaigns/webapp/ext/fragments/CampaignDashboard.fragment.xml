@@ -1,0 +1,262 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:l="sap.ui.layout"
+    xmlns:html="http://www.w3.org/1999/xhtml">
+    
+    <!-- Main Dashboard Container -->
+    <VBox class="campaignDashboard" width="100%">
+        
+        <!-- ================================================== -->
+        <!-- SECTION 1: KPI METRICS CARDS ROW -->
+        <!-- ================================================== -->
+        <VBox class="kpiSection">
+            <HBox class="kpiCardsRow" justifyContent="Start" wrap="Wrap">
+
+                <!-- Impressions KPI -->
+                <VBox class="kpiCard kpiCardBlue" id="kpiImpressions">
+                    <Label text="IMPRESSIONS" class="kpiCardLabel"/>
+                    <Text text="--" class="kpiCardValue" id="valImpressions"/>
+                    <Text text="Loading..." class="kpiCardSubtitle" id="subImpressions"/>
+                </VBox>
+
+                <!-- Clicks KPI -->
+                <VBox class="kpiCard kpiCardTeal" id="kpiClicks">
+                    <Label text="CLICKS" class="kpiCardLabel"/>
+                    <HBox alignItems="End">
+                        <Text text="--" class="kpiCardValue" id="valClicks"/>
+                        <Text text="" class="kpiCardSecondary" id="secClicks"/>
+                    </HBox>
+                    <Text text="Loading..." class="kpiCardSubtitle" id="subClicks"/>
+                </VBox>
+
+                <!-- Conversions KPI -->
+                <VBox class="kpiCard kpiCardGreen" id="kpiConversions">
+                    <Label text="CONVERSIONS" class="kpiCardLabel"/>
+                    <HBox alignItems="End">
+                        <Text text="--" class="kpiCardValue" id="valConversions"/>
+                        <Text text="" class="kpiCardSecondary" id="secConversions"/>
+                    </HBox>
+                    <Text text="Loading..." class="kpiCardSubtitle" id="subConversions"/>
+                </VBox>
+
+                <!-- Engagement KPI -->
+                <VBox class="kpiCard kpiCardPurple" id="kpiEngagement">
+                    <Label text="ENGAGEMENT" class="kpiCardLabel"/>
+                    <Text text="--" class="kpiCardValue" id="valEngagement"/>
+                    <Text text="Loading..." class="kpiCardSubtitle" id="subEngagement"/>
+                </VBox>
+
+                <!-- Amount Spent KPI - Highlighted -->
+                <VBox class="kpiCard kpiCardOrange kpiCardHighlight" id="kpiSpent">
+                    <Label text="AMOUNT SPENT" class="kpiCardLabel"/>
+                    <Text text="--" class="kpiCardValue" id="valSpent"/>
+                    <Text text="Loading..." class="kpiCardSubtitle" id="subSpent"/>
+                </VBox>
+
+                <!-- ROI KPI -->
+                <VBox class="kpiCard kpiCardDark" id="kpiROI">
+                    <Label text="ROI" class="kpiCardLabel"/>
+                    <Text text="--" class="kpiCardValue kpiCardValuePositive" id="valROI"/>
+                    <Text text="Return on Investment" class="kpiCardSubtitle"/>
+                </VBox>
+
+            </HBox>
+        </VBox>
+        
+        <!-- ================================================== -->
+        <!-- SECTION 2: CHARTS AND FUNNEL ROW -->
+        <!-- ================================================== -->
+        <HBox class="chartsSection" width="100%">
+
+            <!-- Left: Performance Trend Chart -->
+            <VBox class="chartCard chartCardMain">
+                <HBox class="chartCardHeader" justifyContent="SpaceBetween" alignItems="Center">
+                    <Title text="Campaign Performance Trend" level="H5" class="chartCardTitle"/>
+                    <HBox class="chartLegend">
+                        <HBox class="legendItem" alignItems="Center">
+                            <core:Icon src="sap-icon://bar-chart" class="legendDot legendDotGray" size="0.5rem"/>
+                            <Text text="MQL" class="legendText"/>
+                        </HBox>
+                        <HBox class="legendItem" alignItems="Center">
+                            <core:Icon src="sap-icon://circle-task-2" class="legendDot legendDotGreen" size="0.5rem"/>
+                            <Text text="Google Search Campaign" class="legendText"/>
+                        </HBox>
+                        <HBox class="legendItem" alignItems="Center">
+                            <core:Icon src="sap-icon://circle-task-2" class="legendDot legendDotOrange" size="0.5rem"/>
+                            <Text text="LinkedIn Campaign" class="legendText"/>
+                        </HBox>
+                        <HBox class="legendItem" alignItems="Center">
+                            <core:Icon src="sap-icon://circle-task-2" class="legendDot legendDotBlue" size="0.5rem"/>
+                            <Text text="Facebook Campaign" class="legendText"/>
+                        </HBox>
+                    </HBox>
+                </HBox>
+
+                <!-- Chart Area -->
+                <VBox class="chartArea" id="trendChartContainer">
+                    <core:HTML id="trendChartHtml" content="&lt;div class='chartPlaceholder'&gt;Loading chart...&lt;/div&gt;"/>
+                </VBox>
+            </VBox>
+
+            <!-- Right: Campaign Funnel -->
+            <VBox class="chartCard chartCardFunnel">
+                <HBox class="chartCardHeader" justifyContent="SpaceBetween" alignItems="Center">
+                    <Title text="Campaign Funnel" level="H5" class="chartCardTitle"/>
+                    <Button icon="sap-icon://overflow" type="Transparent" class="chartMenuBtn"/>
+                </HBox>
+
+                <!-- Funnel Visualization -->
+                <VBox class="funnelContainer" id="funnelChartContainer">
+                    <core:HTML id="funnelChartHtml" content="&lt;div class='chartPlaceholder'&gt;Loading funnel...&lt;/div&gt;"/>
+                </VBox>
+            </VBox>
+
+        </HBox>
+        
+        <!-- ================================================== -->
+        <!-- SECTION 3: DETAILED METRICS TABLE -->
+        <!-- ================================================== -->
+        <VBox class="metricsTableSection">
+            <HBox class="tableHeader" justifyContent="SpaceBetween" alignItems="Center">
+                <Title text="Performance Breakdown" level="H5" class="tableTitle"/>
+                <HBox class="tableActions">
+                    <Button icon="sap-icon://excel-attachment" type="Transparent" tooltip="Export to Excel"/>
+                    <Button icon="sap-icon://refresh" type="Transparent" tooltip="Refresh Data"/>
+                </HBox>
+            </HBox>
+
+            <!-- Metrics Summary Grid -->
+            <l:Grid class="metricsGrid" defaultSpan="L3 M6 S12" hSpacing="1" vSpacing="1">
+
+                <!-- Traffic Metrics -->
+                <VBox class="metricGroupCard">
+                    <Label text="TRAFFIC METRICS" class="metricGroupLabel"/>
+                    <VBox class="metricGroupContent">
+                        <HBox class="metricRow" justifyContent="SpaceBetween">
+                            <Text text="Total Reach" class="metricRowLabel"/>
+                            <Text text="--" class="metricRowValue" id="metricReach"/>
+                        </HBox>
+                        <HBox class="metricRow" justifyContent="SpaceBetween">
+                            <Text text="Impressions" class="metricRowLabel"/>
+                            <Text text="--" class="metricRowValue" id="metricImpressions"/>
+                        </HBox>
+                        <HBox class="metricRow" justifyContent="SpaceBetween">
+                            <Text text="Unique Visitors" class="metricRowLabel"/>
+                            <Text text="--" class="metricRowValue" id="metricVisitors"/>
+                        </HBox>
+                    </VBox>
+                </VBox>
+
+                <!-- Engagement Metrics -->
+                <VBox class="metricGroupCard">
+                    <Label text="ENGAGEMENT METRICS" class="metricGroupLabel"/>
+                    <VBox class="metricGroupContent">
+                        <HBox class="metricRow" justifyContent="SpaceBetween">
+                            <Text text="Total Clicks" class="metricRowLabel"/>
+                            <Text text="--" class="metricRowValue" id="metricClicks"/>
+                        </HBox>
+                        <HBox class="metricRow" justifyContent="SpaceBetween">
+                            <Text text="CTR" class="metricRowLabel"/>
+                            <Text text="--" class="metricRowValue" id="metricCTR"/>
+                        </HBox>
+                        <HBox class="metricRow" justifyContent="SpaceBetween">
+                            <Text text="Engagement Rate" class="metricRowLabel"/>
+                            <Text text="--" class="metricRowValue" id="metricEngRate"/>
+                        </HBox>
+                    </VBox>
+                </VBox>
+
+                <!-- Conversion Metrics -->
+                <VBox class="metricGroupCard">
+                    <Label text="CONVERSION METRICS" class="metricGroupLabel"/>
+                    <VBox class="metricGroupContent">
+                        <HBox class="metricRow" justifyContent="SpaceBetween">
+                            <Text text="Total Conversions" class="metricRowLabel"/>
+                            <Text text="--" class="metricRowValue" id="metricConversions"/>
+                        </HBox>
+                        <HBox class="metricRow" justifyContent="SpaceBetween">
+                            <Text text="Conversion Rate" class="metricRowLabel"/>
+                            <Text text="--" class="metricRowValue" id="metricConvRate"/>
+                        </HBox>
+                        <HBox class="metricRow" justifyContent="SpaceBetween">
+                            <Text text="Cost per Conversion" class="metricRowLabel"/>
+                            <Text text="--" class="metricRowValue" id="metricCPC"/>
+                        </HBox>
+                    </VBox>
+                </VBox>
+
+                <!-- Financial Metrics -->
+                <VBox class="metricGroupCard">
+                    <Label text="FINANCIAL METRICS" class="metricGroupLabel"/>
+                    <VBox class="metricGroupContent">
+                        <HBox class="metricRow" justifyContent="SpaceBetween">
+                            <Text text="Total Revenue" class="metricRowLabel"/>
+                            <Text text="--" class="metricRowValue metricValuePositive" id="metricRevenue"/>
+                        </HBox>
+                        <HBox class="metricRow" justifyContent="SpaceBetween">
+                            <Text text="Total Spend" class="metricRowLabel"/>
+                            <Text text="--" class="metricRowValue" id="metricSpend"/>
+                        </HBox>
+                        <HBox class="metricRow" justifyContent="SpaceBetween">
+                            <Text text="ROAS" class="metricRowLabel"/>
+                            <Text text="--" class="metricRowValue metricValuePositive" id="metricROAS"/>
+                        </HBox>
+                    </VBox>
+                </VBox>
+
+            </l:Grid>
+        </VBox>
+        
+        <!-- ================================================== -->
+        <!-- SECTION 4: DETAILED CAMPAIGN DATA TABLE -->
+        <!-- ================================================== -->
+        <VBox class="campaignTableSection">
+            <HBox class="tableHeader" justifyContent="SpaceBetween" alignItems="Center">
+                <Title text="Ad Campaigns" level="H5" class="tableTitle"/>
+                <HBox class="tableActions">
+                    <Button icon="sap-icon://excel-attachment" type="Transparent" tooltip="Export to Excel" press="onExportTable"/>
+                    <Button icon="sap-icon://refresh" type="Transparent" tooltip="Refresh Data" press="onRefreshTable"/>
+                </HBox>
+            </HBox>
+
+            <!-- Campaign Data Table -->
+            <Table id="campaignDataTable" 
+                   class="campaignDataTable"
+                   mode="None"
+                   fixedLayout="false"
+                   growing="false"
+                   backgroundDesign="Transparent"
+                   noDataText="No campaign data available">
+                <columns>
+                    <Column width="25%">
+                        <Text text="Name"/>
+                    </Column>
+                    <Column width="10%" hAlign="Center">
+                        <Text text="Status"/>
+                    </Column>
+                    <Column width="12%" hAlign="End">
+                        <Text text="Impressions"/>
+                    </Column>
+                    <Column width="12%" hAlign="End">
+                        <Text text="Clicks"/>
+                    </Column>
+                    <Column width="12%" hAlign="End">
+                        <Text text="Contacts"/>
+                    </Column>
+                    <Column width="14%" hAlign="End">
+                        <Text text="Cost per Contact"/>
+                    </Column>
+                    <Column width="15%" hAlign="End">
+                        <Text text="Amount"/>
+                    </Column>
+                </columns>
+                <items>
+                    <!-- Items will be populated by controller -->
+                </items>
+            </Table>
+        </VBox>
+        
+    </VBox>
+    
+</core:FragmentDefinition>

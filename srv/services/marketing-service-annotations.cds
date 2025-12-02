@@ -94,10 +94,37 @@ annotate MarketingService.MarketingCampaigns with @(
         HeaderFacets: [
             {
                 $Type: 'UI.ReferenceFacet',
-                Target: '@UI.FieldGroup#CampaignStatus',
-                Label: 'Status & Budget'
+                Target: '@UI.DataPoint#Status',
+                Label: 'Status'
+            },
+            {
+                $Type: 'UI.ReferenceFacet',
+                Target: '@UI.DataPoint#Budget',
+                Label: 'Budget'
+            },
+            {
+                $Type: 'UI.ReferenceFacet',
+                Target: '@UI.DataPoint#CampaignType',
+                Label: 'Type'
             }
         ],
+
+        // Data Points for Header KPIs
+        DataPoint#Status: {
+            Value: status,
+            Title: 'Status'
+        },
+
+        DataPoint#Budget: {
+            Value: budget,
+            Title: 'Budget',
+            TargetValue: 100000
+        },
+
+        DataPoint#CampaignType: {
+            Value: campaignType,
+            Title: 'Campaign Type'
+        },
 
         // Object Page Facets (Sections)
         Facets: [
@@ -127,6 +154,11 @@ annotate MarketingService.MarketingCampaigns with @(
                 $Type: 'UI.ReferenceFacet',
                 Target: '@UI.FieldGroup#Timeline',
                 Label: 'Timeline'
+            },
+            {
+                $Type: 'UI.ReferenceFacet',
+                Target: 'creators/@UI.LineItem',
+                Label: 'Campaign Creators'
             }
         ],
 
@@ -303,7 +335,8 @@ annotate MarketingService.MarketingCampaigns with {
     status            @title: 'Status'
                       @Common: {
                           ValueListWithFixedValues: true
-                      };
+                      }
+;
 
     triggerKeyword    @title: 'Trigger Keyword';
     ESGTag            @title: 'ESG Tag';
