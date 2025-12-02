@@ -1122,12 +1122,11 @@
                         emphasizedAction: "View Opportunity",
                         onClose: function(sAction) {
                             if (sAction === "View Opportunity" && data.opportunityID) {
-                                // Navigate to opportunity within launchpad (draft-enabled entity requires ID= and IsActiveEntity)
-                                window.location.hash = 'opportunities-manage&/Opportunities(ID=' + data.opportunityID + ',IsActiveEntity=true)';
-                                // Force reload to ensure navigation happens
-                                setTimeout(function() {
-                                    window.location.reload();
-                                }, 100);
+                                // Navigate to opportunity within launchpad using full URL
+                                var sBaseUrl = window.location.origin + window.location.pathname;
+                                var sNewUrl = sBaseUrl + '#opportunities-manage&/Opportunities(ID=' + data.opportunityID + ',IsActiveEntity=true)';
+                                console.log('[Launchpad] Navigating to opportunity:', sNewUrl);
+                                window.location.href = sNewUrl;
                             } else {
                                 // Refresh current page
                                 window.location.reload();
@@ -1160,58 +1159,170 @@
             }
         });
         
-        function updateScoringLabel(isLead) {
-            var header = document.querySelector('#creatioAIPanel .ai-section:nth-child(2) h4');
-            if (!header) return;
-            header.textContent = isLead ? 'Lead Scoring' : 'Prospect Scoring';
+        // Entity-specific AI Panel content configurations
+        var AI_PANEL_CONFIG = {
+            leads: {
+                sectionTitle: 'Lead Scoring',
+                card1: { label: 'AI Score', value: '92%', desc: 'High engagement potential based on social activity and brand fit' },
+                card2: { label: 'Trend Score', value: '95', desc: 'K-Beauty products are trending strongly on TikTok' },
+                ratingLabel: 'Overall Engagement Rating',
+                ratingBadge: 'HOT LEAD',
+                ratingClass: '',
+                quickActions: ['Call', 'Email', 'WhatsApp', 'Schedule'],
+                showProducts: true,
+                showCompetitors: false,
+                showRisks: false,
+                historySectionTitle: 'Engagement History',
+                historyItems: ['TikTok DM - Product inquiry', 'Follow-up call scheduled', 'Product catalog sent']
+            },
+            prospects: {
+                sectionTitle: 'Prospect Scoring',
+                card1: { label: 'Engagement Score', value: '92%', desc: 'Based on interactions, meetings, and response rate' },
+                card2: { label: 'Estimated Value', value: 'RM 50K', desc: 'Projected annual business value' },
+                ratingLabel: 'Prospect Rating',
+                ratingBadge: 'HOT PROSPECT',
+                ratingClass: 'hot-prospect',
+                quickActions: ['Call', 'Email', 'WhatsApp', 'Schedule'],
+                showProducts: true,
+                showCompetitors: false,
+                showRisks: false,
+                historySectionTitle: 'Engagement History',
+                historyItems: ['Discovery call completed', 'Product demo scheduled', 'Pricing sent']
+            },
+            opportunities: {
+                sectionTitle: 'Win Probability',
+                card1: { label: 'AI Win Score', value: '78%', desc: 'Strong engagement and stakeholder alignment' },
+                card2: { label: 'Deal Momentum', value: '85', desc: 'Consistent progress through sales stages' },
+                ratingLabel: 'Deal Outlook',
+                ratingBadge: 'LIKELY TO WIN',
+                ratingClass: 'hot-prospect',
+                quickActions: ['Call', 'Email', 'Meeting', 'Proposal'],
+                showProducts: false,
+                showCompetitors: true,
+                showRisks: false,
+                historySectionTitle: 'Deal History',
+                historyItems: ['Proposal V2 sent', 'Demo completed', 'Initial meeting']
+            },
+            accounts: {
+                sectionTitle: 'Account Health',
+                card1: { label: 'Health Score', value: '88%', desc: 'Strong relationship with consistent engagement' },
+                card2: { label: 'Lifetime Value', value: 'RM 120K', desc: 'Total revenue from this account' },
+                ratingLabel: 'Account Status',
+                ratingBadge: 'HEALTHY',
+                ratingClass: 'hot-prospect',
+                quickActions: ['Call', 'Email', 'Meeting', 'Support'],
+                showProducts: false,
+                showCompetitors: false,
+                showRisks: true,
+                historySectionTitle: 'Recent Interactions',
+                historyItems: ['Order #ORD-2025-0891 placed', 'Quarterly review call', 'Product training session']
+            }
+        };
+        
+        var currentEntityType = null;
+        
+        function updateAIPanelContent(entityType) {
+            if (currentEntityType === entityType) return; // No change needed
+            currentEntityType = entityType;
             
-            // Update both score card labels and descriptions
+            var config = AI_PANEL_CONFIG[entityType];
+            if (!config) return;
+            
+            // Update scoring section header
+            var header = document.querySelector('#creatioAIPanel .ai-section:nth-child(2) h4');
+            if (header) header.textContent = config.sectionTitle;
+            
+            // Update score cards
             var scoreCards = document.querySelectorAll('#creatioAIPanel .ai-section:nth-child(2) .score-card');
             if (scoreCards.length >= 2) {
-                // First score card: AI Score / Engagement Score
                 var label1 = scoreCards[0].querySelector('.score-label');
                 var desc1 = scoreCards[0].querySelector('.score-desc');
-                if (label1) label1.textContent = isLead ? 'AI Score' : 'Engagement Score';
-                if (desc1) desc1.textContent = isLead 
-                    ? 'High engagement potential based on social activity and brand fit'
-                    : 'Based on interactions, meetings, and response rate';
+                var ring1 = scoreCards[0].querySelector('.score-ring-text');
+                if (label1) label1.textContent = config.card1.label;
+                if (desc1) desc1.textContent = config.card1.desc;
+                if (ring1) ring1.textContent = config.card1.value;
                 
-                // Second score card: Trend Score / Estimated Value
                 var label2 = scoreCards[1].querySelector('.score-label');
                 var desc2 = scoreCards[1].querySelector('.score-desc');
-                var ringText2 = scoreCards[1].querySelector('.score-ring-text');
-                if (label2) label2.textContent = isLead ? 'Trend Score' : 'Estimated Value';
-                if (desc2) desc2.textContent = isLead 
-                    ? 'K-Beauty products are trending strongly on TikTok'
-                    : 'Projected annual business value';
-                if (ringText2) ringText2.textContent = isLead ? '95' : 'RM 50K';
+                var ring2 = scoreCards[1].querySelector('.score-ring-text');
+                if (label2) label2.textContent = config.card2.label;
+                if (desc2) desc2.textContent = config.card2.desc;
+                if (ring2) ring2.textContent = config.card2.value;
             }
             
-            // Update the rating badge
+            // Update rating badge
             var ratingLabel = document.querySelector('#creatioAIPanel .rating-label');
             var ratingBadge = document.querySelector('#creatioAIPanel .rating-badge');
-            if (ratingLabel) {
-                ratingLabel.textContent = isLead ? 'Overall Engagement Rating' : 'Prospect Rating';
-            }
+            if (ratingLabel) ratingLabel.textContent = config.ratingLabel;
             if (ratingBadge) {
-                if (isLead) {
-                    ratingBadge.textContent = 'HOT LEAD';
-                    ratingBadge.className = 'rating-badge';
-                } else {
-                    // Determine prospect rating based on score (mock: use 85 as example)
-                    var prospectScore = 85; // Would come from actual data
-                    if (prospectScore >= 80) {
-                        ratingBadge.textContent = 'HOT PROSPECT';
-                        ratingBadge.className = 'rating-badge hot-prospect';
-                    } else if (prospectScore >= 50) {
-                        ratingBadge.textContent = 'WARM PROSPECT';
-                        ratingBadge.className = 'rating-badge warm-prospect';
-                    } else {
-                        ratingBadge.textContent = 'COLD PROSPECT';
-                        ratingBadge.className = 'rating-badge cold-prospect';
-                    }
+                ratingBadge.textContent = config.ratingBadge;
+                ratingBadge.className = 'rating-badge ' + config.ratingClass;
+            }
+            
+            // Update Quick Action buttons
+            var quickActionBtns = document.querySelectorAll('#creatioAIPanel .quick-contact-buttons .contact-btn .btn-text');
+            if (quickActionBtns.length >= 4) {
+                for (var i = 0; i < 4 && i < config.quickActions.length; i++) {
+                    quickActionBtns[i].textContent = config.quickActions[i];
                 }
             }
+            
+            // Toggle Products vs Competitors section
+            var productsSection = document.querySelector('#creatioAIPanel .ai-section:nth-child(4)');
+            if (productsSection) {
+                var productHeader = productsSection.querySelector('h4');
+                if (config.showProducts) {
+                    if (productHeader) productHeader.textContent = 'Recommended Products';
+                    productsSection.style.display = 'block';
+                } else if (config.showCompetitors) {
+                    if (productHeader) productHeader.textContent = 'Competitors';
+                    // Update product cards to show competitor info
+                    var productCards = productsSection.querySelectorAll('.product-card');
+                    var competitors = ['Local Distributor A', 'Direct Brand Channel', 'Online Marketplace'];
+                    var threats = ['Better pricing', 'Brand authority', 'Convenience'];
+                    productCards.forEach(function(card, index) {
+                        if (index < competitors.length) {
+                            var nameEl = card.querySelector('.product-name');
+                            var metaEl = card.querySelector('.product-meta');
+                            var trendEl = card.querySelector('.product-trend');
+                            if (nameEl) nameEl.textContent = competitors[index];
+                            if (metaEl) metaEl.textContent = 'Strength: ' + threats[index];
+                            if (trendEl) trendEl.textContent = '⚠️';
+                        }
+                    });
+                    productsSection.style.display = 'block';
+                } else if (config.showRisks) {
+                    if (productHeader) productHeader.textContent = 'Risk Indicators';
+                    var productCards = productsSection.querySelectorAll('.product-card');
+                    var risks = ['Payment delay pattern', 'Declining engagement', 'Support tickets up'];
+                    var riskDescs = ['3 late payments in 6 months', '20% fewer orders', '5 open tickets'];
+                    productCards.forEach(function(card, index) {
+                        if (index < risks.length) {
+                            var nameEl = card.querySelector('.product-name');
+                            var metaEl = card.querySelector('.product-meta');
+                            var trendEl = card.querySelector('.product-trend');
+                            if (nameEl) nameEl.textContent = risks[index];
+                            if (metaEl) metaEl.textContent = riskDescs[index];
+                            if (trendEl) trendEl.textContent = '⚠️';
+                        }
+                    });
+                    productsSection.style.display = 'block';
+                } else {
+                    productsSection.style.display = 'none';
+                }
+            }
+            
+            // Update history section title
+            var historySection = document.querySelector('#creatioAIPanel .ai-section:nth-child(5) h4');
+            if (historySection) historySection.textContent = config.historySectionTitle;
+            
+            // Update history items
+            var historyItems = document.querySelectorAll('#creatioAIPanel .ai-section:nth-child(5) .timeline-text');
+            historyItems.forEach(function(item, index) {
+                if (index < config.historyItems.length) {
+                    item.textContent = config.historyItems[index];
+                }
+            });
         }
         
         function updateCreatioUI(){
@@ -1233,19 +1344,23 @@
                 if(a) a.style.display="flex";
                 document.body.classList.add("creatio-active");
                 
+                // Update AI panel content based on entity type
+                var entityType = 'leads';
+                if (isProspectsObjectPage) entityType = 'prospects';
+                else if (isOpportunitiesObjectPage) entityType = 'opportunities';
+                else if (isAccountsObjectPage) entityType = 'accounts';
+                
+                updateAIPanelContent(entityType);
+                
                 // Update stage bar based on entity type
                 if (isLeadsObjectPage) {
                     updateStageBar(LEAD_STAGES, true);
-                    updateScoringLabel(true);
                 } else if (isProspectsObjectPage) {
                     updateStageBar(PROSPECT_STAGES, false);
-                    updateScoringLabel(false);
                 } else if (isOpportunitiesObjectPage) {
                     updateStageBar(OPPORTUNITY_STAGES, false);
-                    updateScoringLabel(false);
                 } else if (isAccountsObjectPage) {
                     updateStageBar(ACCOUNT_STAGES, false);
-                    updateScoringLabel(false);
                 }
                 
                 // Show convert button for Leads and Prospects (not for Opportunities/Accounts)

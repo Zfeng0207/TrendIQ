@@ -38,12 +38,14 @@ sap.ui.define([
     "sap/f/Card",
     "sap/ui/core/Icon",
     "sap/ui/core/BusyIndicator",
-    "sap/ui/core/HTML"
+    "sap/ui/core/HTML",
+    "beautyleads/shared/AIAssistantPanelFactory"
 ], function (
     ControllerExtension, Fragment, JSONModel, MessageBox, MessageToast,
     VBox, HBox, FlexBox, Text, Title, Label, Button, ObjectNumber, ObjectStatus, 
     Panel, TextArea, ScrollContainer, List, StandardListItem, CustomListItem,
-    ProgressIndicator, Link, CheckBox, Avatar, Card, Icon, BusyIndicator, HTML
+    ProgressIndicator, Link, CheckBox, Avatar, Card, Icon, BusyIndicator, HTML,
+    AIAssistantPanelFactory
 ) {
     "use strict";
 
@@ -943,570 +945,42 @@ sap.ui.define([
         },
 
         /**
-         * Render Enhanced AI Assistant Panel with 5 sections
+         * Render Enhanced AI Assistant Panel using unified factory
          * @private
          */
         _renderEnhancedAIPanel: function () {
             const that = this;
             
-            // Create AI panel container (fixed position sidebar)
-            const oAIPanel = new Panel({
-                expandable: false,
-                expanded: true,
-                headerText: ""
-            });
-            oAIPanel.addStyleClass("creatio-ai-panel creatio-ai-panel-enhanced");
-
-            // Custom header with gradient
-            const oHeader = this._createAIPanelHeader();
-
-            // Create scrollable content
-            const oScrollContainer = new ScrollContainer({
-                vertical: true,
-                horizontal: false,
-                height: "calc(100vh - 120px)"
-            });
-            oScrollContainer.addStyleClass("creatio-ai-scroll");
-
-            // Build all 5 sections
-            const oContent = new VBox();
-            oContent.addStyleClass("creatio-ai-content-enhanced");
+            // Get current prospect data for context
+            const oEntityData = this._oEntityData || {};
             
-            // 0. Quick Contact Actions Section (prominent at top)
-            const oQuickContactSection = this._createQuickContactSection();
-            oContent.addItem(oQuickContactSection);
-            
-            // 1. Score Breakdown Section
-            const oScoreSection = this._createScoreBreakdown();
-            oContent.addItem(oScoreSection);
-            
-            // 2. Next Best Actions Section
-            const oActionsSection = this._createNextBestActions();
-            oContent.addItem(oActionsSection);
-            
-            // 3. Recommended Products Section
-            const oProductsSection = this._createRecommendedProducts();
-            oContent.addItem(oProductsSection);
-            
-            // 4. Engagement History Section
-            const oEngagementSection = this._createEngagementHistory();
-            oContent.addItem(oEngagementSection);
-
-            oScrollContainer.addContent(oContent);
-
-            oAIPanel.setCustomHeader(oHeader);
-            oAIPanel.addContent(oScrollContainer);
-            
-            // Place panel in body
-            oAIPanel.placeAt(document.body);
-            this._oAIPanel = oAIPanel;
-            
-            console.log("[ProspectsCreatioExt] Enhanced AI Panel rendered");
-        },
-
-        /**
-         * Create AI Panel Header
-         * @private
-         */
-        _createAIPanelHeader: function () {
-            const that = this;
-            
-            return new HBox({
-                justifyContent: "SpaceBetween",
-                alignItems: "Center",
-                items: [
-                    new HBox({
-                        alignItems: "Center",
-                        items: [
-                            new Icon({ src: "sap-icon://da-2", size: "1.25rem" }).addStyleClass("creatio-ai-logo"),
-                            new Title({ text: "AI Assistant", level: "H5" }).addStyleClass("creatio-ai-title")
-                        ]
-                    }),
-                    new HBox({
-                        items: [
-                            new Button({
-                                icon: "sap-icon://refresh",
-                                type: "Transparent",
-                                tooltip: "Refresh Insights",
-                                press: function () {
-                                    that._refreshAIInsights();
-                                }
-                            }),
-                            new Button({
-                                icon: "sap-icon://slim-arrow-right",
-                                type: "Transparent",
-                                tooltip: "Toggle Panel",
-                                press: function () {
-                                    that._onToggleAIPanel();
-                                }
-                            })
-                        ]
-                    })
-                ]
-            }).addStyleClass("creatio-ai-header");
-        },
-
-        /**
-         * Create Quick Contact Section with action buttons
-         * @private
-         */
-        _createQuickContactSection: function () {
-            const that = this;
-            const oSection = new VBox();
-            oSection.addStyleClass("creatio-ai-section creatio-quick-contact-section");
-
-            // Section header
-            const oHeader = new HBox({
-                alignItems: "Center",
-                items: [
-                    new Icon({ src: "sap-icon://customer", size: "1rem" }).addStyleClass("creatio-section-icon"),
-                    new Title({ text: "Quick Actions", level: "H6" }).addStyleClass("creatio-section-title")
-                ]
-            });
-            oSection.addItem(oHeader);
-
-            // Quick action buttons row
-            const oButtonsRow = new HBox({
-                justifyContent: "SpaceAround",
-                alignItems: "Center"
-            });
-            oButtonsRow.addStyleClass("creatio-quick-contact-buttons sapUiSmallMarginTop");
-
-            // Call button
-            const oCallBtn = new Button({
-                icon: "sap-icon://call",
-                text: "Call",
-                type: "Default",
-                press: function () { that._onQuickCall(); }
-            });
-            oCallBtn.addStyleClass("creatio-contact-btn creatio-contact-call");
-
-            // Email button
-            const oEmailBtn = new Button({
-                icon: "sap-icon://email",
-                text: "Email",
-                type: "Default",
-                press: function () { that._onQuickEmail(); }
-            });
-            oEmailBtn.addStyleClass("creatio-contact-btn creatio-contact-email");
-
-            // WhatsApp button
-            const oWhatsAppBtn = new Button({
-                icon: "sap-icon://discussion-2",
-                text: "WhatsApp",
-                type: "Default",
-                press: function () { that._onQuickWhatsApp(); }
-            });
-            oWhatsAppBtn.addStyleClass("creatio-contact-btn creatio-contact-whatsapp");
-
-            // Schedule button
-            const oScheduleBtn = new Button({
-                icon: "sap-icon://appointment",
-                text: "Schedule",
-                type: "Default",
-                press: function () { that._onQuickSchedule(); }
-            });
-            oScheduleBtn.addStyleClass("creatio-contact-btn creatio-contact-schedule");
-
-            oButtonsRow.addItem(oCallBtn);
-            oButtonsRow.addItem(oEmailBtn);
-            oButtonsRow.addItem(oWhatsAppBtn);
-            oButtonsRow.addItem(oScheduleBtn);
-
-            oSection.addItem(oButtonsRow);
-            return oSection;
-        },
-
-        /**
-         * Create Score Breakdown Section
-         * @private
-         */
-        _createScoreBreakdown: function () {
-            const oSection = new VBox();
-            oSection.addStyleClass("creatio-ai-section");
-
-            // Section header
-            const oHeader = new HBox({
-                alignItems: "Center",
-                items: [
-                    new Icon({ src: "sap-icon://performance", size: "1rem" }).addStyleClass("creatio-section-icon"),
-                    new Title({ text: "Prospect Scoring", level: "H6" }).addStyleClass("creatio-section-title")
-                ]
-            });
-            oSection.addItem(oHeader);
-
-            // Score cards container
-            const oScoreCards = new VBox();
-            oScoreCards.addStyleClass("creatio-score-cards sapUiSmallMarginTop");
-
-            // Prospect Score with circular indicator
-            const oProspectScoreCard = this._createScoreCard(
-                "Prospect Score",
-                "88%",
-                88,
-                "Strong potential based on engagement and business fit",
-                "Success"
-            );
-            oScoreCards.addItem(oProspectScoreCard);
-
-            // Trend Score
-            const oTrendScoreCard = this._createScoreCard(
-                "Trend Score",
-                "92/100",
-                92,
-                "Business sector showing strong growth indicators",
-                "Success"
-            );
-            oScoreCards.addItem(oTrendScoreCard);
-
-            // Sentiment Score
-            const oSentimentCard = new HBox({
-                alignItems: "Center",
-                justifyContent: "SpaceBetween"
-            });
-            oSentimentCard.addStyleClass("creatio-sentiment-card sapUiTinyMarginTop");
-            
-            oSentimentCard.addItem(new VBox({
-                items: [
-                    new Text({ text: "Sentiment" }).addStyleClass("creatio-score-label"),
-                    new HBox({
-                        alignItems: "Center",
-                        items: [
-                            new Icon({ src: "sap-icon://sentiment-positive", size: "1.25rem" }).addStyleClass("creatio-sentiment-icon-positive"),
-                            new Text({ text: "Very Positive" }).addStyleClass("creatio-sentiment-value")
-                        ]
-                    })
-                ]
-            }));
-            oSentimentCard.addItem(new Text({ text: "82" }).addStyleClass("creatio-score-number"));
-            oScoreCards.addItem(oSentimentCard);
-
-            // Overall Rating
-            const oRatingBox = new HBox({
-                alignItems: "Center",
-                justifyContent: "Center"
-            });
-            oRatingBox.addStyleClass("creatio-overall-rating sapUiSmallMarginTop");
-            
-            oRatingBox.addItem(new VBox({
-                alignItems: "Center",
-                items: [
-                    new Text({ text: "Overall Prospect Rating" }).addStyleClass("creatio-rating-label"),
-                    new ObjectStatus({
-                        text: "HIGH POTENTIAL",
-                        state: "Success",
-                        icon: "sap-icon://trend-up"
-                    }).addStyleClass("creatio-rating-badge")
-                ]
-            }));
-            oScoreCards.addItem(oRatingBox);
-
-            oSection.addItem(oScoreCards);
-            return oSection;
-        },
-
-        /**
-         * Create a score card with progress ring
-         * @private
-         */
-        _createScoreCard: function (sTitle, sValue, iPercent, sDescription, sState) {
-            const oCard = new HBox({
-                alignItems: "Start",
-                justifyContent: "SpaceBetween"
-            });
-            oCard.addStyleClass("creatio-score-card");
-
-            // Score ring visualization
-            const sColor = sState === "Success" ? "#2e7d32" : (sState === "Warning" ? "#f57c00" : "#d32f2f");
-            const oRing = new HTML({
-                content: this._createScoreRingSVG(iPercent, sColor)
-            });
-
-            // Score details
-            const oDetails = new VBox({
-                items: [
-                    new Text({ text: sTitle }).addStyleClass("creatio-score-label"),
-                    new Text({ text: sDescription }).addStyleClass("creatio-score-desc")
-                ]
-            });
-            oDetails.addStyleClass("creatio-score-details");
-
-            oCard.addItem(oRing);
-            oCard.addItem(oDetails);
-
-            return oCard;
-        },
-
-        /**
-         * Create SVG score ring
-         * @private
-         */
-        _createScoreRingSVG: function (iPercent, sColor) {
-            const iRadius = 24;
-            const iStroke = 4;
-            const iCircumference = 2 * Math.PI * iRadius;
-            const iOffset = iCircumference - (iPercent / 100) * iCircumference;
-            
-            return `<div class="creatio-score-ring-container">
-                <svg width="60" height="60" viewBox="0 0 60 60">
-                    <circle cx="30" cy="30" r="${iRadius}" fill="none" stroke="#e0e0e0" stroke-width="${iStroke}"/>
-                    <circle cx="30" cy="30" r="${iRadius}" fill="none" stroke="${sColor}" stroke-width="${iStroke}" 
-                        stroke-dasharray="${iCircumference}" stroke-dashoffset="${iOffset}" 
-                        stroke-linecap="round" transform="rotate(-90 30 30)"/>
-                    <text x="30" y="35" text-anchor="middle" class="creatio-ring-text">${iPercent}%</text>
-                </svg>
-            </div>`;
-        },
-
-        /**
-         * Create Next Best Actions Section
-         * @private
-         */
-        _createNextBestActions: function () {
-            const that = this;
-            const oSection = new VBox();
-            oSection.addStyleClass("creatio-ai-section");
-
-            // Section header
-            const oHeader = new HBox({
-                alignItems: "Center",
-                items: [
-                    new Icon({ src: "sap-icon://action", size: "1rem" }).addStyleClass("creatio-section-icon"),
-                    new Title({ text: "Next Best Actions", level: "H6" }).addStyleClass("creatio-section-title")
-                ]
-            });
-            oSection.addItem(oHeader);
-
-            // Actions list
-            const oActionsList = new VBox();
-            oActionsList.addStyleClass("creatio-actions-list sapUiSmallMarginTop");
-
-            NEXT_BEST_ACTIONS.forEach((oAction) => {
-                const oActionItem = new HBox({
-                    alignItems: "Center",
-                    justifyContent: "SpaceBetween"
-                });
-                oActionItem.addStyleClass("creatio-action-item");
-
-                // Action info
-                const oInfo = new HBox({
-                    alignItems: "Center",
-                    items: [
-                        new Icon({ src: oAction.icon, size: "1rem" }).addStyleClass("creatio-action-icon"),
-                        new VBox({
-                            items: [
-                                new Text({ text: oAction.label }).addStyleClass("creatio-action-label"),
-                                new Text({ text: oAction.dueText }).addStyleClass("creatio-action-due")
-                            ]
-                        })
-                    ]
-                });
-
-                // Priority badge
-                const oPriority = new ObjectStatus({
-                    text: oAction.priority,
-                    state: oAction.priority === "High" ? "Error" : (oAction.priority === "Medium" ? "Warning" : "None")
-                });
-                oPriority.addStyleClass("creatio-action-priority");
-
-                // Action button
-                const oBtn = new Button({
-                    icon: "sap-icon://navigation-right-arrow",
-                    type: "Emphasized",
-                    tooltip: "Execute " + oAction.label,
-                    press: function () {
-                        that._onActionButtonPress(oAction.id);
-                    }
-                });
-                oBtn.addStyleClass("creatio-action-btn");
-
-                oActionItem.addItem(oInfo);
-                oActionItem.addItem(oPriority);
-                oActionItem.addItem(oBtn);
-                oActionsList.addItem(oActionItem);
-            });
-
-            oSection.addItem(oActionsList);
-            return oSection;
-        },
-
-        /**
-         * Create Recommended Products Section
-         * @private
-         */
-        _createRecommendedProducts: function () {
-            const oSection = new VBox();
-            oSection.addStyleClass("creatio-ai-section");
-
-            // Section header
-            const oHeader = new HBox({
-                alignItems: "Center",
-                justifyContent: "SpaceBetween",
-                items: [
-                    new HBox({
-                        alignItems: "Center",
-                        items: [
-                            new Icon({ src: "sap-icon://product", size: "1rem" }).addStyleClass("creatio-section-icon"),
-                            new Title({ text: "Recommended Products", level: "H6" }).addStyleClass("creatio-section-title")
-                        ]
-                    }),
-                    new Link({ text: "View All", press: function() { MessageToast.show("Opening product catalog..."); } })
-                ]
-            });
-            oSection.addItem(oHeader);
-
-            // Products list
-            const oProductsList = new VBox();
-            oProductsList.addStyleClass("creatio-products-list sapUiSmallMarginTop");
-
-            MOCK_PRODUCTS.forEach((oProduct) => {
-                const oProductCard = new HBox({
-                    alignItems: "Center"
-                });
-                oProductCard.addStyleClass("creatio-product-card");
-
-                // Product avatar/placeholder
-                const oAvatar = new Avatar({
-                    initials: oProduct.name.substring(0, 2).toUpperCase(),
-                    displaySize: "S",
-                    backgroundColor: "Accent6"
-                });
-
-                // Product details
-                const oDetails = new VBox({
-                items: [
-                        new Text({ text: oProduct.name }).addStyleClass("creatio-product-name"),
-                        new Text({ text: oProduct.brand + " • " + oProduct.price }).addStyleClass("creatio-product-meta")
-                    ]
-                });
-                oDetails.addStyleClass("creatio-product-details");
-
-                // Trend score badge
-                const oTrend = new ObjectStatus({
-                    text: oProduct.trendScore + "%",
-                    state: "Success",
-                    icon: "sap-icon://trend-up"
-                });
-                oTrend.addStyleClass("creatio-product-trend");
-
-                oProductCard.addItem(oAvatar);
-                oProductCard.addItem(oDetails);
-                oProductCard.addItem(oTrend);
-                oProductsList.addItem(oProductCard);
-            });
-
-            oSection.addItem(oProductsList);
-            return oSection;
-        },
-
-        /**
-         * Create Engagement History Section
-         * @private
-         */
-        _createEngagementHistory: function () {
-            const oSection = new VBox();
-            oSection.addStyleClass("creatio-ai-section");
-
-            // Section header
-            const oHeader = new HBox({
-                alignItems: "Center",
-                justifyContent: "SpaceBetween",
-                items: [
-                    new HBox({
-                        alignItems: "Center",
-                        items: [
-                            new Icon({ src: "sap-icon://history", size: "1rem" }).addStyleClass("creatio-section-icon"),
-                            new Title({ text: "Engagement History", level: "H6" }).addStyleClass("creatio-section-title")
-                        ]
-                    }),
-                    new Link({ text: "See All", press: function() { MessageToast.show("Opening activity log..."); } })
-                ]
-            });
-            oSection.addItem(oHeader);
-
-            // Stats row
-            const oStatsRow = new HBox({
-                justifyContent: "SpaceAround"
-            });
-            oStatsRow.addStyleClass("creatio-engagement-stats sapUiSmallMarginTop");
-
-            oStatsRow.addItem(new VBox({
-                alignItems: "Center",
-                items: [
-                    new Text({ text: "5" }).addStyleClass("creatio-stat-number"),
-                    new Text({ text: "Interactions" }).addStyleClass("creatio-stat-label")
-                ]
-            }));
-            oStatsRow.addItem(new VBox({
-                alignItems: "Center",
-                items: [
-                    new Text({ text: "87%" }).addStyleClass("creatio-stat-number creatio-stat-success"),
-                    new Text({ text: "Response Rate" }).addStyleClass("creatio-stat-label")
-                ]
-            }));
-            oStatsRow.addItem(new VBox({
-                alignItems: "Center",
-                items: [
-                    new Text({ text: "4h" }).addStyleClass("creatio-stat-number"),
-                    new Text({ text: "Avg Response" }).addStyleClass("creatio-stat-label")
-                ]
-            }));
-            oSection.addItem(oStatsRow);
-
-            // Timeline
-            const oTimeline = new VBox();
-            oTimeline.addStyleClass("creatio-mini-timeline sapUiSmallMarginTop");
-
-            MOCK_ENGAGEMENT.forEach((oEntry, iIndex) => {
-                const oTimelineItem = new HBox({
-                    alignItems: "Start"
-                });
-                oTimelineItem.addStyleClass("creatio-timeline-item");
-
-                // Timeline dot and line
-                const oIndicator = new VBox({
-                    alignItems: "Center"
-                });
-                oIndicator.addStyleClass("creatio-timeline-indicator");
-                
-                const oDot = new Icon({ src: oEntry.icon, size: "0.875rem" });
-                oDot.addStyleClass("creatio-timeline-dot");
-                oIndicator.addItem(oDot);
-                
-                if (iIndex < MOCK_ENGAGEMENT.length - 1) {
-                    const oLine = new HTML({ content: '<div class="creatio-timeline-line"></div>' });
-                    oIndicator.addItem(oLine);
+            // Create AI panel using factory
+            this._oAIPanelFactory = AIAssistantPanelFactory.create({
+                entityType: "prospects",
+                entityData: oEntityData,
+                callbacks: {
+                    onQuickCall: function() { that._onQuickCall(); },
+                    onQuickEmail: function() { that._onQuickEmail(); },
+                    onQuickWhatsapp: function() { that._onQuickWhatsApp(); },
+                    onQuickSchedule: function() { that._onQuickSchedule(); },
+                    onActionPress: function(sActionId) { that._onActionButtonPress(sActionId); },
+                    onRefresh: function() { that._refreshAIInsights(); },
+                    onChatMessage: function(sMessage) { that._onAIChatMessage(sMessage); }
                 }
-
-                // Content
-                const oContent = new VBox({
-                    items: [
-                        new Text({ text: oEntry.description }).addStyleClass("creatio-timeline-text"),
-                        new Text({ text: this._formatRelativeDate(oEntry.date) }).addStyleClass("creatio-timeline-date")
-                    ]
-                });
-                oContent.addStyleClass("creatio-timeline-content");
-
-                oTimelineItem.addItem(oIndicator);
-                oTimelineItem.addItem(oContent);
-                oTimeline.addItem(oTimelineItem);
             });
-
-            oSection.addItem(oTimeline);
-            return oSection;
+            
+            this._oAIPanel = this._oAIPanelFactory.getPanel();
+            console.log("[ProspectsCreatioExt] Enhanced AI Panel rendered via factory");
         },
 
         /**
-         * Format relative date
+         * Handle AI chat message
          * @private
          */
-        _formatRelativeDate: function (oDate) {
-            const iDays = Math.floor((new Date() - oDate) / (1000 * 60 * 60 * 24));
-            if (iDays === 0) return "Today";
-            if (iDays === 1) return "Yesterday";
-            if (iDays < 7) return iDays + " days ago";
-            if (iDays < 30) return Math.floor(iDays / 7) + " week(s) ago";
-            return Math.floor(iDays / 30) + " month(s) ago";
+        _onAIChatMessage: function (sMessage) {
+            console.log("[ProspectsCreatioExt] AI Chat message:", sMessage);
+            MessageToast.show("AI: Processing your request...");
+            // TODO: Integrate with AI service
         },
 
         /**
@@ -2180,8 +1654,8 @@ sap.ui.define([
             if (this._oTagsModel) {
                 this._oTagsModel.destroy();
             }
-            if (this._oAIPanel) {
-                this._oAIPanel.destroy();
+            if (this._oAIPanelFactory) {
+                this._oAIPanelFactory.destroy();
             }
             if (this._oConvertButton) {
                 this._oConvertButton.destroy();

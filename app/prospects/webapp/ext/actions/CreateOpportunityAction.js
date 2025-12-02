@@ -334,20 +334,18 @@ sap.ui.define([
                         emphasizedAction: "View Opportunity",
                         onClose: function (sAction) {
                             if (sAction === "View Opportunity" && oResult.opportunityID) {
-                                // Navigate to opportunity within launchpad (draft-enabled entity requires ID= and IsActiveEntity)
-                                var sNewHash = "opportunities-manage&/Opportunities(ID=" + oResult.opportunityID + ",IsActiveEntity=true)";
-                                window.location.hash = sNewHash;
-                                // Force reload to ensure navigation happens
-                                setTimeout(function() {
-                                    window.location.reload();
-                                }, 100);
+                                // Navigate to opportunity within launchpad using full URL
+                                // Format: baseUrl + hash with opportunities-manage&/Opportunities(ID=xxx,IsActiveEntity=true)
+                                var sBaseUrl = window.location.origin + window.location.pathname;
+                                var sNewUrl = sBaseUrl + "#opportunities-manage&/Opportunities(ID=" + oResult.opportunityID + ",IsActiveEntity=true)";
+                                console.log("[Create Opportunity] Navigating to:", sNewUrl);
+                                window.location.href = sNewUrl;
                             } else if (sAction === "View Account" && oResult.accountID) {
-                                // Navigate to account within launchpad
-                                var sAccountHash = "accounts-manage&/Accounts(" + oResult.accountID + ")";
-                                window.location.hash = sAccountHash;
-                                setTimeout(function() {
-                                    window.location.reload();
-                                }, 100);
+                                // Navigate to account within launchpad using full URL
+                                var sBaseUrl = window.location.origin + window.location.pathname;
+                                var sAccountUrl = sBaseUrl + "#accounts-manage&/Accounts(ID=" + oResult.accountID + ",IsActiveEntity=true)";
+                                console.log("[Create Opportunity] Navigating to account:", sAccountUrl);
+                                window.location.href = sAccountUrl;
                             } else {
                                 // Refresh current page
                                 window.location.reload();

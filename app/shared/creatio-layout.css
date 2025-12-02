@@ -595,6 +595,122 @@ body.creatio-active [id*="action"] {
 }
 
 /* ============================================================================
+   AI Panel View Toggle (Insights vs Chat)
+   ============================================================================ */
+.creatio-ai-view-toggle {
+    margin-right: 0.5rem;
+}
+
+.creatio-ai-view-toggle .sapMSegB {
+    border-radius: var(--creatio-radius-md);
+    background: var(--creatio-bg-light);
+    border: 1px solid var(--creatio-border);
+}
+
+.creatio-ai-view-toggle .sapMSegBBtn {
+    min-width: 32px;
+    height: 28px;
+    padding: 0 0.5rem;
+}
+
+.creatio-ai-view-toggle .sapMSegBBtn .sapMBtnIcon {
+    font-size: 0.875rem;
+}
+
+.creatio-ai-view-toggle .sapMSegBBtnSel {
+    background: var(--creatio-primary) !important;
+}
+
+.creatio-ai-view-toggle .sapMSegBBtnSel .sapMBtnIcon {
+    color: white !important;
+}
+
+/* Chat View Styles */
+.creatio-ai-chat-view {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.creatio-ai-chat-messages {
+    flex: 1;
+    background: white;
+}
+
+.creatio-ai-messages-container {
+    padding: 1rem;
+}
+
+.creatio-ai-input-row {
+    display: flex;
+    gap: 0.5rem;
+    align-items: flex-end;
+    padding: 0.875rem;
+    background: white;
+    border-top: 1px solid var(--creatio-border-light);
+}
+
+.creatio-ai-input {
+    flex: 1;
+}
+
+.creatio-ai-input .sapMTextArea {
+    border-radius: var(--creatio-radius-md);
+    border: 1px solid var(--creatio-border);
+    background: var(--creatio-bg-light);
+}
+
+.creatio-ai-input .sapMTextArea:focus-within {
+    border-color: var(--creatio-primary);
+    box-shadow: 0 0 0 2px var(--creatio-primary-light);
+}
+
+.creatio-ai-send-btn.sapMBtn {
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    background: var(--creatio-primary);
+    border: none;
+}
+
+.creatio-ai-send-btn.sapMBtn:hover {
+    background: var(--creatio-primary-dark);
+    transform: scale(1.05);
+}
+
+.creatio-ai-send-btn .sapMBtnIcon {
+    color: white !important;
+}
+
+/* Risk Icon Styles */
+.creatio-risk-icon {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 0.5rem;
+    background: var(--creatio-bg-light);
+    border-radius: 50%;
+    color: var(--creatio-text-secondary);
+}
+
+/* Sentiment Warning Style */
+.creatio-sentiment-icon-warning {
+    color: #f57c00 !important;
+}
+
+/* No Data State */
+.creatio-no-data {
+    padding: 1rem;
+    text-align: center;
+    color: var(--creatio-text-tertiary);
+    font-size: var(--creatio-font-size-sm);
+    font-style: italic;
+}
+
+/* ============================================================================
    Entity Profile Sidebar - Minimal Left Sidebar
    ============================================================================ */
 .creatio-entity-profile {
