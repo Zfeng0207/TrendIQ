@@ -114,7 +114,7 @@
     position: fixed !important;
     top: 44px !important;
     left: 0 !important;
-    right: 380px !important;
+    right: 0 !important;
     z-index: 9500 !important;
     padding: 0 !important;
     background: linear-gradient(180deg, #1565C0 0%, #0D47A1 100%) !important;
@@ -123,11 +123,102 @@
     overflow: visible !important;
     pointer-events: none !important;
     contain: layout style paint !important;
+    transition: right 0.3s ease;
+}
+
+/* Adjust header stage bar when AI panel is active */
+body.creatio-ai-active .creatio-header-stage-section {
+    right: 380px !important;
 }
 
 /* Push Object Page content down to make room for chevron bar */
 .sapUxAPObjectPageLayout {
-    padding-top: 60px !important;
+    padding-top: 52px !important;
+}
+
+/* ============================================================================
+   CRITICAL FIX: Override the dynamic padding-top on ObjectPageWrapper
+   SAP UI5 dynamically sets padding-top: ~94px which creates the large gap.
+   We reduce this to only account for the stage bar height.
+   ============================================================================ */
+.sapUxAPObjectPageWrapper[style*="padding-top"] {
+    padding-top: 8px !important;
+    scroll-padding-top: 8px !important;
+}
+
+/* Also target the wrapper directly */
+.sapUxAPObjectPageWrapper {
+    padding-top: 8px !important;
+}
+
+/* Fix the clip-path that might be causing visual issues */
+.sapUxAPObjectPageWrapper[style*="clip-path"] {
+    clip-path: none !important;
+}
+
+/* Reduce the gap between header and content in Object Page */
+.sapUxAPObjectPageHeaderContent {
+    padding-bottom: 0 !important;
+    margin-bottom: 0 !important;
+}
+
+/* Reduce extra spacing in header area */
+.sapUxAPObjectPageHeaderIdentifier {
+    margin-bottom: 8px !important;
+}
+
+/* Tighten the Object Page header wrapper */
+.sapUxAPObjectPageWrapper > .sapUxAPObjectPageHeaderTitle {
+    margin-bottom: 0 !important;
+}
+
+/* Remove excessive padding from header content area */
+body.creatio-active .sapUxAPObjectPageLayout .sapUxAPObjectPageHeaderContent {
+    padding: 8px 0 !important;
+}
+
+/* ============================================================================
+   FIX: Collapse the large gap between title and KPI content
+   ============================================================================ */
+
+/* Target the header title wrapper - reduce min-height and spacing */
+body.creatio-active .sapUxAPObjectPageHeaderTitle,
+body.creatio-active .sapUxAPObjectPageDynamicHeaderTitle {
+    min-height: auto !important;
+    padding-bottom: 0 !important;
+    margin-bottom: 0 !important;
+}
+
+/* Collapse the header content design wrapper */
+body.creatio-active .sapUxAPObjectPageDynamicHeaderContent,
+body.creatio-active .sapUxAPObjectPageHeaderContentDesign {
+    padding: 8px 16px !important;
+    margin: 0 !important;
+    min-height: auto !important;
+}
+
+/* Target the actual header content area that wraps KPIs */
+body.creatio-active .sapUxAPObjectPageLayout .sapUxAPObjectPageDynamicHeaderContentArea {
+    padding: 8px 16px !important;
+    margin: 0 !important;
+}
+
+/* Reduce gap on the header wrapper */
+body.creatio-active .sapUxAPObjectPageWrapper > div:first-child,
+body.creatio-active .sapUxAPObjectPageLayout > section:first-child {
+    min-height: auto !important;
+    padding-bottom: 0 !important;
+}
+
+/* Collapse any flex gap in header sections */
+body.creatio-active .sapUxAPObjectPageHeaderIdentifier {
+    margin-bottom: 4px !important;
+    padding-bottom: 0 !important;
+}
+
+/* Target subheader area (subtitle line) */
+body.creatio-active .sapUxAPObjectPageHeaderIdentifierDescription {
+    margin-bottom: 4px !important;
 }
 
 /* Ensure Object Page header actions (buttons) are visible below chevron bar */
@@ -415,9 +506,9 @@ body.creatio-active [id*="Toggle"]:not([id*="DraftToggle"]) {
 .creatio-ai-panel {
     position: fixed;
     right: 0;
-    top: 0;
-    height: 100vh;
-    width: 360px;
+    top: 44px;
+    height: calc(100vh - 44px);
+    width: 380px;
     background: var(--creatio-ai-bg);
     box-shadow: -2px 0 12px rgba(0, 0, 0, 0.06);
     z-index: 9600;
@@ -425,6 +516,19 @@ body.creatio-active [id*="Toggle"]:not([id*="DraftToggle"]) {
     flex-direction: column;
     transition: transform var(--creatio-transition-slow);
     border-left: 1px solid var(--creatio-border-light);
+}
+
+/* Push main Object Page content to leave space for AI sidebar */
+body.creatio-ai-active .sapUxAPObjectPageLayout,
+body.creatio-ai-active .sapUxAPObjectPageWrapper,
+body.creatio-ai-active .sapUiComponentContainer {
+    margin-right: 380px !important;
+}
+
+/* Ensure the shell content doesn't overlap with AI panel */
+body.creatio-ai-active .sapUshellShellContent,
+body.creatio-ai-active .sapMPage {
+    width: calc(100% - 380px) !important;
 }
 
 .creatio-ai-panel.collapsed {

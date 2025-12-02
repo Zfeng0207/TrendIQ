@@ -269,7 +269,42 @@
         .rating-badge.warm-prospect{background:#f57c00}
         .rating-badge.cold-prospect{background:#757575}
         
-        body.creatio-active #content{margin-right:380px}
+        /* Push main content area when AI panel is visible */
+        body.creatio-active {
+            overflow-x: hidden !important;
+        }
+        
+        /* Target all SAP Fiori containers to shrink when AI panel is active */
+        body.creatio-active > div:not(#creatioStageBar):not(#creatioAIPanel):not(#creatioConvertBtn),
+        body.creatio-active .sapUiUfdShell,
+        body.creatio-active .sapUshellShellCntnt,
+        body.creatio-active .sapUshellApplicationContainer,
+        body.creatio-active .sapUiComponentContainer,
+        body.creatio-active .sapMShell,
+        body.creatio-active .sapMShellContent,
+        body.creatio-active .sapUxAPObjectPageLayout {
+            padding-right: 75px !important;
+            box-sizing: border-box !important;
+        }
+        
+        /* Alternative approach - add right padding to the Object Page sections */
+        body.creatio-active .sapUxAPObjectPageSection,
+        body.creatio-active .sapUxAPObjectPageSubSection {
+            padding-right: 16px !important;
+        }
+        
+        /* Ensure scrollable content doesn't go under the panel */
+        body.creatio-active .sapUxAPObjectPageWrapper {
+            width: calc(100vw - 380px) !important;
+        }
+        
+        /* CRITICAL: Fix the large gap between title and content */
+        /* Override SAP's dynamic padding-top calculation */
+        .sapUxAPObjectPageWrapper {
+            padding-top: 8px !important;
+            scroll-padding-top: 8px !important;
+            clip-path: none !important;
+        }
 
     </style>
 
