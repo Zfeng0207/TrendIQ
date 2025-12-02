@@ -340,11 +340,12 @@
                     applicationType: "SAPUI5",
                     url: "/campaigns/webapp"
                 },
-                "competitor-analytics-display": {
+                "CompetitorAnalytics-display": {
                     title: "Competitor Analytics — L'Oréal",
                     description: "Multi-brand and product analytics dashboard",
-                    applicationType: "URL",
-                    url: "/competitor-analytics/index.html"
+                    additionalInformation: "SAPUI5.Component=beautyleads.competitoranalytics",
+                    applicationType: "SAPUI5",
+                    url: "/competitor-analytics/webapp"
                 }
             },
             groups: [
@@ -375,8 +376,8 @@
                                 subtitle: "L'Oréal & competitors",
                                 infoState: "Neutral",
                                 info: "New",
-                                icon: "sap-icon://business-objects-experience",
-                                targetURL: "/competitor-analytics/index.html"
+                                icon: "sap-icon://competitive-analysis",
+                                targetURL: "#CompetitorAnalytics-display"
                             }
                         }
                     ]
@@ -477,7 +478,8 @@
             "beautyleads.campaigns": "/campaigns/webapp/",
             "beautyleads.leads": "/leads/webapp/",
             "beautyleads.accounts": "/accounts/webapp/",
-            "beautyleads.opportunities": "/opportunities/webapp/"
+            "beautyleads.opportunities": "/opportunities/webapp/",
+            "beautyleads.competitoranalytics": "/competitor-analytics/webapp/"
         }'
         data-sap-ui-frameOptions="allow"
         data-sap-ui-flexibilityServices='[{"connector": "LocalStorageConnector"}]'>
@@ -487,7 +489,7 @@
         var crmNavApps = {
             dashboard: [
                 { id: 'dashboard-display', title: 'CRM Dashboard', desc: 'Analytics Overview', icon: '📊', hash: 'dashboard-display' },
-                { id: 'competitor-analytics-display', title: 'Competitor Analytics', desc: 'L\'Oréal & competitors', icon: '📈', hash: '/competitor-analytics/index.html' }
+                { id: 'CompetitorAnalytics-display', title: 'Competitor Analytics', desc: 'L\'Oréal & competitors', icon: '📈', hash: 'CompetitorAnalytics-display' }
             ],
             pipeline: [
                 { id: 'leads-manage', title: 'Leads', desc: 'Capture & Qualify', icon: '🎯', hash: 'leads-manage', badge: 'Step 1' },

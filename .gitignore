@@ -37,3 +37,4 @@ mta_archives/
 .env
 .env.local
 *.md
+db.sqlite*

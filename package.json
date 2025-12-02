@@ -35,7 +35,8 @@
     "app/campaigns",
     "app/leads",
     "app/accounts",
-    "app/opportunities"
+    "app/opportunities",
+    "app/competitor-analytics"
   ],
   "cds": {
     "requires": {

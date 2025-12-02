@@ -1,0 +1,214 @@
+<mvc:View
+    controllerName="beautyleads.competitoranalytics.controller.Main"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:f="sap.f"
+    xmlns:l="sap.ui.layout"
+    xmlns:core="sap.ui.core">
+
+    <!-- Loading Screen -->
+    <VBox id="loadingScreen" class="loadingScreen" alignItems="Center" justifyContent="Center">
+        <VBox class="loadingContent" alignItems="Center">
+            <BusyIndicator id="loadingIndicator" size="1.5rem" class="loadingSpinner"/>
+            <Text text="Loading Market Intelligence" class="loadingTitle"/>
+            <Text text="Fetching competitor data and analytics..." class="loadingSubtitle"/>
+            <ProgressIndicator id="loadingProgress" percentValue="0" displayValue="Initializing..." showValue="true" class="loadingProgress"/>
+        </VBox>
+    </VBox>
+
+    <Page id="analyticsPage" showHeader="false" enableScrolling="true" class="analyticsPage" visible="false">
+        
+        <content>
+            <!-- Page Header -->
+            <HBox class="pageHeader" justifyContent="SpaceBetween" alignItems="Center">
+                <VBox>
+                    <Title text="Competitor Analytics" level="H4" class="pageTitle"/>
+                    <Text text="L'Oréal Group • Q4 2025" class="pageSubtitle"/>
+                </VBox>
+                <HBox alignItems="Center" class="headerControls">
+                    <Select selectedKey="Q4" class="headerSelect">
+                        <core:Item key="Q1" text="Q1 2026"/>
+                        <core:Item key="Q2" text="Q2 2026"/>
+                        <core:Item key="Q3" text="Q3 2026"/>
+                        <core:Item key="Q4" text="Q4 2025"/>
+                    </Select>
+                    <Select selectedKey="all" class="headerSelect">
+                        <core:Item key="all" text="All Regions"/>
+                        <core:Item key="apac" text="APAC"/>
+                        <core:Item key="emea" text="EMEA"/>
+                        <core:Item key="americas" text="Americas"/>
+                    </Select>
+                    <ToolbarSeparator class="headerSeparator"/>
+                    <Button icon="sap-icon://excel-attachment" type="Transparent" class="headerBtn"/>
+                    <Button icon="sap-icon://print" type="Transparent" class="headerBtn"/>
+                </HBox>
+            </HBox>
+
+            <!-- KPI Cards Row -->
+            <HBox class="kpiContainer" wrap="Wrap">
+                <VBox class="kpiCard">
+                    <Label text="GLOBAL MARKET SHARE" class="kpiLabel"/>
+                    <HBox alignItems="End" class="kpiValueRow">
+                        <Text text="23.4" class="kpiValue"/>
+                        <Text text="%" class="kpiUnit"/>
+                    </HBox>
+                    <ObjectStatus text="+1.2 pts vs Q3 2025" state="Success" icon="sap-icon://trend-up" class="kpiTrend"/>
+                </VBox>
+
+                <VBox class="kpiCard">
+                    <Label text="GAP TO #2 COMPETITOR" class="kpiLabel"/>
+                    <HBox alignItems="End" class="kpiValueRow">
+                        <Text text="+9.1" class="kpiValue"/>
+                        <Text text="pts" class="kpiUnit"/>
+                    </HBox>
+                    <ObjectStatus text="Leading vs Estée Lauder" state="Success" class="kpiTrend"/>
+                </VBox>
+
+                <VBox class="kpiCard">
+                    <Label text="BRAND PORTFOLIO" class="kpiLabel"/>
+                    <HBox alignItems="End" class="kpiValueRow">
+                        <Text text="37" class="kpiValue"/>
+                        <Text text="brands" class="kpiUnit"/>
+                    </HBox>
+                    <ObjectStatus text="€43.5B revenue FY2024" state="Information" class="kpiTrend"/>
+                </VBox>
+
+                <VBox class="kpiCard kpiAlert">
+                    <Label text="TOP THREAT" class="kpiLabel"/>
+                    <Text text="Shiseido" class="kpiValueLarge"/>
+                    <ObjectStatus text="High • +4.0% Q3 growth" state="Error" class="kpiTrend"/>
+                </VBox>
+            </HBox>
+
+            <!-- Main Content Grid -->
+            <l:Grid defaultSpan="XL6 L6 M12 S12" class="mainContent" hSpacing="1" vSpacing="1">
+                
+                <!-- Brand Performance -->
+                <VBox class="card">
+                    <HBox class="cardHeader" justifyContent="SpaceBetween" alignItems="Center">
+                        <HBox alignItems="Center">
+                            <core:Icon src="sap-icon://chart-table-view" class="cardHeaderIcon"/>
+                            <Title text="Brand Performance" level="H6"/>
+                        </HBox>
+                        <Link text="View All"/>
+                    </HBox>
+                    <Table items="{competitors>/brands}" class="brandTable" mode="None">
+                        <columns>
+                            <Column width="7%"><Text text="#"/></Column>
+                            <Column width="33%"><Text text="Brand"/></Column>
+                            <Column width="15%" hAlign="End"><Text text="Share"/></Column>
+                            <Column width="18%" hAlign="End"><Text text="Change"/></Column>
+                            <Column width="12%" hAlign="End"><Text text="SKUs"/></Column>
+                            <Column width="15%" hAlign="Center"><Text text="Status"/></Column>
+                        </columns>
+                        <items>
+                            <ColumnListItem>
+                                <cells>
+                                    <Text text="{path: 'competitors>', formatter: '.formatBrandRank'}" class="rankText"/>
+                                    <HBox alignItems="Center" class="brandNameCell">
+                                        <Avatar initials="{competitors>initials}" displaySize="XS" class="brandAvatar"/>
+                                        <Text text="{competitors>name}" class="brandName"/>
+                                    </HBox>
+                                    <Text text="{competitors>marketShare}" class="shareText"/>
+                                    <ObjectStatus text="{competitors>growth}" 
+                                        state="{= ${competitors>growthPositive} ? 'Success' : 'Error' }"
+                                        icon="{= ${competitors>growthPositive} ? 'sap-icon://trend-up' : 'sap-icon://trend-down' }"/>
+                                    <Text text="{competitors>products}"/>
+                                    <ObjectStatus text="{competitors>status}" state="{competitors>statusState}" inverted="true"/>
+                                </cells>
+                            </ColumnListItem>
+                        </items>
+                    </Table>
+                </VBox>
+
+                <!-- Competitor Threats -->
+                <VBox class="card">
+                    <HBox class="cardHeader" justifyContent="SpaceBetween" alignItems="Center">
+                        <HBox alignItems="Center">
+                            <core:Icon src="sap-icon://warning2" class="cardHeaderIcon warningIcon"/>
+                            <Title text="Competitor Threats" level="H6"/>
+                        </HBox>
+                        <ObjectStatus text="5 monitored" state="None"/>
+                    </HBox>
+                    <List items="{competitors>/competitors}" class="threatList" mode="None">
+                        <items>
+                            <CustomListItem class="threatItem">
+                                <HBox justifyContent="SpaceBetween" alignItems="Center" class="threatRow">
+                                    <VBox class="threatInfo">
+                                        <HBox alignItems="Center">
+                                            <Text text="{competitors>name}" class="threatName"/>
+                                            <Text text=" • " class="dotSeparator"/>
+                                            <Text text="{competitors>marketShare}" class="threatShare"/>
+                                        </HBox>
+                                        <Text text="{competitors>strengths}" class="threatDesc"/>
+                                    </VBox>
+                                    <VBox alignItems="End" class="threatMetrics">
+                                        <ObjectStatus text="{competitors>threatLevel}" state="{competitors>threatState}" inverted="true"/>
+                                        <Text text="{competitors>growth}" class="{= ${competitors>growthPositive} ? 'growthPositive' : 'growthNegative' }"/>
+                                    </VBox>
+                                </HBox>
+                            </CustomListItem>
+                        </items>
+                    </List>
+                </VBox>
+
+                <!-- Key Observations -->
+                <VBox class="card">
+                    <HBox class="cardHeader" justifyContent="SpaceBetween" alignItems="Center">
+                        <HBox alignItems="Center">
+                            <core:Icon src="sap-icon://hint" class="cardHeaderIcon"/>
+                            <Title text="Key Observations" level="H6"/>
+                        </HBox>
+                        <Text text="Updated today" class="metaText"/>
+                    </HBox>
+                    <VBox class="observationsList">
+                        <HBox class="observationItem">
+                            <core:Icon src="sap-icon://status-positive" class="obsIcon successIcon"/>
+                            <Text text="L'Oréal Q3 2025 like-for-like growth reached +4.9%, outperforming global beauty market. SAPMENA-SSA region delivered +11% growth." class="obsText"/>
+                        </HBox>
+                        <HBox class="observationItem">
+                            <core:Icon src="sap-icon://status-critical" class="obsIcon warningIcon"/>
+                            <Text text="Shiseido's Clé de Peau Beauté showing double-digit growth in mainland China. Monitor premium skincare segment positioning." class="obsText"/>
+                        </HBox>
+                        <HBox class="observationItem">
+                            <core:Icon src="sap-icon://status-inactive" class="obsIcon infoIcon"/>
+                            <Text text="Kering partnership announced: Creed acquisition plus Gucci, Bottega Veneta, Balenciaga fragrance licenses to strengthen luxury portfolio." class="obsText"/>
+                        </HBox>
+                    </VBox>
+                </VBox>
+
+                <!-- Trending Products -->
+                <VBox class="card">
+                    <HBox class="cardHeader" justifyContent="SpaceBetween" alignItems="Center">
+                        <HBox alignItems="Center">
+                            <core:Icon src="sap-icon://product" class="cardHeaderIcon"/>
+                            <Title text="Trending Products" level="H6"/>
+                        </HBox>
+                        <Select selectedKey="all" class="cardSelect">
+                            <core:Item key="all" text="All Categories"/>
+                            <core:Item key="skincare" text="Skincare"/>
+                            <core:Item key="makeup" text="Makeup"/>
+                        </Select>
+                    </HBox>
+                    <List items="{competitors>/trendingProducts}" class="trendList" mode="None">
+                        <items>
+                            <CustomListItem class="trendItem">
+                                <HBox justifyContent="SpaceBetween" alignItems="Center" class="trendRow">
+                                    <HBox alignItems="Center">
+                                        <Text text="{path: 'competitors>', formatter: '.formatTrendRank'}" class="trendRankBadge"/>
+                                        <VBox>
+                                            <Text text="{competitors>name}" class="trendName"/>
+                                            <Text text="{competitors>brand} • {competitors>category}" class="trendMeta"/>
+                                        </VBox>
+                                    </HBox>
+                                    <ObjectStatus text="{competitors>trend}" state="Success"/>
+                                </HBox>
+                            </CustomListItem>
+                        </items>
+                    </List>
+                </VBox>
+
+            </l:Grid>
+        </content>
+    </Page>
+</mvc:View>

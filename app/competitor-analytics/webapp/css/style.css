@@ -1,0 +1,507 @@
+/* ============================================
+   COMPETITOR ANALYTICS - ENTERPRISE DASHBOARD
+   Clean SAP Fiori-style design
+   ============================================ */
+
+/* ============================================
+   LOADING SCREEN
+   ============================================ */
+.loadingScreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, #0a6ed1 0%, #085cad 50%, #064a8a 100%);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.3s ease-out;
+}
+
+.loadingScreen.fadeOut {
+    opacity: 0;
+}
+
+.loadingContent {
+    text-align: center;
+    padding: 40px;
+}
+
+.loadingSpinner {
+    margin-bottom: 24px;
+}
+
+.loadingSpinner .sapUiLocalBusyIndicator > svg {
+    width: 64px !important;
+    height: 64px !important;
+}
+
+.loadingSpinner .sapUiLocalBusyIndicatorAnimation > div {
+    background-color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.loadingTitle {
+    font-size: 1.5rem !important;
+    font-weight: 600 !important;
+    color: #ffffff !important;
+    margin-bottom: 8px;
+}
+
+.loadingSubtitle {
+    font-size: 0.875rem !important;
+    color: rgba(255, 255, 255, 0.8) !important;
+    margin-bottom: 32px;
+}
+
+.loadingProgress {
+    width: 320px;
+    max-width: 90vw;
+}
+
+.loadingProgress .sapMPI {
+    background: rgba(255, 255, 255, 0.2) !important;
+    border-radius: 4px;
+    height: 8px !important;
+}
+
+.loadingProgress .sapMPIBar {
+    background: linear-gradient(90deg, #4fc3f7, #81d4fa) !important;
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.loadingProgress .sapMPIText {
+    color: rgba(255, 255, 255, 0.9) !important;
+    font-size: 0.75rem !important;
+    margin-top: 8px;
+}
+
+/* Fade in animation for main content */
+.analyticsPage.fadeIn {
+    animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Page Base */
+.analyticsPage {
+    background: var(--sapBackgroundColor, #f5f6f7) !important;
+}
+
+.analyticsPage .sapMPageBgSolid {
+    background: transparent !important;
+}
+
+/* ============================================
+   PAGE HEADER
+   ============================================ */
+.pageHeader {
+    background: var(--sapTile_Background, #ffffff);
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--sapGroup_TitleBorderColor, #d9d9d9);
+    margin-bottom: 16px;
+}
+
+.pageTitle {
+    font-size: 1.25rem !important;
+    font-weight: 600 !important;
+    color: var(--sapTitleColor, #32363a) !important;
+}
+
+.pageSubtitle {
+    font-size: 0.8125rem !important;
+    color: var(--sapContent_LabelColor, #6a6d70) !important;
+    margin-top: 2px;
+}
+
+.headerControls {
+    gap: 8px;
+}
+
+.headerSelect {
+    min-width: 110px;
+}
+
+.headerSeparator {
+    height: 24px;
+    margin: 0 4px;
+}
+
+.headerBtn {
+    min-width: 2.5rem;
+}
+
+/* ============================================
+   KPI CARDS
+   ============================================ */
+.kpiContainer {
+    padding: 0 24px 16px;
+    gap: 12px;
+}
+
+.kpiCard {
+    background: var(--sapTile_Background, #ffffff);
+    border: 1px solid var(--sapTile_BorderColor, #e5e5e5);
+    border-radius: 8px;
+    padding: 16px 20px;
+    min-width: 200px;
+    flex: 1;
+    position: relative;
+}
+
+.kpiCard::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: var(--sapBrandColor, #0a6ed1);
+    border-radius: 8px 0 0 8px;
+}
+
+.kpiAlert::before {
+    background: var(--sapNegativeColor, #bb0000);
+}
+
+.kpiLabel {
+    font-size: 0.6875rem !important;
+    font-weight: 600 !important;
+    color: var(--sapContent_LabelColor, #6a6d70) !important;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    margin-bottom: 6px !important;
+}
+
+.kpiValueRow {
+    gap: 2px;
+    margin-bottom: 8px;
+}
+
+.kpiValue {
+    font-size: 1.75rem !important;
+    font-weight: 700 !important;
+    color: var(--sapTextColor, #32363a) !important;
+    line-height: 1;
+}
+
+.kpiValueLarge {
+    font-size: 1.25rem !important;
+    font-weight: 600 !important;
+    color: var(--sapTextColor, #32363a) !important;
+    margin-bottom: 8px;
+}
+
+.kpiUnit {
+    font-size: 0.875rem !important;
+    font-weight: 500 !important;
+    color: var(--sapContent_LabelColor, #6a6d70) !important;
+    margin-bottom: 3px;
+}
+
+.kpiTrend .sapMObjStatusText {
+    font-size: 0.75rem !important;
+}
+
+.kpiTrend .sapMObjStatusIcon {
+    font-size: 0.75rem !important;
+}
+
+/* ============================================
+   MAIN CONTENT
+   ============================================ */
+.mainContent {
+    padding: 0 24px 24px;
+}
+
+/* ============================================
+   CARDS
+   ============================================ */
+.card {
+    background: var(--sapTile_Background, #ffffff);
+    border: 1px solid var(--sapTile_BorderColor, #e5e5e5);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.cardHeader {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--sapGroup_TitleBorderColor, #e5e5e5);
+    background: var(--sapGroup_TitleBackground, #fff);
+}
+
+.cardHeaderIcon {
+    font-size: 1rem !important;
+    color: var(--sapBrandColor, #0a6ed1) !important;
+    margin-right: 8px;
+}
+
+.cardHeaderIcon.warningIcon {
+    color: var(--sapCriticalColor, #e9730c) !important;
+}
+
+.cardHeader .sapMTitle {
+    font-size: 0.875rem !important;
+    font-weight: 600 !important;
+}
+
+.cardSelect {
+    min-width: 120px;
+}
+
+.metaText {
+    font-size: 0.75rem !important;
+    color: var(--sapContent_LabelColor, #6a6d70) !important;
+}
+
+/* ============================================
+   BRAND TABLE
+   ============================================ */
+.brandTable {
+    background: transparent;
+}
+
+.brandTable .sapMListTblHeaderCell {
+    padding: 10px 12px;
+    font-size: 0.6875rem !important;
+    font-weight: 600 !important;
+    color: var(--sapContent_LabelColor, #6a6d70) !important;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    background: var(--sapList_HeaderBackground, #f7f7f7);
+}
+
+.brandTable .sapMListTblCell {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--sapList_BorderColor, #e5e5e5);
+}
+
+.brandTable .sapMListTblRow:last-child .sapMListTblCell {
+    border-bottom: none;
+}
+
+.rankText {
+    font-size: 0.8125rem !important;
+    font-weight: 600 !important;
+    color: var(--sapContent_LabelColor, #6a6d70) !important;
+}
+
+.brandNameCell {
+    gap: 10px;
+}
+
+.brandAvatar {
+    width: 26px !important;
+    height: 26px !important;
+    min-width: 26px !important;
+}
+
+.brandName {
+    font-size: 0.8125rem !important;
+    font-weight: 600 !important;
+    color: var(--sapTextColor, #32363a) !important;
+}
+
+.shareText {
+    font-size: 0.8125rem !important;
+    font-weight: 600 !important;
+    color: var(--sapTextColor, #32363a) !important;
+}
+
+/* ============================================
+   THREAT LIST
+   ============================================ */
+.threatList {
+    background: transparent;
+}
+
+.threatItem {
+    border-bottom: 1px solid var(--sapList_BorderColor, #e5e5e5);
+}
+
+.threatItem:last-child {
+    border-bottom: none;
+}
+
+.threatRow {
+    padding: 12px 16px;
+    width: 100%;
+}
+
+.threatInfo {
+    flex: 1;
+}
+
+.threatName {
+    font-size: 0.8125rem !important;
+    font-weight: 600 !important;
+    color: var(--sapTextColor, #32363a) !important;
+}
+
+.dotSeparator {
+    color: var(--sapContent_LabelColor, #6a6d70) !important;
+    margin: 0 2px;
+}
+
+.threatShare {
+    font-size: 0.8125rem !important;
+    color: var(--sapContent_LabelColor, #6a6d70) !important;
+}
+
+.threatDesc {
+    font-size: 0.75rem !important;
+    color: var(--sapContent_LabelColor, #6a6d70) !important;
+    margin-top: 2px;
+}
+
+.threatMetrics {
+    gap: 4px;
+}
+
+.growthPositive {
+    font-size: 0.75rem !important;
+    color: var(--sapPositiveTextColor, #107e3e) !important;
+}
+
+.growthNegative {
+    font-size: 0.75rem !important;
+    color: var(--sapNegativeTextColor, #bb0000) !important;
+}
+
+/* ============================================
+   OBSERVATIONS
+   ============================================ */
+.observationsList {
+    padding: 8px 16px;
+}
+
+.observationItem {
+    padding: 10px 0;
+    border-bottom: 1px solid var(--sapList_BorderColor, #e5e5e5);
+    align-items: flex-start;
+}
+
+.observationItem:last-child {
+    border-bottom: none;
+}
+
+.obsIcon {
+    margin-right: 12px;
+    margin-top: 2px;
+    font-size: 1rem !important;
+}
+
+.obsIcon.successIcon {
+    color: var(--sapPositiveColor, #107e3e) !important;
+}
+
+.obsIcon.warningIcon {
+    color: var(--sapCriticalColor, #e9730c) !important;
+}
+
+.obsIcon.infoIcon {
+    color: var(--sapInformativeColor, #0a6ed1) !important;
+}
+
+.obsText {
+    font-size: 0.8125rem !important;
+    color: var(--sapTextColor, #32363a) !important;
+    line-height: 1.5 !important;
+    flex: 1;
+}
+
+/* ============================================
+   TREND LIST
+   ============================================ */
+.trendList {
+    background: transparent;
+}
+
+.trendItem {
+    border-bottom: 1px solid var(--sapList_BorderColor, #e5e5e5);
+}
+
+.trendItem:last-child {
+    border-bottom: none;
+}
+
+.trendRow {
+    padding: 10px 16px;
+    width: 100%;
+}
+
+.trendRankBadge {
+    width: 24px;
+    height: 24px;
+    background: var(--sapList_HeaderBackground, #f2f2f2);
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem !important;
+    font-weight: 700 !important;
+    color: var(--sapContent_LabelColor, #6a6d70) !important;
+    margin-right: 12px;
+}
+
+.trendName {
+    font-size: 0.8125rem !important;
+    font-weight: 600 !important;
+    color: var(--sapTextColor, #32363a) !important;
+}
+
+.trendMeta {
+    font-size: 0.6875rem !important;
+    color: var(--sapContent_LabelColor, #6a6d70) !important;
+    margin-top: 1px;
+}
+
+/* ============================================
+   STATUS BADGES
+   ============================================ */
+.sapMObjStatusInverted .sapMObjStatusText {
+    border-radius: 4px !important;
+    padding: 2px 8px !important;
+    font-size: 0.6875rem !important;
+    font-weight: 600 !important;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 1200px) {
+    .kpiCard {
+        min-width: 180px;
+    }
+}
+
+@media (max-width: 768px) {
+    .pageHeader {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 12px;
+    }
+    
+    .kpiContainer {
+        padding: 0 16px 16px;
+    }
+    
+    .kpiCard {
+        min-width: 100%;
+    }
+    
+    .mainContent {
+        padding: 0 16px 16px;
+    }
+}
