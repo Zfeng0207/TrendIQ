@@ -222,27 +222,6 @@ annotate OpportunityService.Opportunities with @(
         Identification: [
             {
                 $Type: 'UI.DataFieldForAction',
-                Action: 'OpportunityService.advanceStage',
-                Label: 'Advance Stage',
-                ![@UI.Importance]: #High
-            },
-            {
-                $Type: 'UI.DataFieldForAction',
-                Action: 'OpportunityService.previousStage',
-                Label: 'Previous Stage'
-            },
-            {
-                $Type: 'UI.DataFieldForAction',
-                Action: 'OpportunityService.markAsWon',
-                Label: 'Mark as Won'
-            },
-            {
-                $Type: 'UI.DataFieldForAction',
-                Action: 'OpportunityService.markAsLost',
-                Label: 'Mark as Lost'
-            },
-            {
-                $Type: 'UI.DataFieldForAction',
                 Action: 'OpportunityService.requestApproval',
                 Label: 'Request Approval'
             },

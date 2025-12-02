@@ -109,6 +109,7 @@
 }
 
 /* Stage bar header wrapper - covers full width */
+/* Positioned right below SAP Shell header */
 .creatio-header-stage-section {
     position: fixed !important;
     top: 44px !important;
@@ -117,6 +118,33 @@
     z-index: 9500 !important;
     padding: 0 !important;
     background: linear-gradient(180deg, #1565C0 0%, #0D47A1 100%) !important;
+    max-height: 60px !important;
+    height: auto !important;
+    overflow: visible !important;
+    pointer-events: none !important;
+    contain: layout style paint !important;
+}
+
+/* Push Object Page content down to make room for chevron bar */
+.sapUxAPObjectPageLayout {
+    padding-top: 60px !important;
+}
+
+/* Ensure Object Page header actions (buttons) are visible below chevron bar */
+.sapUxAPObjectPageHeaderAction {
+    position: relative !important;
+}
+
+.sapUxAPObjectPageHeaderTitle {
+    position: relative !important;
+}
+
+/* Allow pointer events on chevron bar content */
+.creatio-header-stage-section > *,
+.creatio-header-stage-section .creatio-chevron-container,
+.creatio-header-stage-section .creatio-chevron-bar,
+.creatio-header-stage-section .creatio-chevron-stage {
+    pointer-events: auto !important;
 }
 
 .creatio-chevron-bar {
@@ -221,6 +249,29 @@
     margin-top: 0.75rem;
     padding-top: 0.75rem;
     border-top: 1px solid var(--creatio-border);
+}
+
+/* Stage Navigation Buttons Container - Ensure it's always clickable and on top */
+#creatioStageNavButtons {
+    z-index: 999999 !important;
+    pointer-events: auto !important;
+    isolation: isolate !important;
+    position: fixed !important;
+    bottom: 24px !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    will-change: transform;
+    transform-style: preserve-3d;
+}
+
+/* Ensure button container is not blocked by any parent stacking contexts */
+body > #creatioStageNavButtons {
+    z-index: 999999 !important;
+}
+
+/* Ensure chevron bar doesn't extend beyond its bounds */
+.creatio-header-stage-section {
+    contain: layout style paint;
 }
 
 .creatio-stage-label {
@@ -1584,7 +1635,8 @@ body.creatio-active [id*="Toggle"]:not([id*="DraftToggle"]) {
 /* ============================================================================
    Convert to Prospect Button - Professional CTA
    ============================================================================ */
-#creatioConvertBtnContainer {
+#creatioConvertBtnContainer,
+#creatioStageNavBtnContainer {
     position: fixed !important;
     bottom: 24px !important;
     left: 50% !important;
@@ -1592,7 +1644,8 @@ body.creatio-active [id*="Toggle"]:not([id*="DraftToggle"]) {
     z-index: 9999 !important;
 }
 
-#creatioConvertBtnContainer .sapMBtn {
+#creatioConvertBtnContainer .sapMBtn,
+#creatioStageNavBtnContainer .sapMBtn {
     border-radius: var(--creatio-radius-full) !important;
     padding: 0 1.75rem !important;
     height: 44px !important;
@@ -1605,22 +1658,26 @@ body.creatio-active [id*="Toggle"]:not([id*="DraftToggle"]) {
     border: none !important;
 }
 
-#creatioConvertBtnContainer .sapMBtn:hover {
+#creatioConvertBtnContainer .sapMBtn:hover,
+#creatioStageNavBtnContainer .sapMBtn:hover {
     transform: translateY(-1px) !important;
     box-shadow: var(--creatio-shadow-lg) !important;
 }
 
-#creatioConvertBtnContainer .sapMBtn:disabled {
+#creatioConvertBtnContainer .sapMBtn:disabled,
+#creatioStageNavBtnContainer .sapMBtn:disabled {
     opacity: 0.5 !important;
     box-shadow: none !important;
     background: var(--creatio-text-tertiary) !important;
 }
 
-#creatioConvertBtnContainer .sapMBtnContent {
+#creatioConvertBtnContainer .sapMBtnContent,
+#creatioStageNavBtnContainer .sapMBtnContent {
     color: white !important;
 }
 
-#creatioConvertBtnContainer .sapMBtnIcon {
+#creatioConvertBtnContainer .sapMBtnIcon,
+#creatioStageNavBtnContainer .sapMBtnIcon {
     color: white !important;
 }
 

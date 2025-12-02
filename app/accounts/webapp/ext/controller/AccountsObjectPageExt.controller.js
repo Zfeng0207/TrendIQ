@@ -258,7 +258,7 @@ sap.ui.define([
          */
         _initializeCreatioComponents: function () {
             const oView = this.base.getView();
-            
+
             if (!oView) {
                 console.warn("[AccountsObjectPageExt] View not available");
                 return;
@@ -271,6 +271,125 @@ sap.ui.define([
             this._renderDashboardWidgets();
             this._renderProfileSidebar();
             this._renderEnhancedAIPanel();
+            this._createLifecycleNavigationButton();
+        },
+
+        /**
+         * Create Lifecycle Navigation button at bottom (like Opportunities Advance Stage button)
+         * @private
+         */
+        _createLifecycleNavigationButton: function () {
+            const that = this;
+            console.log("[AccountsObjectPageExt] Creating lifecycle navigation button...");
+
+            // Use setTimeout to ensure DOM is ready
+            setTimeout(function() {
+                // Remove existing button if any
+                if (that._oLifecycleButton) {
+                    that._oLifecycleButton.destroy();
+                    that._oLifecycleButton = null;
+                }
+
+                // Remove existing container
+                let oContainer = document.getElementById("creatioLifecycleBtnContainer");
+                if (oContainer) {
+                    oContainer.remove();
+                }
+
+                // Create floating action button (like Opportunities)
+                const oLifecycleBtn = new Button({
+                    text: "Update Status",
+                    icon: "sap-icon://status-positive",
+                    iconFirst: false,
+                    type: "Emphasized",
+                    press: function () {
+                        that._onUpdateStatusPress();
+                    }
+                });
+                oLifecycleBtn.addStyleClass("creatio-convert-btn");
+
+                // Create a container div for proper positioning (same as Opportunities)
+                oContainer = document.createElement("div");
+                oContainer.id = "creatioLifecycleBtnContainer";
+                oContainer.style.cssText = "position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:9999;";
+                document.body.appendChild(oContainer);
+
+                // Place button in container
+                oLifecycleBtn.placeAt(oContainer);
+                that._oLifecycleButton = oLifecycleBtn;
+
+                // Initial state based on current context
+                const oView = that.base.getView();
+                const oContext = oView && oView.getBindingContext();
+                if (oContext) {
+                    oContext.requestObject().then((oData) => {
+                        that._updateLifecycleButtonState(oData.accountStatus);
+                    });
+                }
+
+                console.log("[AccountsObjectPageExt] Lifecycle navigation button created at bottom of screen");
+            }, 100);
+        },
+
+        /**
+         * Update lifecycle button state based on current status
+         * @private
+         */
+        _updateLifecycleButtonState: function (sStatus) {
+            if (!this._oLifecycleButton) return;
+
+            const sLifecycleStage = this._mapStatusToLifecycle(sStatus);
+
+            if (sLifecycleStage === "Churned" || sLifecycleStage === "Inactive") {
+                this._oLifecycleButton.setText("Reactivate Account");
+                this._oLifecycleButton.setIcon("sap-icon://restart");
+                this._oLifecycleButton.setType("Default");
+            } else if (sLifecycleStage === "At Risk") {
+                this._oLifecycleButton.setText("Resolve Risk");
+                this._oLifecycleButton.setIcon("sap-icon://shield");
+                this._oLifecycleButton.setType("Emphasized");
+            } else {
+                this._oLifecycleButton.setText("Update Status");
+                this._oLifecycleButton.setIcon("sap-icon://status-positive");
+                this._oLifecycleButton.setType("Emphasized");
+            }
+        },
+
+        /**
+         * Handle Update Status button press
+         * @private
+         */
+        _onUpdateStatusPress: function () {
+            const oView = this.base.getView();
+            const oContext = oView.getBindingContext();
+            if (!oContext) {
+                MessageToast.show("No account context available");
+                return;
+            }
+
+            const that = this;
+
+            oContext.requestObject().then(function (oData) {
+                const sCurrentStatus = that._mapStatusToLifecycle(oData.accountStatus);
+
+                // Show status selection dialog
+                MessageBox.show(
+                    "Current status: " + sCurrentStatus + "\n\nSelect new status:",
+                    {
+                        title: "Update Account Status",
+                        icon: MessageBox.Icon.QUESTION,
+                        actions: ["Active", "At Risk", "Churned", MessageBox.Action.CANCEL],
+                        emphasizedAction: "Active",
+                        onClose: function (sAction) {
+                            if (sAction && sAction !== MessageBox.Action.CANCEL) {
+                                that._executeLifecycleChange(sAction);
+                            }
+                        }
+                    }
+                );
+            }).catch(function (oError) {
+                MessageBox.error("Failed to get account data: " + oError.message);
+            });
         },
 
         /**
@@ -988,14 +1107,15 @@ sap.ui.define([
          */
         _updateFromEntity: function (oData) {
             if (!oData) return;
-            
+
             this._oEntityData = oData;
             console.log("[AccountsObjectPageExt] Updating from entity data:", oData.accountName);
-            
+
             // Map accountStatus to lifecycle stage
             const sLifecycleStage = this._mapStatusToLifecycle(oData.accountStatus);
             this._updateLifecycleState(sLifecycleStage);
-            
+            this._updateLifecycleButtonState(oData.accountStatus);
+
             this._updateProfileModel(oData);
             this._updateKPIModel(oData);
         },
@@ -1364,7 +1484,10 @@ sap.ui.define([
             if (this._oProfileSidebar) {
                 this._oProfileSidebar.destroy();
             }
-            
+            if (this._oLifecycleButton) {
+                this._oLifecycleButton.destroy();
+            }
+
             // Remove DOM elements
             const oTagContainer = document.getElementById("creatioTagChipsContainer");
             if (oTagContainer) {
@@ -1378,7 +1501,11 @@ sap.ui.define([
             if (oDashContainer) {
                 oDashContainer.remove();
             }
-            
+            const oLifecycleBtnContainer = document.getElementById("creatioLifecycleBtnContainer");
+            if (oLifecycleBtnContainer) {
+                oLifecycleBtnContainer.remove();
+            }
+
             document.body.classList.remove("creatio-with-profile-sidebar");
         },
 

@@ -14,10 +14,9 @@ service AccountService @(path: '/account') {
         // Exclude compositions that cause issues with draft navigation
         recommendations: redirected to AccountRecommendations,
         riskAlerts: redirected to AccountRiskAlerts,
-        // Virtual fields for UI
+        // Virtual fields for UI (criticality and computed text fields)
         virtual null as healthCriticality : Integer,
         virtual null as statusCriticality : Integer,
-        virtual null as priorityScore : Integer, // 1-5 scale for CRM operations
         virtual null as priorityScoreCriticality : Integer, // For color coding
         virtual null as currentStageSummary : LargeString,
         virtual null as nextStepsSummary : LargeString,

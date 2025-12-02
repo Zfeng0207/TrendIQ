@@ -112,6 +112,10 @@
                 "@com.sap.vocabularies.UI.v1.LineItem": {
                   "tableSettings": {
                     "type": "ResponsiveTable",
+                    "personalization": {
+                      "sort": true,
+                      "column": true
+                    },
                     "enableExport": true,
                     "selectAll": true,
                     "growingThreshold": 15,

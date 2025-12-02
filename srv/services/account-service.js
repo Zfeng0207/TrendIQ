@@ -8,6 +8,24 @@ const cds = require('@sap/cds');
 module.exports = async function() {
     const { Accounts, Contacts, AccountRecommendations, AccountRiskAlerts, Opportunities, MarketingCampaigns, Activities } = this.entities;
 
+    // On service initialization: Calculate priorityScore for accounts that don't have one
+    this.on('served', async () => {
+        try {
+            const accountsWithoutPriority = await SELECT.from(Accounts).where({ priorityScore: null });
+            if (accountsWithoutPriority.length > 0) {
+                console.log(`[AccountService] Calculating priorityScore for ${accountsWithoutPriority.length} accounts...`);
+                for (const account of accountsWithoutPriority) {
+                    const priorityScore100 = calculatePriorityScore(account);
+                    const priorityScore = convertToPriorityScore1to5(priorityScore100);
+                    await UPDATE(Accounts).set({ priorityScore }).where({ ID: account.ID });
+                }
+                console.log(`[AccountService] Priority scores updated successfully.`);
+            }
+        } catch (e) {
+            console.warn('[AccountService] Error initializing priority scores:', e.message);
+        }
+    });
+
     // Handler for virtual fields: criticality, priority score, and AI summaries (using after to avoid draft conflicts)
     this.after('READ', 'Accounts', async (results, req) => {
         const processAccount = async (account) => {
@@ -25,10 +43,8 @@ module.exports = async function() {
                     default:         account.statusCriticality = 0;
                 }
 
-                // Calculate Priority Score (1-5 scale for CRM operations)
-                const priorityScore100 = calculatePriorityScore(account);
-                account.priorityScore = convertToPriorityScore1to5(priorityScore100);
-                account.priorityScoreCriticality = getPriorityScoreCriticality(account.priorityScore);
+                // Calculate Priority Score Criticality (priorityScore is now stored in DB)
+                account.priorityScoreCriticality = getPriorityScoreCriticality(account.priorityScore || 1);
 
                 // Generate Last Follow Up text
                 account.lastFollowUp = generateLastFollowUp(account);
@@ -112,8 +128,14 @@ module.exports = async function() {
             recentSentimentTrend: sentimentTrend
         }).where({ ID: accountID });
 
+        // Recalculate and update priority score based on new health score
         const updatedAccount = await SELECT.one.from(Accounts).where({ ID: accountID });
-        return updatedAccount;
+        const priorityScore100 = calculatePriorityScore(updatedAccount);
+        const priorityScore = convertToPriorityScore1to5(priorityScore100);
+        await UPDATE(Accounts).set({ priorityScore }).where({ ID: accountID });
+
+        const finalAccount = await SELECT.one.from(Accounts).where({ ID: accountID });
+        return finalAccount;
     });
 
     // Action: Merge Account
@@ -330,6 +352,27 @@ module.exports = async function() {
 
         // Calculate initial health score
         account.healthScore = calculateAccountHealth(account);
+
+        // Calculate and store priority score (1-5 scale)
+        const priorityScore100 = calculatePriorityScore(account);
+        account.priorityScore = convertToPriorityScore1to5(priorityScore100);
+    });
+
+    // Before UPDATE Account: Recalculate priority score
+    this.before('UPDATE', 'Accounts', async (req) => {
+        const accountID = req.data.ID;
+        if (!accountID) return;
+
+        // Get existing account data
+        const existing = await SELECT.one.from(Accounts).where({ ID: accountID });
+        if (!existing) return;
+
+        // Merge existing data with updates
+        const merged = { ...existing, ...req.data };
+
+        // Recalculate priority score based on merged data
+        const priorityScore100 = calculatePriorityScore(merged);
+        req.data.priorityScore = convertToPriorityScore1to5(priorityScore100);
     });
 
     // Before CREATE Contact: Validate and set defaults

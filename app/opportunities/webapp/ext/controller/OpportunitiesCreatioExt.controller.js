@@ -1,13 +1,14 @@
 /**
  * Opportunities Object Page Extension - Creatio-style Layout
  * Integrates ChevronStageBar, KPI Cards, Enhanced AI Assistant Panel, and Entity Profile
- * 
+ *
  * Enhanced Features:
  * - AI Sidebar with Win Probability Breakdown, Next Best Actions, Competitors, Deal History
  * - Activity Timeline with mock data
  * - Quick Action Buttons (Call, Email, Meeting)
  * - Visual Score Indicators with progress rings
  */
+console.log("[OpportunitiesCreatioExt] Module file is being loaded at:", new Date().toISOString());
 sap.ui.define([
     "sap/ui/core/mvc/ControllerExtension",
     "sap/ui/core/Fragment",
@@ -280,94 +281,64 @@ sap.ui.define([
         },
 
         /**
-         * Create Advance Stage and Previous Stage buttons below the chevron bar
+         * Create Advance Stage button at bottom (like Leads Convert button)
          * @private
          */
         _createStageNavigationButtons: function () {
             const that = this;
+            console.log("[OpportunitiesCreatioExt] Creating stage navigation button...");
 
-            // Remove existing container if present
-            let oButtonContainer = document.getElementById("creatioStageNavButtons");
-            if (oButtonContainer) {
-                oButtonContainer.remove();
-            }
-
-            // Create new container with inline styles for maximum visibility
-            oButtonContainer = document.createElement("div");
-            oButtonContainer.id = "creatioStageNavButtons";
-            oButtonContainer.style.position = "fixed";
-            oButtonContainer.style.bottom = "24px";
-            oButtonContainer.style.left = "50%";
-            oButtonContainer.style.transform = "translateX(calc(-50% - 180px))"; // Offset for AI panel
-            oButtonContainer.style.zIndex = "99999";
-            oButtonContainer.style.display = "flex";
-            oButtonContainer.style.gap = "12px";
-            oButtonContainer.style.padding = "12px 24px";
-            oButtonContainer.style.background = "linear-gradient(135deg, #ffffff 0%, #f5f5f5 100%)";
-            oButtonContainer.style.borderRadius = "16px";
-            oButtonContainer.style.boxShadow = "0 8px 32px rgba(0,0,0,0.2)";
-            oButtonContainer.style.border = "1px solid #e0e0e0";
-            document.body.appendChild(oButtonContainer);
-
-            // Create Previous Stage Button
-            this._oPreviousStageButton = new Button({
-                text: "Previous Stage",
-                icon: "sap-icon://arrow-left",
-                type: "Default",
-                visible: true,
-                press: function () {
-                    that._onPreviousStagePress();
+            // Use setTimeout to ensure DOM is ready
+            setTimeout(function() {
+                // Remove existing button if any
+                if (that._oAdvanceStageButton) {
+                    that._oAdvanceStageButton.destroy();
+                    that._oAdvanceStageButton = null;
                 }
-            });
 
-            // Create Advance Stage Button
-            this._oAdvanceStageButton = new Button({
-                text: "Advance Stage",
-                icon: "sap-icon://arrow-right",
-                iconFirst: false,
-                type: "Emphasized",
-                visible: true,
-                press: function () {
-                    that._onAdvanceStagePress();
+                // Remove existing container
+                let oContainer = document.getElementById("creatioStageNavBtnContainer");
+                if (oContainer) {
+                    oContainer.remove();
                 }
-            });
 
-            // Create Mark as Won Button
-            this._oMarkWonButton = new Button({
-                text: "Mark Won",
-                icon: "sap-icon://accept",
-                type: "Accept",
-                press: function () {
-                    that._onMarkAsWon();
-                }
-            });
-
-            // Create Mark as Lost Button
-            this._oMarkLostButton = new Button({
-                text: "Mark Lost",
-                icon: "sap-icon://decline",
-                type: "Reject",
-                press: function () {
-                    that._onMarkAsLost();
-                }
-            });
-
-            // Place buttons in container
-            this._oPreviousStageButton.placeAt(oButtonContainer);
-            this._oAdvanceStageButton.placeAt(oButtonContainer);
-            this._oMarkWonButton.placeAt(oButtonContainer);
-            this._oMarkLostButton.placeAt(oButtonContainer);
-
-            // Initial state based on current context
-            const oView = this.base.getView();
-            const oContext = oView && oView.getBindingContext();
-            if (oContext) {
-                oContext.requestObject().then((oData) => {
-                    this._updateStageButtonsState(oData.stage);
+                // Create floating action button (like Leads Convert button)
+                const oAdvanceBtn = new Button({
+                    text: "Advance Stage",
+                    icon: "sap-icon://arrow-right",
+                    iconFirst: false,
+                    type: "Emphasized",
+                    press: function () {
+                        that._onAdvanceStagePress();
+                    }
                 });
-            }
+                oAdvanceBtn.addStyleClass("creatio-convert-btn");
 
-            console.log("[OpportunitiesCreatioExt] Stage navigation buttons created at bottom of screen");
+                // Create a container div for proper positioning (same as Leads)
+                oContainer = document.createElement("div");
+                oContainer.id = "creatioStageNavBtnContainer";
+                oContainer.style.cssText = "position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:9999;";
+                document.body.appendChild(oContainer);
+
+                console.log("[OpportunitiesCreatioExt] Container created:", oContainer);
+
+                // Place button in container
+                oAdvanceBtn.placeAt(oContainer);
+                that._oAdvanceStageButton = oAdvanceBtn;
+
+                console.log("[OpportunitiesCreatioExt] Button placed:", oAdvanceBtn);
+
+                // Initial state based on current context
+                const oView = that.base.getView();
+                const oContext = oView && oView.getBindingContext();
+                if (oContext) {
+                    oContext.requestObject().then((oData) => {
+                        that._updateStageButtonsState(oData.stage);
+                    });
+                }
+
+                console.log("[OpportunitiesCreatioExt] Stage navigation button created at bottom of screen");
+            }, 100);
         },
 
         /**
@@ -421,34 +392,32 @@ sap.ui.define([
         },
 
         /**
-         * Update stage buttons visibility and enablement
+         * Update stage button visibility and enablement
          * @private
          */
         _updateStageButtonsState: function (sStage) {
-            if (!this._oAdvanceStageButton || !this._oPreviousStageButton) return;
+            if (!this._oAdvanceStageButton) return;
 
             const bCanAdvance = this._canAdvance(sStage);
-            const bCanRevert = this._canRevert(sStage);
             const bIsClosed = CLOSED_STAGES.includes(sStage);
 
-            // Show/hide navigation buttons
-            this._oAdvanceStageButton.setVisible(bCanAdvance);
-            this._oAdvanceStageButton.setEnabled(bCanAdvance);
-
-            this._oPreviousStageButton.setVisible(bCanRevert);
-            this._oPreviousStageButton.setEnabled(bCanRevert);
-
-            // Show/hide Mark Won/Lost buttons (hide when already closed)
-            if (this._oMarkWonButton) {
-                this._oMarkWonButton.setVisible(!bIsClosed);
-                this._oMarkWonButton.setEnabled(!bIsClosed);
+            // Update button based on stage
+            if (bIsClosed) {
+                this._oAdvanceStageButton.setText("Deal Closed");
+                this._oAdvanceStageButton.setEnabled(false);
+                this._oAdvanceStageButton.setType("Default");
+            } else if (bCanAdvance) {
+                this._oAdvanceStageButton.setText("Advance Stage");
+                this._oAdvanceStageButton.setEnabled(true);
+                this._oAdvanceStageButton.setType("Emphasized");
+            } else {
+                // At Negotiation stage - show close options
+                this._oAdvanceStageButton.setText("Close Deal");
+                this._oAdvanceStageButton.setEnabled(true);
+                this._oAdvanceStageButton.setType("Emphasized");
             }
-            if (this._oMarkLostButton) {
-                this._oMarkLostButton.setVisible(!bIsClosed);
-                this._oMarkLostButton.setEnabled(!bIsClosed);
-            }
 
-            console.log("[OpportunitiesCreatioExt] Stage buttons updated - Advance:", bCanAdvance, "Previous:", bCanRevert, "Closed:", bIsClosed);
+            console.log("[OpportunitiesCreatioExt] Stage button updated - Stage:", sStage, "CanAdvance:", bCanAdvance, "Closed:", bIsClosed);
         },
 
         /**
@@ -1779,10 +1748,7 @@ sap.ui.define([
             if (this._oAdvanceStageButton) {
                 this._oAdvanceStageButton.destroy();
             }
-            if (this._oPreviousStageButton) {
-                this._oPreviousStageButton.destroy();
-            }
-            
+
             // Remove DOM elements
             const oTagContainer = document.getElementById("creatioTagChipsContainer");
             if (oTagContainer) {
@@ -1796,7 +1762,7 @@ sap.ui.define([
             if (oDashContainer) {
                 oDashContainer.remove();
             }
-            const oStageNavContainer = document.getElementById("creatioStageNavButtons");
+            const oStageNavContainer = document.getElementById("creatioStageNavBtnContainer");
             if (oStageNavContainer) {
                 oStageNavContainer.remove();
             }

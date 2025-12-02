@@ -139,10 +139,12 @@
             "settings": {
               "editableHeaderContent": true,
               "contextPath": "/Opportunities",
-              "showDraftToggle": true,
-              "editFlow": {
-                "sticky": false
-              }
+              "controlConfiguration": {
+                "@com.sap.vocabularies.UI.v1.Identification": {
+                  "actions": {}
+                }
+              },
+              "navigation": {}
             }
           },
           "extends": {

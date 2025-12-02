@@ -1,6 +1,16 @@
 /* Import shared Creatio layout styles */
 @import "../../../shared/creatio-layout.css";
 
+/* ============================================================================
+   Object Page Header Actions - Hide default, use custom floating button instead
+   (Same pattern as Opportunities page)
+   ============================================================================ */
+
+/* Hide the default header actions - we use custom positioned button at bottom */
+.sapUxAPObjectPageHeaderAction {
+    display: none !important;
+}
+
 /* Custom styles for Accounts table - larger text and spacing */
 
 /* Increase table row height and spacing */

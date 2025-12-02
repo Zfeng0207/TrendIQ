@@ -77,6 +77,7 @@ entity Accounts : managed, cuid, aspects.Address, aspects.SocialMedia, aspects.C
 
     // Health & scoring
     healthScore : Integer @title: 'Account Health Score' @assert.range: [0, 100];
+    priorityScore : Integer @title: 'Priority Score' @assert.range: [1, 5];
     riskLevel   : String(20) @title: 'Risk Level'
                   @assert.enum: ['Low', 'Medium', 'High', 'Critical'];
 
