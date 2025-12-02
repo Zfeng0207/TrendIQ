@@ -61,7 +61,7 @@ entity Accounts : managed, cuid, aspects.Address, aspects.SocialMedia, aspects.C
 
     // Account hierarchy
     parentAccount : Association to Accounts @title: 'Parent Account';
-    childAccounts : Composition of many Accounts on childAccounts.parentAccount = $self;
+    childAccounts : Association to many Accounts on childAccounts.parentAccount = $self;
 
     // Account management
     status         : String(20) @title: 'Status' default 'Onboarding'
@@ -70,6 +70,8 @@ entity Accounts : managed, cuid, aspects.Address, aspects.SocialMedia, aspects.C
     accountManager : Association to Users @title: 'Account Manager';
     accountTier    : String(20) @title: 'Account Tier'
                      @assert.enum: ['Platinum', 'Gold', 'Silver', 'Bronze'];
+    hierarchyRole  : String(20) @title: 'Hierarchy Role' default 'Independent'
+                     @assert.enum: ['Group', 'Location', 'Independent'];
 
     // Operational fields for List Report
     assignedTo     : String(200) @title: 'Assigned To'; // Sales rep name as string
@@ -483,3 +485,20 @@ entity CampaignCreators : cuid {
     selected          : Boolean default false @title: 'Selected';
     assignedBudget    : Decimal(15,2) @title: 'Assigned Budget (RM)';
 }
+
+/**
+ * AccountGroupMetrics - Aggregated metrics for account groups (parent + children)
+ */
+@readonly
+entity AccountGroupMetrics as select from Accounts as parent
+  left join Accounts as child on child.parentAccount.ID = parent.ID
+  left join Opportunities as childOpp on (childOpp.account.ID = child.ID or childOpp.account.ID = parent.ID)
+{
+    key parent.ID as groupAccountID,
+    parent.accountName as groupAccountName,
+    count(distinct child.ID) as locationCount : Integer,
+    count(distinct childOpp.ID) as totalOpportunities : Integer,
+    sum(childOpp.expectedRevenue) as totalPipelineValue : Decimal(15,2)
+}
+where parent.hierarchyRole = 'Group'
+group by parent.ID, parent.accountName;

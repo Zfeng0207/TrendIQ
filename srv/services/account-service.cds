@@ -11,6 +11,9 @@ service AccountService @(path: '/account') {
     @odata.draft.enabled
     entity Accounts as projection on crm.Accounts {
         *,
+        // Hierarchy support
+        childAccounts: redirected to Accounts,
+        parentAccount: redirected to Accounts,
         // Exclude compositions that cause issues with draft navigation
         recommendations: redirected to AccountRecommendations,
         riskAlerts: redirected to AccountRiskAlerts,
@@ -97,4 +100,13 @@ service AccountService @(path: '/account') {
     @readonly entity Activities as projection on crm.Activities;
     @cds.redirection.target
     @readonly entity MarketingCampaigns as projection on crm.MarketingCampaigns;
+
+    // Account Group Metrics for hierarchy aggregations
+    @readonly entity AccountGroupMetrics as projection on crm.AccountGroupMetrics;
+
+    // Analytics view for hierarchy distribution
+    @readonly entity AccountsByHierarchy as projection on crm.Accounts {
+        key hierarchyRole,
+        count(ID) as count : Integer
+    } group by hierarchyRole;
 }

@@ -20,7 +20,9 @@ annotate AccountService.Accounts with @(
             priorityScore,
             phase,
             assignedTo,
-            dateCreated
+            dateCreated,
+            hierarchyRole,
+            parentAccount_ID
         ],
 
         LineItem: [
@@ -29,6 +31,17 @@ annotate AccountService.Accounts with @(
                 Value: accountName,
                 Label: 'Account Name',
                 ![@UI.Importance]: #High
+            },
+            {
+                $Type: 'UI.DataField',
+                Value: hierarchyRole,
+                Label: 'Role',
+                ![@UI.Importance]: #High
+            },
+            {
+                $Type: 'UI.DataField',
+                Value: parentAccount.accountName,
+                Label: 'Parent Account'
             },
             {
                 $Type: 'UI.DataField',
@@ -161,6 +174,17 @@ annotate AccountService.Accounts with @(
                 $Type: 'UI.ReferenceFacet',
                 Target: 'contacts/@UI.LineItem',
                 Label: 'Contacts'
+            },
+            {
+                $Type: 'UI.ReferenceFacet',
+                Target: 'childAccounts/@UI.LineItem#ChildLocations',
+                Label: 'Locations',
+                ![@UI.Hidden]: { $edmJson: { $Ne: [{ $Path: 'hierarchyRole' }, 'Group'] } }
+            },
+            {
+                $Type: 'UI.ReferenceFacet',
+                Target: '@UI.FieldGroup#GroupSummary',
+                Label: 'Group Summary'
             }
         ],
 
@@ -331,6 +355,13 @@ annotate AccountService.Accounts with @(
             ]
         },
 
+        FieldGroup#GroupSummary: {
+            Data: [
+                {Value: hierarchyRole, Label: 'Hierarchy Role'},
+                {Value: parentAccount.accountName, Label: 'Parent Account'}
+            ]
+        },
+
         Identification: [
             {
                 $Type: 'UI.DataFieldForAction',
@@ -396,6 +427,8 @@ annotate AccountService.Accounts with {
                    @Common.FieldControl: #ReadOnly;
     assignedTo @title: 'Assigned To';
     dateCreated @title: 'Date Created';
+    hierarchyRole @title: 'Hierarchy Role';
+    parentAccount @title: 'Parent Account';
 }
 
 // ============================================================================
@@ -705,3 +738,38 @@ annotate AccountService.AccountRiskAlerts with {
     resolvedDate @title: 'Resolved Date';
     isResolved @title: 'Is Resolved';
 }
+
+// ============================================================================
+// Child Accounts (Locations) Annotations
+// ============================================================================
+
+annotate AccountService.Accounts with @(
+    UI.LineItem#ChildLocations: [
+        {
+            $Type: 'UI.DataField',
+            Value: accountName,
+            Label: 'Location Name',
+            ![@UI.Importance]: #High
+        },
+        {
+            $Type: 'UI.DataField',
+            Value: city,
+            Label: 'City'
+        },
+        {
+            $Type: 'UI.DataField',
+            Value: status,
+            Label: 'Status'
+        },
+        {
+            $Type: 'UI.DataFieldForAnnotation',
+            Target: '@UI.DataPoint#HealthScore',
+            Label: 'Health Score'
+        },
+        {
+            $Type: 'UI.DataField',
+            Value: estimatedMonthlyGMV,
+            Label: 'Monthly GMV'
+        }
+    ]
+);
