@@ -84,7 +84,7 @@
                         </HBox>
                         <HBox class="legendItem" alignItems="Center">
                             <core:Icon src="sap-icon://circle-task-2" class="legendDot legendDotOrange" size="0.5rem"/>
-                            <Text text="LinkedIn Campaign" class="legendText"/>
+                            <Text text="TikTok Campaign" class="legendText"/>
                         </HBox>
                         <HBox class="legendItem" alignItems="Center">
                             <core:Icon src="sap-icon://circle-task-2" class="legendDot legendDotBlue" size="0.5rem"/>
