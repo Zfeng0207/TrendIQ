@@ -1,108 +1,142 @@
-# Smart Beauty CRM - Quick Start Guide
+# TrendIQ CRM (Beauty Leads)
 
-## ✅ System Status: FULLY OPERATIONAL
+TrendIQ CRM is a unified, analytics-driven CRM for managing the full commercial lifecycle — **leads → prospects → accounts/contacts → opportunities → activities**, with integrated dashboards and campaign + competitor intelligence.
 
-All services and applications are running successfully!
+## Live preview (screenshots)
 
-**Last Updated:** November 13, 2025
-**CAP Version:** 9.4.4
-**Server Status:** Running on http://localhost:4004
-**Launch Time:** ~1 second
+Below is a guided walkthrough of the core CRM flows, in sequence.
 
-## 🚀 Access Your Applications
+### 1) CRM dashboard — KPIs at a glance
 
-### Dashboard & Analytics
-**Overview Page Dashboard** - Main KPIs and insights
-- URL: http://localhost:4004/ey-beauty-1/webapp/index.html
-- Features: 8 analytical cards showing leads, accounts, opportunities, activities, and products
+High-level operational visibility across pipeline, accounts, activities, and performance indicators.
 
-### Core Business Applications
+![CRM dashboard](TrendIQ%20Live%20Preview/crm-dashboard.png)
 
-**Lead Management** - Track and convert leads
-- URL: http://localhost:4004/leads/webapp/index.html
-- Features: Lead tracking, AI scoring, conversion to accounts
+### 2) CRM dashboard — analytics overview
 
-**Account Management** - Manage customer relationships
-- URL: http://localhost:4004/accounts/webapp/index.html
-- Features: Account details, contacts, health scoring
+Drill into key metrics and trends to prioritize actions and identify opportunities.
 
-**Opportunity Management** - Sales pipeline tracking
-- URL: http://localhost:4004/opportunities/webapp/index.html
-- Features: Deal tracking, stage management, win probability
+![CRM dashboard (analytics)](TrendIQ%20Live%20Preview/crm-dashboard-2.png)
 
-### OData Service Endpoints
+### 3) Lead management
 
-All services are accessible via OData V4 protocol:
+Capture, qualify, and track inbound/outbound leads through the pipeline with structured status and scoring fields.
 
-- **Lead Service**: http://localhost:4004/lead/
-- **Account Service**: http://localhost:4004/account/
-- **Opportunity Service**: http://localhost:4004/opportunity/
-- **Activity Service**: http://localhost:4004/activity/
-- **Product Service**: http://localhost:4004/product/
-- **Workflow Service**: http://localhost:4004/workflow/
+![Lead management](TrendIQ%20Live%20Preview/lead-management.png)
 
-### Service Documentation
-- **Root Welcome Page**: http://localhost:4004/
-- **Service Metadata**: http://localhost:4004/lead/$metadata (example)
+### 4) Lead conversion
 
-## 📊 Sample Data Loaded
+Convert qualified leads into downstream records to continue the sales motion seamlessly.
 
-- ✅ 30 Leads across various stages
-- ✅ 15 Customer Accounts
-- ✅ 20 Sales Opportunities
-- ✅ 50 Products in catalog
-- ✅ 10 System Users
-- ✅ Sample Activities and Approvals
+![Lead conversion](TrendIQ%20Live%20Preview/lead-conversion.png)
 
-## 🎯 Key Features
+### 5) Prospects list
 
-### AI-Powered Insights
-- Lead Scoring (sentiment + trend analysis)
-- Account Health Monitoring
-- Opportunity Win Probability
-- Activity Sentiment Analysis
-- Product Trend Scoring
+Manage qualified prospects with discovery context and prioritization fields for sales follow-up.
 
-### Business Operations
-- Lead to Account Conversion
-- Sales Pipeline Management
-- Contact Management
-- Activity Tracking
-- Approval Workflows
+![Prospects](TrendIQ%20Live%20Preview/prospects.png)
 
-## 💻 Development Commands
+### 6) Prospect creation
+
+Create prospects with structured discovery source, business type, and scoring to support consistent qualification.
+
+![Prospect creation](TrendIQ%20Live%20Preview/prospect-creation.png)
+
+### 7) Accounts management
+
+Centralize account data, relationships, and operational signals for ongoing customer management.
+
+![Accounts management](TrendIQ%20Live%20Preview/accounts-management.png)
+
+### 8) Accounts status & health
+
+Track account health/risk indicators and operational status to drive proactive retention and growth.
+
+![Accounts status](TrendIQ%20Live%20Preview/accounts-status.png)
+
+### 9) Opportunity management
+
+Manage deals through stages with ownership, value, probability, and planning fields.
+
+![Opportunity management](TrendIQ%20Live%20Preview/opportunity-management.png)
+
+### 10) Deal outlook
+
+Understand deal trajectory and next steps with a focused opportunity view.
+
+![Opportunity deal outlook](TrendIQ%20Live%20Preview/opportunity-deal-outlook.png)
+
+### 11) Marketing campaigns
+
+Plan and execute campaigns with structured targeting and lifecycle management.
+
+![Marketing campaigns](TrendIQ%20Live%20Preview/marketing-campaigns.png)
+
+### 12) Marketing analytics
+
+Measure campaign performance and effectiveness using analytics views.
+
+![Marketing analytics](TrendIQ%20Live%20Preview/marketing-analytics.png)
+
+### 13) Competitor analytics
+
+Monitor competitive signals and insights to support differentiated positioning.
+
+![Competitor analytics](TrendIQ%20Live%20Preview/competitor-analytics.png)
+
+## Quick start
 
 ```bash
-# Start the server (currently running)
+npm install
 npm run watch
-
-# Or start specific apps
-npm run watch-dashboard      # Opens Overview Page
-npm run watch-leads          # Opens Lead Management
-npm run watch-accounts       # Opens Account Management
-npm run watch-opportunities  # Opens Opportunity Management
 ```
 
-## 🔧 Technical Details
+- Runs the CAP server at `http://localhost:4004`
+- Initializes the local SQLite database (`db.sqlite`) and loads seed data from `db/data/*.csv`
 
-- **Backend**: SAP CAP v9.4.4 with Node.js
-- **Database**: SQLite (in-memory)
-- **Services**: 6 OData V4 services
-- **Frontend**: SAPUI5 v1.120.0 (Fiori Elements)
-- **Port**: 4004
+## Applications (UI)
 
-## 📝 Notes
+- **CRM Dashboard**: `http://localhost:4004/ey-beauty-1/webapp/index.html`
+- **Lead Management**: `http://localhost:4004/leads/webapp/index.html`
+- **Prospects**: `http://localhost:4004/prospects/webapp/index.html`
+- **Accounts**: `http://localhost:4004/accounts/webapp/index.html`
+- **Opportunities**: `http://localhost:4004/opportunities/webapp/index.html`
+- **Marketing Campaigns**: `http://localhost:4004/campaigns/webapp/index.html`
+- **Competitor Analytics**: `http://localhost:4004/competitor-analytics/webapp/index.html`
 
-- All services are running with mock AI algorithms
-- Authentication is mocked (no login required)
-- Data is in-memory (resets on server restart)
-- UI applications use Fiori Elements (annotation-driven)
+## Services (OData V4)
 
-## 🎉 You're All Set!
+- **Lead Service**: `http://localhost:4004/lead/`
+- **Account Service**: `http://localhost:4004/account/`
+- **Opportunity Service**: `http://localhost:4004/opportunity/`
+- **Activity Service**: `http://localhost:4004/activity/`
+- **Product Service**: `http://localhost:4004/product/`
+- **Workflow Service**: `http://localhost:4004/workflow/`
+- **Prospect Service**: `http://localhost:4004/prospect/`
+- **Marketing Service**: `http://localhost:4004/marketing/`
+- **Dashboard Service**: `http://localhost:4004/dashboard/`
 
-Your Smart Beauty CRM is fully functional and ready to use. Start with the Overview Page Dashboard to see all your key metrics at a glance, then navigate to specific apps as needed.
+## Development commands
 
-For detailed implementation information, see `PROJECT_STATUS.md`.
+```bash
+# Start the dev server (auto-initializes SQLite in db.sqlite)
+npm run watch
 
----
-*Server running on http://localhost:4004*
+# Open specific apps
+npm run watch-dashboard
+npm run watch-leads
+npm run watch-accounts
+npm run watch-opportunities
+
+# Database utilities
+npm run db:deploy   # deploy schema + load db/data/*.csv into db.sqlite
+npm run db:reset    # delete db.sqlite (+ wal/shm), then redeploy + reload
+```
+
+## Troubleshooting
+
+- If you see errors like `no such table: <Service>_<Entity>`, run `npm run db:deploy`.
+
+## Project docs
+
+For deeper implementation notes, see `PROJECT_STATUS.md` and `docs/`.
